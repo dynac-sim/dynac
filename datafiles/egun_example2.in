@@ -1,0 +1,58 @@
+TEST DC EGUN
+; generate a monokinetic electron beam of 30 eV 
+GEBEAM
+5 1
+1300.E06
+1000
+0. 0.0 0.  0.0 0. 0.
+ 0.20004E-03   0.14130E-01 32.732
+-0.47806E-04   0.14137E-01 32.755
+ 0.0000        0.21146E+11 0.130766E-08 
+INPUT
+0.51100 1. -1.
+0.000030    0.
+EMITGR
+BEAM AT EGUN INPUT
+1 5
+.25 100. .25 100. .25 .25  10. 0.01
+; space charge computation (140. mA) with the routine SCHEFF (only this routine can be used in
+; conjunction with EGUN)
+SCDYNAC
+3
+140.  3.
+0
+; in this example 8 space charge computations are made in the EGUN (16 or 32 s.c.c. are possible, see user guide)
+EGUN
+egun_field.txt
+19.16402  1
+EMITGR
+BEAM AT EGUN OUTPUT
+1 5
+.5 100. .5 100. .75 .75  10. 0.05
+FDRIFT
+5.  10    0
+FDRIFT
+5.  10    0
+SOLENO
+1 2. .68
+SOLENO
+1 2. .68
+SOLENO
+1 2. .68
+SOLENO
+1 2. .68
+SOLENO
+1 2. .68
+FDRIFT
+20. 20 0
+EMIT
+ENVEL
+BEAM FROM EGUN INPUT to beamline OUTPUT
+1.
+0. 1.
+1. 1. 0.5 100.
+EMITGR
+BEAM AT OUTPUT
+1 5
+1. 50. 1. 50. 1. 1.  10. 0.04
+STOP
