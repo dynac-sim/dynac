@@ -30,7 +30,7 @@
 c ******************************************************************
        PROGRAM dynac
        implicit real*8 (a-h,o-z)
-C Version 6.0R12  14-Sep-2014
+C Version 6.0R14  1-Jun-2015
 C      THIS SOFTWARE WAS ORIGINALLY PRODUCED BY CERN/PS, CEN/SACLAY
 C   AUTHORS :P. LAPOSTOLLE  CONSULTANT (Paris, France)
 C            E. TANKE       ESS (Lund, Sweden)
@@ -38,7 +38,7 @@ C            S. VALERO      CONSULTANT (Paris, France)
 C      Modified and maintained by :
 C      TANKE Eugene
 C      VALERO Saby
-       parameter(ncards=61,iptsz=100002,maxcell=3000,maxcell1=3000)
+       parameter(ncards=63,iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/ITVOLE/ITVOL,IMAMIN
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
        COMMON/FENE/WDISP,WPHAS,WX,WY,RLIM,IFW
@@ -112,6 +112,10 @@ C      VALERO Saby
 c allow plotting the beam after sector nsprint ******
        common/isector/nsector,nsprint
        common/mingw/mg
+c §§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§
+c v28/04/2015
+       common/fcont/ifcont
+       logical ifcont
        logical mg,ffound
 c********************************************
        logical izrot
@@ -129,7 +133,7 @@ c ******
      *          'PROFGR','SECORD','RASYN','FDRIFT','FSOLE',
      *          'EGUN','COMPRES','REFCOG','FPART','QUAELEC',
      *          'QUAFK','CAVNUM','EDFLEC','EMITL','RFKICK',
-     *          'STOP'/
+     *          'FIRORD','DCBEAM','STOP'/
 cet2010s
        integer narg,i
        character*80 inarg,myarg(10),myfile,wfile,infiln,shortl
@@ -359,12 +363,14 @@ cccc       ibcont=.false.
        ISCSP=0
        IFILE=11
        IMAX=0
+c default for beams is to be bunched (not continuous)
+       ifcont=.FALSE.
 c   *******************************************************
        WRITE(6,3101)
        WRITE(16,3101)
        WRITE(12,3101)
 cet2010s
-3101   FORMAT('******** DYNAC V6.0R12 (Beta), 14-Sep-2014 *********')
+3101   FORMAT('****** DYNAC V6.0R14 (Beta test), 1-Jun-2015 *******')
        if (gfortran) then
          write(16,*) 'Input file: ',infiln
          write(12,*) 'Input file: ',infiln
@@ -435,7 +441,7 @@ c key not found, go to STOP
      *        31,32,33,34,35,36,37,38,39,40,
      *        41,42,43,44,45,46,47,48,49,50,
      *        51,52,54,55,56,57,58,59,60,61,
-     *        53),I
+     *        62,63,53),I
 c**************************************************************************************
 c  GEBEAM     1  INPUT     2  RDBEAM    3   ETAC    4   DRIFT     5
 c  QUADRUPO   6  SEXTUPO   7  QUADSXT   8   SOLENO  9   SOQUAD    10
@@ -449,7 +455,7 @@ c  MMODE      41 RFQPTQ    42 STRIPPER  43  STEER   44  ZONES     45
 c  PROFGR     46 SECORD    47 RASYN     48  FDRIFT  49  FSOLE     50
 c  EGUN       51 COMPRES   52 REFCOG    54  FPART   55  QUAELEC   56
 c  QUAFK      57 CAVNUM    58 EDFLEC    59  EMITL   60  RFKICK    61
-c  STOP       53
+c  FIRORD     62 DCBEAM    63 STOP      53
 c**************************************************************************************
 1      CONTINUE
 C AFTER GEBEAM:Generates randomly the input beam
@@ -1035,7 +1041,7 @@ c ---  (new level of field) = (previous level of field) * (1.+ vfield/100)
 42    CONTINUE
 c --- AFTER RFQPTQ
       write(16,*) 'TYPE CODE:RFQPTQ ************************'
-      write(6,*) 
+      write(6,*)
 c -- ENTRIES:
 c ---  ENTRY 1: input file 'myfile' contains the geometry of the RFQ (unit 27)
 c ---  ENTRY 2: nceltot
@@ -1218,7 +1224,6 @@ c file not yet open
        write(16,990) intgr
 990    format('*** SOLENOID WITH ARBITRARY MAGNETIC FIELD ',/,5x,
      *        'PARTITION IN: ',i4,' ELEMENTARY SOLENOIDS')
-comment       call solfield (bcret)
        call solfield(bcret,intgr)
        write(16,*) '********************************'
        GO TO 200
@@ -1296,7 +1301,7 @@ c    (at the begining shift = false)
      *         ' new ref. beta: ',e12.5,' TOF: ',e12.5,' deg',/,
      *         ' COG      beta: ',e12.5,' TOF: ',e12.5,' deg')
 c        write(16,*) 'old TTVOL (deg): ',ottvols*fcpi
-c        write(16,*) 'new TTVOL (deg): ',ttvols*fcpi     
+c        write(16,*) 'new TTVOL (deg): ',ttvols*fcpi
        endif
        if(ishift.eq.1) then
         shift=.true.
@@ -1375,7 +1380,7 @@ c           or from the type code: HARM in the form of a Fourier series expansio
        write(16,*) '********************************'
        GO TO 200
 59    continue
-c     AFTER EDFLEC:  ELECTROSTATIC DELECTOR
+c     AFTER EDFLEC:  ELECTROSTATIC DEFLECTOR
 c --- Input parameters
 c   radial radius (cm)
 c   bend angle (deg)
@@ -1406,6 +1411,26 @@ C      NVF: 0 = horizontal, 1 = vertical
        call rfkick(pv,pdp,pharm,nvf)
        write(16,*) '********************************'
        GO TO 200
+62     CONTINUE
+C  AFTER FIRORD : first order matrix for optical lenses
+       write(16,*) '*****************************************'
+       write(16,*) '  FIRST ORDER IN BEAM TRANSPORT**********'
+       ISEOR=.FALSE.
+       write(16,*) '*****************************************'
+       go to 200
+63     CONTINUE
+C  AFTER DCBEAM : select DC or bunched beam
+       READ(IN,*) iscont
+       write(16,*) '****************************'
+       if(iscont.eq.1) then
+         ifcont=.true.
+         write(16,*) ' DC BEAM SELECTED    **********'
+       elseif(iscont.eq.0) then
+         ifcont=.false.
+         write(16,*) ' BUNCHED BEAM SELECTED ********'
+       endif
+       write(16,*) '****************************'
+       go to 200
 53     CONTINUE
 c AFTER STOP: mandatory, stop the computations
       write(16,100) kle(ncards)
@@ -1577,6 +1602,7 @@ c  (ngood) is passed back.
 c  ...............................................................................
        parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
        common/faisc/f(10,iptsz),imax,ngood
+       common/mcs/imcs,ncstat,cstat(20)
        common/macro/ratei
        k=ngood
        ngood1=0
@@ -1594,6 +1620,26 @@ c  .............................................................................
   5    continue
        ngood=ngood1
        ratei=float(imax)/float(ngood)
+c*ets*2015/05/20
+       ncstat=1
+       cstat(1)=f(9,1)
+       do j=2,ngood
+         mcstat=0
+         do k=1,ncstat
+           if(f(9,j).eq.cstat(k)) then
+             mcstat=1
+           endif
+         enddo
+         if(mcstat.eq.0) then
+           ncstat=ncstat+1
+           cstat(ncstat)=f(9,j)
+         endif
+       enddo
+       write(16,*) 'Number of charge states after shuffle: ',ncstat
+       write(16,*) 'Charge states: ',(cstat(j),j=1,ncstat)
+       imcs=0
+       if(ncstat.gt.1) imcs=1
+c*ete*2015/05/20
 comment       write(16,*) '***reshuffle: ',ngood,' good particles'
        if(ngood.lt.10) then
          write(16,*)'Less than 10 particles left, statistics too low'
@@ -3375,7 +3421,7 @@ c   ........................................................................
        parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
        common/faisc/f(10,iptsz),imax,ngood
        common/etcha1/dav2(maxcell1,33),ichas(iptsz),chasit
-       common/etcom/cog(8),exten(11),fd(iptsz)
+       common/etcom/cog(8),exten(17),fd(iptsz)
        COMMON/DYN/TREF,VREF
        LOGICAL chasit
        cog(1)=0.
@@ -3440,6 +3486,12 @@ c  exten(6) : Sum( y*y )   cm*cm
 c  exten(7) : Sum( yp*yp )  mrad*mrad
 c  exten(8) : Sum( x*xp )   cm*mrad
 c  exten(9) : Sum( y*yp )   cm*mrad
+c  exten(12): Sum( (dp/p)*x(i) )  (cm), with p of REF
+c  exten(13): Sum( (dp/p)*y(i) )  (cm), with p of REF
+c  exten(14): Sum( (dp/p)*(dp/p) )  compared to p of REF
+c  exten(15): Sum( (dp/p)*x(i) )  (cm), with p of COG
+c  exten(16): Sum( (dp/p)*y(i) )  (cm), with p of COG
+c  exten(17): Sum( (dp/p)*(dp/p) )  compared to p of COG
 c   ........................................................................
        implicit real*8 (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
@@ -3447,8 +3499,10 @@ c   ........................................................................
        COMMON/TTFC/TK,T1K,T2K,SK,S1K,S2K,FH
        common/faisc/f(10,iptsz),imax,ngood
        COMMON/QMOYEN/QMOY
-       common/etcom/cog(8),exten(11),fd(iptsz)
+       COMMON/DYN/TREF,VREF
+       common/etcom/cog(8),exten(17),fd(iptsz)
        common/etcha1/dav2(maxcell1,33),ichas(iptsz),chasit
+       dimension ffd(iptsz)
        LOGICAL chasit
        exten(1)=0.
        exten(2)=0.
@@ -3459,12 +3513,28 @@ c   ........................................................................
        exten(7)=0.
        exten(8)=0.
        exten(9)=0.
+       exten(12)=0.
+       exten(13)=0.
+       exten(14)=0.
+       exten(15)=0.
+       exten(16)=0.
+       exten(17)=0.
        qmoy=0.
 c --- imaxf: particles keep in the bunch. With CHASE imaxf may be different from ngood(i.e. imaxf < ngood)
        imaxf=0
        gcog=cog(1)/xmat
        bcog=sqrt(1.-1./(gcog*gcog))
+       bref=vref/vl
+       gref=1./sqrt(1.-bref*bref)
        do i=1,ngood
+         gpai=f(7,i)/xmat
+         bpai=sqrt(1.-1./(gpai*gpai))
+         fd(i)=(gpai*bpai)/(gref*bref)
+         ffd(i)=(gpai*bpai)/(gcog*bcog)
+       enddo
+       do i=1,ngood
+         FDPP=fd(i)-1.
+         FFDPP=ffd(i)-1.
          fdp=f(7,i)-cog(1)
          TRPH1=FH*(f(6,i)-cog(3))
          TRXF=F(2,I)-COG(4)
@@ -3473,17 +3543,23 @@ c --- imaxf: particles keep in the bunch. With CHASE imaxf may be different from
          TRPF=F(5,I)-cog(7)
 c --- with CHASE
          IF(IDCH.EQ.1.AND.ICHAS(I).EQ.1) THEN
-          exten(1)=exten(1)+FDP**2
-          exten(2)=exten(2)+TRPH1*FDP
-          exten(3)=exten(3)+TRPH1**2
-          EXTEN(4)=EXTEN(4)+TRXF**2
-          exten(5)=exten(5)+TRTF**2
-          EXTEN(6)=EXTEN(6)+TRYF**2
-          exten(7)=exten(7)+TRPF**2
-          EXTEN(8)=EXTEN(8)+TRXF*TRTF
-          EXTEN(9)=EXTEN(9)+TRYF*TRPF
-          qmoy=qmoy+f(9,i)
-          imaxf=imaxf+1
+           exten(1)=exten(1)+FDP**2
+           exten(2)=exten(2)+TRPH1*FDP
+           exten(3)=exten(3)+TRPH1**2
+           EXTEN(4)=EXTEN(4)+TRXF**2
+           exten(5)=exten(5)+TRTF**2
+           EXTEN(6)=EXTEN(6)+TRYF**2
+           exten(7)=exten(7)+TRPF**2
+           EXTEN(8)=EXTEN(8)+TRXF*TRTF
+           EXTEN(9)=EXTEN(9)+TRYF*TRPF
+           exten(12)=exten(12)+FDPP*TRXF
+           exten(13)=exten(13)+FDPP*TRYF
+           exten(14)=exten(14)+FDDP**2
+           exten(15)=exten(15)+FFDPP*TRXF
+           exten(16)=exten(16)+FFDPP*TRYF
+           exten(17)=exten(17)+FFDDP**2
+           qmoy=qmoy+f(9,i)
+           imaxf=imaxf+1
          ENDIF
 c --- without CHASE
          IF(IDCH.NE.1) THEN
@@ -3496,11 +3572,20 @@ c --- without CHASE
            exten(7)=exten(7)+TRPF**2
            EXTEN(8)=EXTEN(8)+TRXF*TRTF
            EXTEN(9)=EXTEN(9)+TRYF*TRPF
+           exten(12)=exten(12)+FDPP*TRXF
+           exten(13)=exten(13)+FDPP*TRYF
+           exten(14)=exten(14)+FDDP**2
+           exten(15)=exten(15)+FFDPP*TRXF
+           exten(16)=exten(16)+FFDPP*TRYF
+           exten(17)=exten(17)+FFDDP**2
            qmoy=qmoy+f(9,i)
            imaxf=imaxf+1
-           ENDIF
+         ENDIF
        enddo
        do i=1,9
+         exten(i)=exten(i)/float(imaxf)
+       enddo
+       do i=12,17
          exten(i)=exten(i)/float(imaxf)
        enddo
        qmoy=qmoy/float(imaxf)
@@ -3521,7 +3606,7 @@ c       cog(5) : xp(mrd)
 c       cog(6) : y-direction (cm)
 c       cog(7) : yp(mrd)
 c
-c  exten(1) : Sum( (dp/p)*(dp/p) )
+c  exten(1) : Sum( (dp/p)*(dp/p) ) compared to p of COG
 c  exten(2) : Sum( (dp/p)*phase )  (rad)
 c  exten(3) : Sum( phase*phase) ) (rad*rad)
 c  exten(4) : Sum( x(i)*x(i) )   cm*cm
@@ -3532,6 +3617,12 @@ c  exten(8) : Sum( x(i)*xp(i) )   cm*mrad
 c  exten(9) : Sum( y(i)*yp(i) )   cm*mrad
 c  exten(10): Sum( dE*dE )        (MeV*MeV)
 c  exten(11): Sum( dE*phase )     (MeV*rad)
+c  exten(12): Sum( (dp/p)*x(i) )  (cm), with p of REF
+c  exten(13): Sum( (dp/p)*y(i) )  (cm), with p of REF
+c  exten(14): Sum( (dp/p)*(dp/p) ) compared to p of REF
+c  exten(15): Sum( (dp/p)*x(i) )  (cm), with p of COG
+c  exten(16): Sum( (dp/p)*y(i) )  (cm), with p of COG
+c  exten(17): Sum( (dp/p)*(dp/p) )  compared to p of COG
 c   ........................................................................
 
 c    Calculate the emittances of the bunch
@@ -3544,10 +3635,12 @@ c   ........................................................................
        COMMON/TTFC/TK,T1K,T2K,SK,S1K,S2K,FH
        common/faisc/f(10,iptsz),imax,ngood
        COMMON/QMOYEN/QMOY
-       common/etcom/cog(8),exten(11),fd(iptsz)
+       COMMON/DYN/TREF,VREF
+       common/etcom/cog(8),exten(17),fd(iptsz)
        common/etcha1/dav2(maxcell1,33),ichas(iptsz),chasit
+       dimension fdd(iptsz)
        LOGICAL chasit
-c EXT2 looks for average extensions squared and returns them in exten(11)
+c EXT2 looks for average extensions squared and returns them in exten(14)
        exten(1)=0.
        exten(2)=0.
        exten(3)=0.
@@ -3559,17 +3652,27 @@ c EXT2 looks for average extensions squared and returns them in exten(11)
        exten(9)=0.
        exten(10)=0.
        exten(11)=0.
+       exten(12)=0.
+       exten(13)=0.
+       exten(14)=0.
+       exten(15)=0.
+       exten(16)=0.
+       exten(17)=0.
        qmoy=0.
        imaxf=0
        gcog=cog(1)/xmat
        bcog=sqrt(1.-1./(gcog*gcog))
+       bref=vref/vl
+       gref=1./sqrt(1.-bref*bref)
        do i=1,ngood
          gpai=f(7,i)/xmat
          bpai=sqrt(1.-1./(gpai*gpai))
          fd(i)=(gpai*bpai)/(gcog*bcog)
+         fdd(i)=(gpai*bpai)/(gref*bref)
        enddo
        do i=1,ngood
          fdp=fd(i)-1.
+         FDDP=fdd(i)-1.
          dener=f(7,i)-cog(1)
          TRPH1=FH*(f(6,i)-cog(3))
          TRXF=F(2,I)-COG(4)
@@ -3588,6 +3691,12 @@ c EXT2 looks for average extensions squared and returns them in exten(11)
            EXTEN(9)=EXTEN(9)+TRYF*TRPF
            exten(10)=exten(10)+dener*dener
            exten(11)=exten(11)+dener*trph1
+           exten(12)=exten(12)+FDDP*TRXF
+           exten(13)=exten(13)+FDDP*TRYF
+           exten(14)=exten(14)+FDDP**2
+           exten(15)=exten(15)+FDP*TRXF
+           exten(16)=exten(16)+FDP*TRYF
+           exten(17)=exten(17)+FDP**2
            qmoy=qmoy+f(9,i)
            imaxf=imaxf+1
          ENDIF
@@ -3603,11 +3712,17 @@ c EXT2 looks for average extensions squared and returns them in exten(11)
            EXTEN(9)=EXTEN(9)+TRYF*TRPF
            exten(10)=exten(10)+dener*dener
            exten(11)=exten(11)+dener*trph1
+           exten(12)=exten(12)+FDDP*TRXF
+           exten(13)=exten(13)+FDDP*TRYF
+           exten(14)=exten(14)+FDDP**2
+           exten(15)=exten(15)+FDP*TRXF
+           exten(16)=exten(16)+FDP*TRYF
+           exten(17)=exten(17)+FDP**2
            qmoy=qmoy+f(9,i)
            imaxf=imaxf+1
          ENDIF
        enddo
-       do i=1,11
+       do i=1,17
          exten(i)=exten(i)/float(imaxf)
        enddo
        qmoy=qmoy/float(imaxf)
@@ -4024,7 +4139,7 @@ c  ........................................................................
        COMMON/RIGID/BORO
        COMMON/DYN/TREF,VREF
        common/tapes/in,ifile,meta
-       common/etcom/cog(8),exten(11),fd(iptsz)
+       common/etcom/cog(8),exten(17),fd(iptsz)
        WRITE(16,1)TILTA
 1      FORMAT(' tilt in the plane (x,z) around the c.o.g',
      X '    ANGLE :',E12.5,' DEG',/)
@@ -4078,7 +4193,7 @@ c****************************************************************
        common/faisc/f(10,iptsz),imax,ngood
        common/tapes/in,ifile,meta
        COMMON/DAVCOM/dav1(maxcell1,40),davtot,iitem(maxcell1),idav
-       common/etcom/cog(8),exten(11),fd(iptsz)
+       common/etcom/cog(8),exten(17),fd(iptsz)
        COMMON/SC3/BEAMC,SCDIST,SCE10,CPLM,ECT,APL,ICHAES,ISCSP
        COMMON/FENE/WDISP,WPHAS,WX,WY,RLIM,IFW
        COMMON/DCSPA/IESP
@@ -4651,7 +4766,7 @@ c   .....................................................................
        common/tapes/in,ifile,meta
        common/etcha3/ichxyz(iptsz)
        common/rec/irec
-       common/etcom/cog(8),exten(11),fd(iptsz)
+       common/etcom/cog(8),exten(17),fd(iptsz)
        logical chasit
        character*80 wfile
        ENTRY compress(pib)
@@ -9707,7 +9822,7 @@ c  .............................................................................
        common/etcha1/dav2(maxcell1,33),ichas(iptsz),chasit
        LOGICAL CHASIT
        common/etchas/fractx,fracty,fractl
-       common/etcom/cog(8),exten(11),fd(iptsz)
+       common/etcom/cog(8),exten(17),fd(iptsz)
        common/pool/zl(iptsz),ipin(iptsz)
        if(fractl.ge.1.) return
        do i=1,ngood
@@ -10987,7 +11102,7 @@ c   ............................................................................
        COMMON/RIGID/BORO
        COMMON/MASTRP/XMA(2,2),XMB(2,2),XMC(2,2)
        COMMON/STIS/suryth,surzph,enedep,ecogde,TESTCA
-       common/etcom/cog(8),exten(11),fd(iptsz)
+       common/etcom/cog(8),exten(17),fd(iptsz)
        common/tapes/in,ifile,meta
        COMMON/DAVCOM/dav1(maxcell1,40),davtot,iitem(maxcell1),idav
        COMMON/TILT/TIPHA,TIX,TIY,SHIFW,SHIFP
@@ -11146,6 +11261,10 @@ c  .............................................................................
        COMMON/DYNI/VREFI,TREFI,FHINIT
        common/speda/dave,idave
        common/ragau/ntir
+c §§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§
+c v28/04/2015
+       common/fcont/ifcont
+       logical ifcont
        logical iesp,chasit,dave
 c       dimension fn(9,iptsz),foo(9),so(6),vecx(1)
        dimension vecx(1)
@@ -11219,6 +11338,8 @@ c        if(loi.eq.5) then
 399       format(4x,' Continuous beam in the longitudinal direction :',
      *    /,6x,' half phase length (deg): ',e12.5,/,6x,
      *    ' half energy width (MeV): ',e12.5)
+c continuous beam
+          ifcont=.true.
         else
           write(16,*) ' Beam distribution based on Twiss parameters'
           write(16,199) alphax,betax,emitx,alphay,betay,emity
@@ -11853,7 +11974,7 @@ c   ............................................................................
        COMMON/QMOYEN/QMOY
        COMMON/RIGID/BORO
        COMMON/SC3/BEAMC,SCDIST,SCE10,CPLM,ECT,APL,ICHAES,ISCSP
-       common/etcom/cog(8),exten(11),fd(iptsz)
+       common/etcom/cog(8),exten(17),fd(iptsz)
        common/tapes/in,ifile,meta
        common/isxpyp/iflag
        common/mcs/imcs,ncstat,cstat(20)
@@ -11907,10 +12028,10 @@ c     *      ' time of flight ',e12.5,' sec')
          stop
        endif
 c  iflag = 0 standard file:f(1,)=x, f(2,)=xp, f(3,)=y, f(4,)=yp, f(5,)=phase, f(6,)=kinetic energy
-        if(iflag.eq.0 .or. iflag.eq.10) read(55,*) 
+        if(iflag.eq.0 .or. iflag.eq.10) read(55,*)
      *   ((f(i,j),i=1,6),j=1,imax)
 c  iflag = 1  File with rest mass: f(1,)=x, f(2,)=xp, f(3,)=y, f(4,)=yp, f(5,)=phase, f(6,)=kinetic energy, dum1, dum2
-        if(iflag.eq.1 .or. iflag.eq.11) read(55,*) 
+        if(iflag.eq.1 .or. iflag.eq.11) read(55,*)
      *   ((f(i,j),i=1,6),dum1,dum2,j=1,imax)
 c  iflag = 2 beam with different charges: f(7,) = charge; figure out how many different ones there are and store them
 c*ets*13/12/2010
@@ -11947,7 +12068,7 @@ c  convert the particles  in DYNAC units
 c   ............................................................................
        implicit real*8 (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
-       common/etcom/cog(8),exten(11),fd(iptsz)
+       common/etcom/cog(8),exten(17),fd(iptsz)
        COMMON/SHIF/DTIPH,SHIFT
        COMMON/TTFC/TK,T1K,T2K,SK,S1K,S2K,FH
        common/faisc/f(10,iptsz),imax,ngood
@@ -12113,7 +12234,11 @@ c9999   format(6(2x,e12.5))
      *               sprfp(3000),SPRNG(3000),iprf
        common/pltprf1/sprww(3000),eprfw(3000),eprnx(3000),eprny(3000),
      *                sprfz(3000)
-       common/etcom/cog(8),exten(11),fd(iptsz)
+       common/pltprf2/sxmn(3000),sxmx(3000),symn(3000),symx(3000),
+     *                stmn(3000),stmx(3000),spmn(3000),spmx(3000),
+     *                swmn(3000),swmx(3000),disprx(3000),dispry(3000),
+     *                dispcx(3000),dispcy(3000)
+       common/etcom/cog(8),exten(17),fd(iptsz)
        common /consta/ vl, pi, xmat, rpel, qst
        common/ttfc/tk,t1k,t2k,sk,s1k,s2k,fh
        common/faisc/f(10,iptsz),imax,ngood
@@ -12159,8 +12284,22 @@ c  izrot: logical flag set as .true. in the routine ZROTA
        suryph=4.*pi*sqrt(trqpy)
        eprnx(iprf)=bcog*surxth*10./(pi*sqrt(1.-bcog*bcog))
        eprny(iprf)=bcog*suryph*10./(pi*sqrt(1.-bcog*bcog))
+c horizontal and vertical dispersion in meter (w.r.t. reference)
+c       disprx(iprf)=0.01*exten(12)/exten(14)
+c       dispry(iprf)=0.01*exten(13)/exten(14)
+c horizontal and vertical dispersion in meter (w.r.t. COG)
+       dispcx(iprf)=0.01*exten(15)/exten(17)
+       dispcy(iprf)=0.01*exten(16)/exten(17)
        trqfi=0.
        tof=0.
+       chxmx=f(2,1)
+       chxmn=f(2,1)
+       chymx=f(4,1)
+       chymn=f(4,1)
+       chpmx=f(6,1)-tcog
+       chpmn=f(6,1)-tcog
+       chwmx=f(7,1)-encog
+       chwmn=f(7,1)-encog
        do i=1,ngood
          gpai=f(7,i)/xmat
          bpai=sqrt(1.-1./(gpai*gpai))
@@ -12168,6 +12307,20 @@ c  izrot: logical flag set as .true. in the routine ZROTA
          trqfi=trqfi+fdp*fdp
          tf=(tcog-f(6,i))*bpai*vl
          tof=tof+tf*tf
+         if(f(2,i).gt.chxmx)chxmx=f(2,i)
+         if(f(2,i).lt.chxmn)chxmn=f(2,i)
+         if(f(4,i).gt.chymx)chymx=f(4,i)
+         if(f(4,i).lt.chymn)chymn=f(4,i)
+         if(f(6,i)-tcog.gt.chpmx) then
+           chpmx=f(6,i)-tcog
+           chdmx=chpmx*fh*180./pi
+         endif
+         if(f(6,i)-tcog.lt.chpmn) then
+           chpmn=f(6,i)-tcog
+           chdmn=chpmn*fh*180./pi
+         endif
+         if(f(7,i)-encog.gt.chwmx)chwmx=f(7,i)-encog
+         if(f(7,i)-encog.lt.chwmn)chwmn=f(7,i)-encog
        enddo
        trqfi=trqfi/float(ngood)
        tof=tof/float(ngood)
@@ -12181,6 +12334,17 @@ c   t.o.f of the reference in m
        sprfl(iprf)=zpos/1000.
 c*et*2013-Aug-21 set up ngood particle counter for dynac.print file
        sprng(iprf)=ngood
+c*et*2014-Sep-25 Add recording of min. and max. positions in x,y and z,z'
+       sxmx(iprf)=chxmx*10.
+       sxmn(iprf)=chxmn*10.
+       symx(iprf)=chymx*10.
+       symn(iprf)=chymn*10.
+       stmx(iprf)=chpmx
+       stmn(iprf)=chpmn
+       spmx(iprf)=chdmx
+       spmn(iprf)=chdmn
+       swmx(iprf)=chwmx
+       swmn(iprf)=chwmn
 c evolve pointer iprf (cor. 08/01/2009)
        iprf=iprf+1
        if(izrot) call zrotap(-rzot)
@@ -12192,12 +12356,22 @@ c evolve pointer iprf (cor. 08/01/2009)
      *               sprfp(3000),SPRNG(3000),iprf
        common/pltprf1/sprww(3000),eprfw(3000),eprnx(3000),eprny(3000),
      *                sprfz(3000)
-c l(m) x(mm) y(mm) z(deg) z(mm) Ex(mm.mrd) Ey(mm.mrd) Ez(KeV.ns) Wcog(MeV)
+       common/pltprf2/sxmn(3000),sxmx(3000),symn(3000),symx(3000),
+     *                stmn(3000),stmx(3000),spmn(3000),spmx(3000),
+     *                swmn(3000),swmx(3000),disprx(3000),dispry(3000),
+     *                dispcx(3000),dispcy(3000)
+c l(m) x(mm) y(mm) z(deg) z(mm) Ex(mm.mrd) Ey(mm.mrd) Ez(KeV.ns) Wcog(MeV) xmin(mm) xmax(mm) ymin(mm) ymax(mm)
+c  tmin(ns) tmax(ns) pmin(deg) pmax(deg) wmin(MeV) wmax(MeV) Dxref(m) Dyref(m) Dxcog(m) Dycog(m)
        write(71,99)
-99     format(2x,'     l(m)  ',2x,'     x(mm)  ',2x,'     y(mm)  ',
-     *        4x,'    z(deg) ',2x,'     z(mm)  ',
-     *        4x,'emx(mm.mrd)',2x,'emy(mm.mrd) ',
-     *        2x,'emz(KeV.ns)',3x,'energy(MeV) ',3x,'#particles')
+99     format(1x,'#    l(m)  ',1x,'     x(mm)  ',1x,'     y(mm)  ',
+     *        3x,'    z(deg) ',1x,'     z(mm)  ',
+     *        2x,'emx(mm.mrd)',2x,'emy(mm.mrd) ',
+     *        1x,'emz(KeV.ns)',2x,'energy(MeV) ',1x,'#particles',
+     *        2x,'xmin(mm)',5x,'xmax(mm)',5x,'ymin(mm)',5x,'ymax(mm)',
+     *        5x,'tmin(s)',6x,'tmax(s)',5x,'phmin(deg)',
+     *        4x,'phmax(deg)',3x,'Wmin(MeV)',4x,'Wmax(MeV)',
+     *        4x,'Dx(m)',8x,'Dy(m)')
+c     *        4x,'Drx(m)',8x,'Dry(m)',4x,'Dcx(m)',8x,'Dcy(m)')
        iprf1=iprf-1
        do i=1,iprf1
 c     x and y: cm-->mm
@@ -12206,9 +12380,14 @@ c     x and y: cm-->mm
         sprp=sprfp(i)/2.
         sprz=sprfz(i)*10.
         write(71,100) sprfl(i),sprx,spry,sprp,sprz,eprnx(i)/4.,
-     *               eprny(i)/4.,eprfw(i),sprww(i),sprng(i)
+     *               eprny(i)/4.,eprfw(i),sprww(i),int(sprng(i)),
+     *               sxmn(i),sxmx(i),symn(i),symx(i),stmn(i),stmx(i),
+     *               spmn(i),spmx(i),swmn(i),swmx(i),
+     *               dispcx(i),dispcy(i)
+c     *               disprx(i),dispry(i),dispcx(i),dispcy(i)
        enddo
-100    format(10(2x,e12.5))
+100    format(9(1x,e12.5),1x,i7,3x,12(1x,e12.5))
+c100    format(9(1x,e12.5),1x,i7,3x,14(1x,e12.5))
        return
        end
       SUBROUTINE etgap
@@ -12253,7 +12432,7 @@ C      TRANSIT TIME COEFFICIENTS
        COMMON/FENE/WDISP,WPHAS,WX,WY,RLIM,IFW
        COMMON/TAPES/IN,IFILE,META
        COMMON/RANEC1/DUMMY(6)
-       common/etcom/cog(8),exten(11),fd(iptsz)
+       common/etcom/cog(8),exten(17),fd(iptsz)
        common/speda/dave,idave
        COMMON/SHIF/DTIPH,SHIFT
        COMMON/DAVCOM/dav1(maxcell1,40),davtot,iitem(maxcell1),idav
@@ -12780,7 +12959,7 @@ C ********************************************************************
        COMMON /CONSTA/ VL, PI, XMAT, RPEL,QST
        COMMON/DYN/TREF,VREF
        COMMON/TAPES/IN,IFILE,META
-       common/etcom/cog(8),exten(11),fd(iptsz)
+       common/etcom/cog(8),exten(17),fd(iptsz)
        common/speda/dave,idave
        COMMON/SHIF/DTIPH,SHIFT
        COMMON/DAVCOM/dav1(maxcell1,40),davtot,iitem(maxcell1),idav
@@ -13085,7 +13264,7 @@ C --- routine XTYPM
        common/itersi/YH21T,YH2K1T,YH2K01T,YH2P1T,YH20PKT,YH21PKT,
      *                H1BKIT,H1BKIMT,H1BKMT,HBPIT,HBPPIT
        common/appel/irstay,ilost,iavp,ispcel
-       common/etcom/cog(8),exten(11),fd(iptsz)
+       common/etcom/cog(8),exten(17),fd(iptsz)
        common/cgtof/charm(20),cgtdv(20),nbch(20),netac
        common/tofev/ttvols
        common/aerp/vphase,vfield,ierpf
@@ -13761,7 +13940,7 @@ c   ............................................................................
        common/etcha1/dav2(maxcell1,33),ichas(iptsz),chasit
        COMMON/TTFC/TK,T1K,T2K,SK,S1K,S2K,FH
        common/faisc/f(10,iptsz),imax,ngood
-       common/etcom/cog(8),exten(11),fd(iptsz)
+       common/etcom/cog(8),exten(17),fd(iptsz)
        COMMON/FENE/WDISP,WPHAS,WX,WY,RLIM,IFW
        common/corec/tref1
        COMMON/QMOYEN/QMOY
@@ -13770,6 +13949,8 @@ c   ............................................................................
        COMMON/COMPT/NRRES,NRTRE,NRBUNC,NRDBUN
        COMMON/SHIF/DTIPH,SHIFT
        common/tofev/ttvols
+       common/fcont/ifcont
+       logical ifcont
        character*1 cr
        dimension vecx(1)
        LOGICAL chasit,itvol,imamin,shift
@@ -13965,6 +14146,9 @@ c shift=true => reference and COG seperated, otherwise reference=COG
 1789   FORMAT(' COG ',f7.5,3x,f10.6,3x,f8.3,3x,e12.5,3x,e12.5)
 c dave start for buncher
        dav1(idav,36)=ngood
+c as beam passed through buncher, assume bunched beam
+       ifcont=.false.
+       WRITE(16,*) 'After buncher, bunched beam assumed'
        call emiprt(0)
 c dave end
 cxx3928   FORMAT(' # ',i5,1x,7(f10.2,1x))
@@ -14101,7 +14285,7 @@ C     4/15/14 - Daniel Alt: Added electrostatic steerers.
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
        COMMON/RIGID/BORO
        common/faisc/f(10,iptsz),imax,ngood
-       common/etcom/cog(8),exten(11),fd(iptsz)
+       common/etcom/cog(8),exten(17),fd(iptsz)
        COMMON/QMOYEN/QMOY
        COMMON/DCSPA/IESP
        COMMON/SC3/BEAMC,SCDIST,SCE10,CPLM,ECT,APL,ICHAES,ISCSP
@@ -14215,7 +14399,7 @@ c  ......................................................................
        common/davcom/dav1(maxcell1,40),davtot,iitem(maxcell1),idav
        common/davprt/shortl
        common/qmoyen/qmoy
-       common/etcom/cog(8),exten(11),fd(iptsz)
+       common/etcom/cog(8),exten(17),fd(iptsz)
        common/etcha1/dav2(maxcell1,33),ichas(iptsz),chasit
        common/etcha3/ichxyz(iptsz)
        common/speda/dave,idave
@@ -14473,14 +14657,16 @@ c*et*2012*March*02 print energy, boro etc for each charge state in long
            enddo
          ENDDO
          DO i=1,imax
-           DO k=1,ncstat
-             if(f(9,i).eq.cstat(k)) then
-               NDP(k)=NDP(k)+1
-               do j=2,7
-                 foo(k,j)=foo(k,j)+f(j,i)
-               enddo
-             endif
-           ENDDO
+           if(f(8,i).eq.1) then
+             DO k=1,ncstat
+               if(f(9,i).eq.cstat(k)) then
+                 NDP(k)=NDP(k)+1
+                 do j=2,7
+                   foo(k,j)=foo(k,j)+f(j,i)
+                 enddo
+               endif
+             ENDDO
+           endif
          ENDDO
          DO k=1,ncstat
            do j=2,7
@@ -14488,19 +14674,19 @@ c*et*2012*March*02 print energy, boro etc for each charge state in long
            enddo
          ENDDO
          write(16,*) ' Q     Particles  beta       Wcog(MeV)',
-     *        '    Wcog(MeV/u)  Pcog(kG.cm)    ',
-     *        'X_avg(cm)     Xp_avg(mrad)  ',
-     *        'Y_avg(cm)     Yp_avg(mrad)'
+     *     '    Wcog(MeV/u)  Pcog(kG.cm)     TOF(deg)   TOF(sec)   ',
+     *     '     X_avg(cm)     Xp_avg(mrad)  ',
+     *     'Y_avg(cm)     Yp_avg(mrad)'
          DO k=1,ncstat
            gref=foo(k,7)/xmat
            bref=sqrt(1.-1./(gref*gref))
            xe=(gref-1.)*xmat
 c   magnetic rigidity
            bor=3.3356*xmat*bref*gref/cstat(k)
-           write(16,'(2x,f4.1,3x,I5,5x,F9.7,
-     *      3(1x,E12.5),1x,4(F12.5,2x))')
-     *     cstat(k),NDP(k),bref,xe,xe/atm,bor,
-     *     foo(k,2),foo(k,3),foo(k,4),foo(k,5)
+           write(16,'(2x,f5.2,3x,I5,5x,F9.7,
+     *      5(1x,E12.5),1x,4(F12.5,2x))')
+     *     cstat(k),NDP(k),bref,xe,xe/atm,bor,foo(k,6)*180.*fh/pi,
+     *     foo(k,6),foo(k,2),foo(k,3),foo(k,4),foo(k,5)
          ENDDO
          write(16,*)
        endif
@@ -14528,7 +14714,7 @@ c  ......................................................................
        COMMON/QMOYEN/QMOY
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
        COMMON/STIS/surxth,suryph,enedep,ecogde,TESTCA
-       common/etcom/cog(8),exten(11),fd(iptsz)
+       common/etcom/cog(8),exten(17),fd(iptsz)
 c EXT2D looks for average extensions squared and returns them in EXTEN
        iarg=1
        call cdg(iarg)
@@ -14626,7 +14812,7 @@ c  ......................................................................
        common/tof/tofini
        LOGICAL SHIFT
        common/tapes/in,ifile,meta
-       common/etcom/cog(8),exten(11),fd(iptsz)
+       common/etcom/cog(8),exten(17),fd(iptsz)
 C      TIPHA : Shift on the phase axis(DEG)
 C      TIX   : Shift in the x-direction (CM)
 C      TIY   : Shift in the y-direction   (CM)
@@ -14816,7 +15002,7 @@ c  ......................................................................
 comment      common/tof/tofini
        LOGICAL SHIFT
        common/tapes/in,ifile,meta
-       common/etcom/cog(8),exten(11),fd(iptsz)
+       common/etcom/cog(8),exten(17),fd(iptsz)
 C      TIPHA : Shift with regard to the phase axis(DEG)
 C      TIX   : Shift in the x-direction (CM)
 C      TIY   : Shift in the y-direction   (CM)
@@ -15002,7 +15188,7 @@ c ..........................................................
        COMMON/TTFC/TK,T1K,T2K,SK,S1K,S2K,FH
        COMMON/TAPES/IN,IFILE,META
        common/faisc/f(10,iptsz),imax,ngood
-       common/etcom/cog(8),exten(11),fd(iptsz)
+       common/etcom/cog(8),exten(17),fd(iptsz)
        COMMON/DYN/TREF,VREF
        COMMON/DYNI/VREFI,TREFI,FHINIT
        COMMON/QMOYEN/QMOY
@@ -15131,7 +15317,7 @@ c ..........................................................
        COMMON/FENE/WDISP,WPHAS,WX,WY,RLIM,IFW
        COMMON/DYN/TREF,VREF
        common/tapes/in,ifile,meta
-       common/etcom/cog(8),exten(11),fd(iptsz)
+       common/etcom/cog(8),exten(17),fd(iptsz)
        COMMON/etcha1/dav2(maxcell1,33),ichas(iptsz),chasit
        COMMON/GRPARM/GLIM(4,2),GLIM1(4,2),GLIM2(4,2),PATITL,
      *        ngraphs(100),idwdp,igrprm,ngrafs
@@ -15230,11 +15416,13 @@ c  save limits in GLIM(j,k)
 1552     FORMAT(4X,' 1/2 EXTENSION X : ',E12.5,' CM',/,4X,
      1   ' 1/2 EXTENSION XP : ',E12.5,' MRD',4X,
      2   ' SURFACE : ',E15.8,' CM.MRD',/)
-         WRITE(16,1554)
-1554     FORMAT(' ***  VERTICAL phase plane ',/)
-         WRITE(16,1556) cog(6),cog(7)
-1556     FORMAT(4X,' C.O.G :',
+       endif
+       WRITE(16,1554)
+1554   FORMAT(' ***  VERTICAL phase plane ',/)
+       WRITE(16,1556) cog(6),cog(7)
+1556   FORMAT(4X,' C.O.G :',
      1   5X,' Y : ',E12.5,' CM  YP :',E12.5,' MRD',/)
+       if(rmsmtp.gt.teps) then
          WRITE(16,1555) QDITA,QDIANP,SURZPH
 1555     FORMAT(4X,' 1/2 EXTENSION Y : ',E12.5,' CM',/,4X,
      1   ' 1/2 EXTENSION YP : ',E12.5,' MRD',4X,
@@ -15498,7 +15686,7 @@ c ..........................................................
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
        COMMON/DYN/TREF,VREF
        common/tapes/in,ifile,meta
-       common/etcom/cog(8),exten(11),fd(iptsz)
+       common/etcom/cog(8),exten(17),fd(iptsz)
        COMMON/etcha1/dav2(maxcell1,33),ichas(iptsz),chasit
        COMMON/GRPARM/GLIM(4,2),GLIM1(4,2),GLIM2(4,2),PATITL,
      *       ngraphs(100),idwdp,igrprm,ngrafs
@@ -15738,7 +15926,7 @@ C      TRANSIT TIME COEFFICIENTS
        COMMON/FENE/WDISP,WPHAS,WX,WY,RLIM,IFW
        COMMON/TAPES/IN,IFILE,META
        COMMON/RANEC1/DUMMY(6)
-       common/etcom/cog(8),exten(11),fd(iptsz)
+       common/etcom/cog(8),exten(17),fd(iptsz)
        common/speda/dave,idave
        COMMON/SHIF/DTIPH,SHIFT
        COMMON/DAVCOM/dav1(maxcell1,40),davtot,iitem(maxcell1),idav
@@ -17561,6 +17749,117 @@ C   ...................................................................
        ENDDO
        RETURN
        END
+       SUBROUTINE DERIF2(N)
+C   ...................................................................
+C     second derivative of spline functions at position (x,y)
+C   ...................................................................
+       implicit real*8 (a-h,o-z)
+       common/spff/x(400),y(400),s(500),p(500),q(500)
+       AVXN=X(N)-X(N-1)
+       AVVXN=X(N-1)-X(N-2)
+       AVYN=Y(N)-Y(N-1)
+       AVVYN=Y(N-1)-Y(N-2)
+       F=AVXN-(AVVXN**2)/AVXN
+       P(N-1)=1.
+       Q(N-1)=0.
+       if(f.ne.0.) then
+         P(N-1)=(-2.*AVXN-3.*AVVXN-AVVXN**2/AVXN)/F
+         Q(N-1)=6.*(AVYN/AVXN-AVVYN/AVVXN)/F
+       endif
+       NM1=N-1
+       DO J=2,NM1
+         I=N-J
+         AVX=X(I+1)-X(I)
+         AVVX=X(I+2)-X(I+1)
+         AVY=Y(I+1)-Y(I)
+         AVVY=Y(I+2)-Y(I+1)
+         D=2.*(AVX+AVVX)+AVVX*P(I+1)
+         P(I)=-AVX/D
+         Q(I)=(6.*(AVVY/AVVX-AVY/AVX)-AVVX*Q(I+1))/D
+       ENDDO
+       AVX1=X(2)-X(1)
+       AVVX1=X(3)-X(2)
+       G1=(AVVX1/AVX1)+1.-P(2)-(Q(2)/Q(1))
+       G2=(AVVX1/(AVX1*P(1)))-(AVVX1/AVX1)-1.+P(2)
+       S(1)=(Q(1)*G1)/(P(1)*G2)
+       DO I=1,NM1
+         S(I+1)=P(I)*S(I)+Q(I)
+       ENDDO
+       RETURN
+       END
+       FUNCTION splinf (N,XV)
+C    ..................................................................
+C      SPLINE FUNCTION
+C    ..................................................................
+       implicit real*8 (a-h,o-z)
+       COMMON /SPFF/X(400),Y(400),S(500),P(500),Q(500)
+       splinf=y(1)
+       xtv1=xv-x(1)
+       if(xtv1.lt.0.) then
+         SPLINF=Y(1)+((Y(2)-Y(1))/(X(2)-X(1))-S(2)*(X(2)-X(1))/6.)
+     *          *(XV-X(1))
+         return
+       endif
+       if(xtv1.eq.0.00) then
+         SPLINF=Y(1)
+         return
+       endif
+       if(xtv1.gt.0.) then
+        xtvn=xv-x(n)
+        if(xtvn.eq.0.00) then
+          SPLINF=Y(N)
+          return
+        endif
+        if(xtvn.gt.0.) then
+         SPLINF=Y(N)+((Y(N)-Y(N-1))/(X(N)-X(N-1))+S(N-1)*(X(N)-X(N-1))
+     *           /6.)*(XV-X(N))
+         return
+        endif
+        if(xtvn.lt.0.) then
+         do i=2,n
+          xtvi=xv-x(i)
+          if(xtvi.gt.0.) go to 11
+          if(xtvi.lt.0.) go to 2
+          if(xtvi.eq.0.) go to 3
+11        continue
+         enddo
+3        splinf=y(i)
+         return
+2        I=I-1
+         DGX=XV-X(I)
+         DDX=X(I+1)-XV
+         AVX=X(I+1)-X(I)
+         SPLINF=S(I)*DDX**3/(6.*AVX)+S(I+1)*DGX**3/(6.*AVX)
+     *   +(Y(I+1)/AVX-S(I+1)*AVX/6.)*DGX+(Y(I)/AVX-S(I)*AVX/6.)*DDX
+         return
+        endif
+       endif
+       end
+       FUNCTION slopf(N,XV)
+c   ..........................................
+c    first derivative of the spline function
+c   ..........................................
+       implicit real*8 (a-h,o-z)
+       COMMON /SPFF/X(400),Y(400),S(500),P(500),Q(500)
+       do i=2,n
+         xtvi=xv-x(i)
+         if(xtvi.gt.0.) go to 4
+         if(xtvi.lt.0.) go to 2
+         if(xtvi.eq.0.00) go to 3
+4        continue
+       enddo
+3       I=I-1
+        AVX=X(I+1)-X(I)
+        SLOPF=S(I+1)*AVX/3.+S(I)*AVX/6.+(Y(I+1)-Y(I))/AVX
+        return
+2       I=I-1
+        DGX=XV-X(I)
+        DDX=X(I+1)-XV
+        AVX=X(I+1)-X(I)
+        SLOPF=-(S(I)*DDX*DDX)/(2.*AVX)+(S(I+1)*DGX*DGX)/(2.*AVX)
+     *          +((Y(I+1)-Y(I))/AVX)-(AVX*(S(I+1)-S(I))/6.)
+        return
+        end
        SUBROUTINE area(init)
        implicit real*8 (a-h,o-z)
 c  ..............................................................................
@@ -18131,7 +18430,7 @@ c  ......................................................................
        COMMON/SPEDA/DAVE,idave
        COMMON/DAVCOM/dav1(maxcell1,40),davtot,iitem(maxcell1),idav
        common/etcha1/dav2(maxcell1,33),ichas(iptsz),chasit
-       common/etcom/cog(8),exten(11),fd(iptsz)
+       common/etcom/cog(8),exten(17),fd(iptsz)
        COMMON/SC3/BEAMC,SCDIST,SCE10,CPLM,ECT,APL,ICHAES,ISCSP
        common/cptemit/xltot(maxcell1),nbemit
        COMMON/PORO/IROT1,IROT2
@@ -18424,7 +18723,7 @@ c bending magnet
 c solenoid
          write(12,5010) dav1(i,4),dav1(i,1),dav1(i,2),dav1(i,3),
      *     dav1(i,5),dav1(i,36)
-5010     format(f9.2,' mm  Solenoid:  length = ',f7.3,' mm',
+5010     format(f9.2,' mm  Solenoid:  length = ',f8.3,' mm',
      *   '   field = ',e12.5,' kG  K = ',e12.5,' cm-1',/,
      *'      momentum = ',e12.5,' kG.cm   particles left ',f7.0)
          write(12,*)
@@ -19375,7 +19674,7 @@ c   ............................................................................
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
        COMMON/RIGID/BORO
        COMMON/FAISC/F(10,iptsz),IMAX,NGOOD
-       common/etcom/cog(8),exten(11),fd(iptsz)
+       common/etcom/cog(8),exten(17),fd(iptsz)
        COMMON/QMOYEN/QMOY
        COMMON/DCSPA/IESP
        LOGICAL IESP
@@ -19569,7 +19868,7 @@ c
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
        COMMON/RIGID/BORO
        COMMON/FAISC/F(10,iptsz),IMAX,NGOOD
-       common/etcom/cog(8),exten(11),fd(iptsz)
+       common/etcom/cog(8),exten(17),fd(iptsz)
        COMMON/QMOYEN/QMOY
        COMMON/DCSPA/IESP
        LOGICAL IESP
@@ -19778,7 +20077,7 @@ c   ............................................................................
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
        COMMON/RIGID/BORO
        COMMON/FAISC/F(10,iptsz),IMAX,NGOOD
-       common/etcom/cog(8),exten(11),fd(iptsz)
+       common/etcom/cog(8),exten(17),fd(iptsz)
        COMMON/QMOYEN/QMOY
        COMMON/DCSPA/IESP
        LOGICAL IESP
@@ -20200,7 +20499,7 @@ c   ....................................................................
        COMMON/RIGID/BORO
        COMMON/DCSPA/IESP
        common/faisc/f(10,iptsz),imax,ngood
-       common/etcom/cog(8),exten(11),fd(iptsz)
+       common/etcom/cog(8),exten(17),fd(iptsz)
        COMMON/QMOYEN/QMOY
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
        COMMON/TAPES/IN,IFILE,META
@@ -20258,37 +20557,38 @@ c  start prints in file 'short.data'
        iitem(idav)=5
        dav1(idav,1)=xlsol*10.
        dav1(idav,2)=crest
+       davti=davtot
        davtot=davtot+xlsol
        dav1(idav,4)=davtot*10.
        zc=zinf
        iesp=.true.
-        do ia=1,6
+       do ia=1,6
          do ib=1,6
           if(ia.eq.ib) rcul(ia,ib)=1.
           if(ia.ne.ib) rcul(ia,ib)=0.
          enddo
-        enddo
-        bisol=0.
-        bisol2=0.
+       enddo
+       bisol=0.
+       bisol2=0.
        do i=1,npas
-        zcf=zc+dsol
-        zcf2=zc+dsol/2.
-        bsol=bcret*spline(ncord,zcf2)
+         zcf=zc+dsol
+         zcf2=zc+dsol/2.
+         bsol=bcret*spline(ncord,zcf2)
 comment        write(70,110) i,zcf2,bsol
-        dscm=dsol*100.
-        call fldsol(bsol,dscm)
-        write(16,520) i,zc,zcf,bsol
-520    format(2x,'**STEP: ',i2,' LIMITS: inf(m)= ',f7.5,
+         dscm=dsol*100.
+         call fldsol(bsol,dscm)
+         write(16,520) i,zc,zcf,bsol
+520      format(2x,'**STEP: ',i2,' LIMITS: inf(m)= ',f7.5,
      *        ' sup(m)= ',f7.5,' AVERAGE FIELD(kG): ',e12.5)
-        bisol=bisol+bsol*dsol
-        bisol2=bisol2+bsol*bsol*dsol
+         bisol=bisol+bsol*dsol
+         bisol2=bisol2+bsol*bsol*dsol
 c     save equivalent transport matrix
-        do ia=1,6
-         do ib=1,6
-          rs(ia,ib)=rcul(ia,ib)
+         do ia=1,6
+           do ib=1,6
+             rs(ia,ib)=rcul(ia,ib)
+           enddo
          enddo
-        enddo
-        call mfordre(rcul,r,rs)
+         call mfordre(rcul,r,rs)
 c   ************TEST******************
 c   print first order matrix
 comment         write(16,*) ' EQUIVALENT FIRST order MATRIX TRANSFORM (m-rad)'
@@ -20304,20 +20604,27 @@ comment         ENDDO
 c      **********END TEST********************
 c  SPACE CHARGE
          if(.not.iesp) then
-          iesp=.true.
-          go to 720
+           iesp=.true.
+           go to 720
          endif
-          if(ichaes.and.xlsol.gt.0.) then
+         if(ichaes.and.xlsol.gt.0.) then
            if(sce10.eq.1.or.sce10.eq.3.) then
-            dscm2=dscm*2.
-            call cesp(dscm2)
-            iesp=.false.
+             dscm2=dscm*2.
+             call cesp(dscm2)
+             iesp=.false.
 c     dispersion dE/E with respect to the C.O.G of the bunch
-            call disp
+             call disp
+cet*2015-04-25*test*s
+cet             call compress(360.)
+cet*2015-04-25*test*e
            endif
-          endif
+         endif
 720      continue
-        zc=zcf
+C  envelope sol
+         write(16,*) 'distance',davti,dsol
+         davti=davti+dsol*100.
+         call stapl((davti)*10.)
+         zc=zcf
        enddo
        write(16,922) zc,bisol,bisol2,bisol2/zc
 922    format(/,'Field length                 (m): ',e12.5,/,
@@ -20349,7 +20656,7 @@ C   plots
        common/faisc/f(10,iptsz),imax,ngood
        COMMON/FENE/WDISP,WPHAS,WX,WY,RLIM,IFW
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
-       common/etcom/cog(8),exten(11),fd(iptsz)
+       common/etcom/cog(8),exten(17),fd(iptsz)
        common/femt/iemgrw,iemqesg
        common/cgtof/charm(20),cgtdv(20),nbch(20),netac
        COMMON/SOLE/L,KL,KO
@@ -20411,7 +20718,7 @@ C
        COMMON/RIGID/BORO
        COMMON/DCSPA/IESP
        common/faisc/f(10,iptsz),imax,ngood
-       common/etcom/cog(8),exten(11),fd(iptsz)
+       common/etcom/cog(8),exten(17),fd(iptsz)
        COMMON/QMOYEN/QMOY
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
        COMMON/TAPES/IN,IFILE,META
@@ -20676,7 +20983,7 @@ c   ....................................................................
        COMMON/RIGID/BORO
        COMMON/DCSPA/IESP
        common/faisc/f(10,iptsz),imax,ngood
-       common/etcom/cog(8),exten(11),fd(iptsz)
+       common/etcom/cog(8),exten(17),fd(iptsz)
        COMMON/QMOYEN/QMOY
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
        COMMON/TAPES/IN,IFILE,META
@@ -21076,7 +21383,7 @@ c   ............................................................................
        common/faisc/f(10,iptsz),imax,ngood
        common/tapes/in,ifile,meta
        COMMON/DAVCOM/dav1(maxcell1,40),davtot,iitem(maxcell1),idav
-       common/etcom/cog(8),exten(11),fd(iptsz)
+       common/etcom/cog(8),exten(17),fd(iptsz)
        COMMON/SC3/BEAMC,SCDIST,SCE10,CPLM,ECT,APL,ICHAES,ISCSP
        COMMON/FENE/WDISP,WPHAS,WX,WY,RLIM,IFW
        COMMON/DCSPA/IESP
@@ -21219,7 +21526,7 @@ C       BEAM COMPUTATION
        parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
        common/faisc/f(10,iptsz),imax,ngood
        COMMON /BLOC11/ R(6,6), T(6,6,6)
-       common/etcom/cog(8),exten(11),fd(iptsz)
+       common/etcom/cog(8),exten(17),fd(iptsz)
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
        COMMON/RADIA/TRT,RMOY,XINTF,CRAE
        COMMON/SECDR/ISEOR
@@ -21271,7 +21578,7 @@ c     Compute the dispersion dE/E with respect to the center of gravity of the b
        implicit real*8 (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
        common/faisc/f(10,iptsz),imax,ngood
-       common/etcom/cog(8),exten(11),fd(iptsz)
+       common/etcom/cog(8),exten(17),fd(iptsz)
        common/mcs/imcs,ncstat,cstat(20)
        common /consta/ vl,pi,xmat,rpel,qst
        gcog=0.
@@ -21527,7 +21834,7 @@ c ******************************************************************************
        COMMON/AZLIST/ICONT,IPRIN
        COMMON/DYN/TREF,VREF
        COMMON/RIGID/BORO
-       common/etcom/cog(8),exten(11),fd(iptsz)
+       common/etcom/cog(8),exten(17),fd(iptsz)
        COMMON/QMOYEN/QMOY
        COMMON/TAPES/IN,IFILE,META
        COMMON/PLTPRF/SPRFX(3000),SPRFY(3000),SPRFL(3000),SPRFW(3000),
@@ -22251,12 +22558,14 @@ c ******************************************************************************
 c --- make up a list of cell by cell RFQ data based on the file generated by the external code
 c
 c     nc: cell number
-c     ityp = 0: standard accelerating cell
-c     ityp = 1: transition cell of type T
-c     ityp = 2: transition cell of type E
-c     ityp = 3: transition cell of type M
-c     ityp = 4: fringe-field region (after type T, M or accelerating cell)
-c     ityp = 5: Radius matching section
+c     ityp = 0: Standard accelerating cell
+c     ityp = 1: Transition cell of type T
+c     ityp = 2: Transition cell of type E
+c     ityp = 3: Transition cell of type M
+c     ityp = 4: Fringe-field region from the potential function (after type T, M or accelerating cell)
+c     ityp = 5: Radial matching section based on coefficients
+c     ityp = 6: Radial matching section based on RMS shape defined in an external file
+c     ityp = 7: Fringe-field region; the profile is defined in an external file (after type T, M or accelerating cell)
 c     a(1): cell length (cm)
 c     a(2): coefficient A10 (no dimension)
 c     a(3): smallest aperture  a  of vanes (cm)
@@ -22283,47 +22592,60 @@ c ******************************************************************************
        COMMON/DYN/TREF,VREF
        common/bonda/cbx(500),bbx(500),ablx(500),cby(500),
      *        bby(500),ably(500)
+       common/spl/xspl(4000),yspl(4000),s(5000),p(5000),q(5000)
+       common/spff/xspf(400),yspf(400),sf(500),pf(500),qf(500)
+       common/rms_prfl/npt,npf
        dimension a(16),vptq(16)
+       character*80 vprof,fprof
        logical even,evens,evenr
 c  Do so by shifting particles belonging to the same bunch outside the (+/-) pib/2 (rad) window
-c   w.r.t.the COG to inside the (+/-) pib/2 window w.r.t.the COG
+c   w.r.t.the REF to inside the (+/-) pib/2 window w.r.t.the COG
        if(abs(pib).gt.6.*0.) then
-cold        pib=pi/2.
-        pib=pi
-        call accep_rfq(pib)
+         pib=pi
+         call accep_rfq(pib)
        endif
        erest=xmat
 c --- for simulating PARMTEQ cells, odd cells have A01 positive and even cells have A01 negative
 c ---  even: logical flag, even = true ==> A01 is positive, otherwise A01 is negative
-        even=.true.
-        netc=0
-50      continue
+       even=.true.
+       netc=0
+50     continue
 c --- read the data of the RFQ from the input file
 c ****************************************************************
 c ---   read 11 parameters from unit 27), file 'myfile', in the form:
-c      nc  ityp interane-voltage (KV) cl(cm)  A10  a(cm)  m  r0(cm) rho(cm) phase(deg) fvolt ipar
-        netc=netc+1
-        read(27,*) nc,ityp,(vptq(j),j=1,9),ipar
-        a(1)=vptq(2)
-        a(2)=vptq(3)
-        a(3)=vptq(4)
-        a(4)=vptq(5)
-        a(5)=vptq(6)
-        a(6)=vptq(7)
-        a(7)=vptq(8)
-        a(8)=vptq(9)
-        a(9)=vptq(1)
+c      nc  ityp intervane-voltage (KV) cl(cm)  A10  a(cm)  m  r0(cm) rho(cm) phase(deg) fvolt ipar
+       netc=netc+1
+       read(27,*) nc,ityp,(vptq(j),j=1,9),ipar
+       if(ityp.eq.6) then
+c if the RMS is of type 6, get the filename of the RMS descriptor
+         read(27,'(A80)') vprof
+         write(16,*) 'Read RMS from file ',vprof
+       endif
+       if(ityp.eq.7) then
+c if the Fringe Field is of type 7, get the filename of the FF descriptor
+         read(27,'(A80)') fprof
+         write(16,*) 'Read Fringe Field from file ',fprof
+       endif
+       a(1)=vptq(2)
+       a(2)=vptq(3)
+       a(3)=vptq(4)
+       a(4)=vptq(5)
+       a(5)=vptq(6)
+       a(6)=vptq(7)
+       a(7)=vptq(8)
+       a(8)=vptq(9)
+       a(9)=vptq(1)
 c **************************************************
 c convert intervane voltage in MV
-        a(9)=a(9)*1.e-03
-        if(nc.eq.1) tdvolt=a(9)
+       a(9)=a(9)*1.e-03
+       if(nc.eq.1) tdvolt=a(9)
 c ----  stop at the last line with nc = 0
-        if(nc.eq.0) go to 60
-        if(nc.gt.nceltot) go to 60
-        itype(nc)=ityp
-        ipari(nc)=ipar
-        if(itype(nc).eq.5) then
-c Radial matching section
+       if(nc.eq.0) go to 60
+       if(nc.gt.nceltot) go to 60
+       itype(nc)=ityp
+       ipari(nc)=ipar
+       if(itype(nc).eq.5) then
+c Radial matching section from potential function
 c ---------------------------------------------------------------------------------------------
 c Note: The total length L(rms) of the RMS must be the sum of the RMS-cell lengths in the
 c       Parmteq file. rho is equal to the distance between the axis and the vane, r0, at the
@@ -22331,6 +22653,7 @@ c       exit of the RMS
 c       we have used the approximation of the modified Bessel functions for small arguments
 c       and we have negleted the terms of higher order in r greater than 2
 c ----------------------------------------------------------------------------------------------
+         write(16,*) 'RFQ RMS from potential function'
          cl=a(1)
          r0=a(5)
          rh0=a(6)
@@ -22354,17 +22677,62 @@ c     rfq3(nc): RMS length (m)
 c     rfq4(nc): phase RF (deg)
 c     rfq7(nc): mean aperture of the vane r0 (m)
 c     rfq9(nc): factor to be applied at the inter-vane potentiel (only for particles)
-c     rfq10(nc):intervane voltage applied to the synchronous particle (KV)
-c     rfq11(nc):intervane voltage applied to the particles (KV)
+c     rfq10(nc):intervane voltage applied to the synchronous particle (kV)
+c     rfq11(nc):intervane voltage applied to the particles (kV)
 c
-        rfq1(nc)=aq
+         rfq1(nc)=aq
+         rfq2(nc)=0.
+         rfq3(nc)=cl*1.e-02
+         rfq4(nc)=phim
+         rfq7(nc)=r0*1.e-02
+         rfq9(nc)=fact
+         rfq10(nc)=(1.+tvolt)*a(9)
+         rfq11(nc)=(1.+avolt)*a(9)
+         go to 50
+       endif
+       if(itype(nc).eq.6) then
+c  read from disk the RMS profile in the form (z,R(z)), with z,R in meter
+c  npt is the number of (z,R(z)) coordinates
+         open(67,file=vprof,status='unknown')
+c         read(67,*)npt
+         npt=0
+         do
+           read(67,*,END=777) xspl(npt+1),yspl(npt+1)
+           npt=npt+1
+         enddo
+777      write(16,*) 'RFQ RMS from file with ',npt,' data points'
+         call deriv2(npt)
+c cl; length of the RMS (in M)
+         cl=xspl(npt)
+         r0=yspl(npt)
+         phim=a(7)
+         fact=1.+a(8)
+c ---   limits x-vane y-vane
+         cbx(nc)=1.5*r0
+         cby(nc)=1.5*r0
+         ablx(nc)=0.
+         ably(nc)=0.
+         bbx(nc)=0.
+         bby(nc)=0.
+c     rfq1(nc) : not used
+c     rfq2(nc): not used
+c     rfq3(nc): RMS length (m)
+c     rfq4(nc): phase RF (deg)
+c     rfq7(nc): distance axe-vanes at the end of the RMS (m)
+c     rfq9(nc): factor to be applied at the inter-vane potentiel (only for particles)
+c     rfq10(nc):intervane voltage applied to the synchronous particle (kV)
+c     rfq11(nc):intervane voltage applied to the particles (kV)
+c       rfq1(nc)=0.
         rfq2(nc)=0.
-        rfq3(nc)=cl*1.e-02
+        rfq3(nc)=cl
         rfq4(nc)=phim
-        rfq7(nc)=r0*1.e-02
+        rfq7(nc)=r0
         rfq9(nc)=fact
         rfq10(nc)=(1.+tvolt)*a(9)
         rfq11(nc)=(1.+avolt)*a(9)
+        close(67)
+ccc        write(16,579)nc,npt,cl,phim,r0,rfq10(nc),rfq11(nc)
+ccc579     format(2(2x,i4),5(2x,e12.5))
         go to 50
        endif
 c  End Radial matching section
@@ -22620,8 +22988,8 @@ c  cell limits x-vane = y-vane = average radius
         bby(nc)=0.
         ably(nc)=0.
 c   conversion: cm --> m
-         cbx(nc)=cbx(nc)*1.e-02
-         cby(nc)=cby(nc)*1.e-02
+        cbx(nc)=cbx(nc)*1.e-02
+        cby(nc)=cby(nc)*1.e-02
 c  end vanes limits ******************************
 c ---  convert the parameters in units (MeV, m)
 c     rfq1(nc): A30 = 0
@@ -22642,7 +23010,7 @@ c     rfq11(nc):intervane voltage applied to the particles (KV)c
         rfq11(nc)=(1.+avolt)*a(9)
         go to 50
 c endif M-cell
-       endif
+      endif
 c   Fringe-field region after T-cell or M-cell  (Type = 4)
        if(itype(nc).eq.4) then
         cl=a(1)
@@ -22682,6 +23050,59 @@ cold        rfq1(nc)=a01*1.e04
         rfq10(nc)=(1.+tvolt)*a(9)
         rfq11(nc)=(1.+avolt)*a(9)
        endif
+c §§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§
+c  fringe field region the profil is read from disk
+       if(itype(nc).eq.7) then
+c  read the ff profile in the form (z,R(z)) in M
+c    npt is the number of coordinates (z,R(z)
+         open(67,file=fprof,status='unknown')
+c         read(67,*)npf
+         npf=0
+         do
+           read(67,*,END=888) xspf(npf+1),yspf(npf+1)
+           npf=npf+1
+         enddo
+888      write(16,*) 'RFQ FF from file with ',npf,' data points'
+         reca=xspf(1)
+         do i=1,npf
+           xspf(i)=xspf(i)-reca
+         enddo
+c length of the fringe field  m
+         cl=xspf(npf)
+         call derif2(npf)
+         phim=a(7)
+         fact=1.+a(8)
+         write(16,*) 'Fringe Field length=',cl,' m'
+         write(16,*) 'Fringe Field Phase=',phim
+         write(16,*) 'Fringe Field Field Factor=',fact
+c ---   limits x-vane y-vane
+         cbx(nc)=100.
+         cby(nc)=100.
+         ablx(nc)=0.
+         ably(nc)=0.
+         bbx(nc)=0.
+         bby(nc)=0.
+c     rfq1(nc) : not used
+c     rfq2(nc): not used
+c     rfq3(nc): Fringe field length (m)
+c     rfq4(nc): phase RF (deg)
+c     rfq7(nc): distance axe-vanes at the start of the FF (m)
+c     rfq9(nc): factor to be applied at the inter-vane potentiel (only for particles)
+c     rfq10(nc):intervane voltage applied to the synchronous particle (KV)
+c     rfq11(nc):intervane voltage applied to the particles (KV)
+        rfq1(nc)=0.
+        rfq2(nc)=0.
+        rfq3(nc)=cl
+        rfq4(nc)=phim
+        rfq7(nc)=r0
+        rfq9(nc)=fact
+        rfq10(nc)=(1.+tvolt)*a(9)
+        rfq11(nc)=(1.+avolt)*a(9)
+        close(67)
+ccc        write(16,579)nc,npt,cl,phim,r0,rfq10(nc),rfq11(nc)
+ccc579     format(2(2x,i4),5(2x,e12.5))
+       endif
+c §§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§
 60     continue
        if(netc.lt.nceltot) then
          write(6,*) 'Error: Parameter NCELTOT after RFQPTQ entry in',
@@ -22693,7 +23114,7 @@ cold        rfq1(nc)=a01*1.e04
          write(16,*) 'This is larger than the',
      *   ' number of cells in the RFQ datafile, which is ',netc
          stop
-       endif  
+       endif
        call rfq_parm
        return
        end
@@ -22739,7 +23160,7 @@ c   .....................................................................
        common/tapes/in,ifile,meta
        common/etcha3/ichxyz(iptsz)
        common/rec/irec
-       common/etcom/cog(8),exten(11),fd(iptsz)
+       common/etcom/cog(8),exten(17),fd(iptsz)
        logical chasit
 c       character*80 wfile
        do ite=1,3
@@ -22756,15 +23177,15 @@ cold             f(6,i)=(f(6,i)+pi/fh)
          enddo
        enddo
        tcog=0.
-c --- cog in time of bunch after shifting particles
+c --- cog in time of bunch after reinjecting particles into the bunch
        do i=1,ngood
          tcog=tcog+f(6,i)
        enddo
        tcog=tcog/float(ngood)
-       tref=tcog
+c       tref=tcog
        write(16,59) tcog*fh*180./pi
-59     format(' reference in time after shifting particles: ',
-     * e13.7,' deg')
+59     format(' Phase of COG after reinjecting particles into the ',
+     *        'bunch: ',e13.7,' deg')
        return
        end
       SUBROUTINE rfq_parm
@@ -22817,12 +23238,22 @@ c     rfq9(nc): factor F = 1 + a(8)
 c     rfq10(nc):intervane voltage applied to the synchronous particle (KV)
 c     rfq11(nc):intervane voltage applied to the particles (KV)
 c
-c ---- Fringe-field region (F-cell)
+c ---- Fringe-field region from the potential function (F-cell)
 c     rfq1(nc): A01 ( 1/(m*m) )
 c     rfq2(nc): A10 (no dimensions)
 c     rfq3(nc): cell length (m)
 c     rfq4(nc): phase RF (deg)
 c     rfq7(nc): mean aperture of the vane r0 (m)
+c     rfq9(nc): factor F = 1 + a(8)
+c     rfq10(nc):intervane voltage applied to the synchronous particle (KV)
+c     rfq11(nc):intervane voltage applied to the particles (KV)
+c
+c ---- Fringe-field region the profil is read on the disk (F-cell)
+c     rfq1(nc): not used
+c     rfq2(nc): not used
+c     rfq3(nc): cell length (m)
+c     rfq4(nc): phase RF (deg)
+c     rfq7(nc): mean aperture of the vane r0 (m) (not used)
 c     rfq9(nc): factor F = 1 + a(8)
 c     rfq10(nc):intervane voltage applied to the synchronous particle (KV)
 c     rfq11(nc):intervane voltage applied to the particles (KV)
@@ -22837,7 +23268,7 @@ c*******************************************************************************
        common/faisc/f(10,iptsz),imax,ngood
        common/tapes/in,ifile,meta
        COMMON/DAVCOM/dav1(maxcell1,40),davtot,iitem(maxcell1),idav
-       common/etcom/cog(8),exten(11),fd(iptsz)
+       common/etcom/cog(8),exten(17),fd(iptsz)
        COMMON/SC3/BEAMC,SCDIST,SCE10,CPLM,ECT,APL,ICHAES,ISCSP
        COMMON/FENE/WDISP,WPHAS,WX,WY,RLIM,IFW
        COMMON/DCSPA/IESP
@@ -22848,7 +23279,7 @@ c*******************************************************************************
        common/femt/iemgrw,iemqesg
        common/posc/xpsc
        common/cgtof/charm(20),cgtdv(20),nbch(20),netac
-       common/drfq/p(9)
+c       common/drfq/p(9)
        COMMON/AZLIST/ICONT,IPRIN
        common/trfq/icour,ncell
        logical iesp,ichaes,shift,iemgrw,iflag
@@ -22864,6 +23295,14 @@ cold       common/rfq3ptq/itype(500),evens,evenr
      *        bby(500),ably(500)
        logical itvol,imamin
        common/conti/irfqp
+       common/spl/xspl(4000),yspl(4000),s(5000),p(5000),q(5000)
+       common/spff/xspf(400),yspf(400),sf(500),pf(500),qf(500)
+       common/rms_prfl/npt,npf
+c §§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§
+c v28/04/2015
+       common/fcont/ifcont
+       logical ifcont
+c §§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§
 c       logical irfqp,evens,evenr,evenf
        logical irfqp,evens,evenr
        dimension rfqdmp(500,10)
@@ -22890,18 +23329,16 @@ c  start prints in file 'short.data'
        dav1(idav,8)=tdvolt*1000.
 c --- end daves
 c  ns = 18: number of steps in cells (apart for the fringe field region and RMS)
-cold       NS=18
-cold       nsm=ns/2
        xlrfq=0.
+c   the integer nn is only used if the RMS profile is required
+       nn=0
        do ncell=1,nceltot
          write(6,8254) nrtre,ncell,cr
 8254     format('Transport element:',i5,'      RFQ cell :',
      *     i5,'            ',a1,$)
-        if(itype(ncell).eq.5) then
-         ns=126
-        else
-         ns=18
-        endif
+        ns=18
+        if(itype(ncell).eq.5) ns=126
+        if(itype(ncell).eq.6) ns=126
         nsm=ns/2
         r0=rfq7(ncell)
         cl=rfq3(ncell)
@@ -22952,7 +23389,18 @@ c --- particles
            pavolt=rfq11(ncell)
            avb=rfq2(ncell)*pavolt*rfq9(ncell)
          endif
-c -----Radial matching section (Type = 5)
+c §§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§
+c  fringe field type 7
+         if(itype(ncell).eq.7) then
+c -------, F-cell (ityp = 7)
+c --- synchronous particle
+           rtvolt=rfq10(ncell)
+c --- particles
+           pavolt=rfq11(ncell)
+           a31vb=pavolt*rfq9(ncell)
+         endif
+c §§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§
+c -----Radial matching section from potential function(Type = 5)
          if(itype(ncell).eq.5) then
 c ---- synchronous particle
            rtvolt=rfq10(ncell)
@@ -22962,6 +23410,14 @@ c ---- particles (field)
            pavolt=rfq11(ncell)
            a31vb=rfq1(ncell)*pavolt*rfq9(ncell)
            av10b=rfq2(ncell)*pavolt*rfq9(ncell)
+         endif
+c -----Radial matching section with vanes profile read from disk (Type = 6)
+         if(itype(ncell).eq.6) then
+c ---- potential applied to the synchronous particle
+           rtvolt=rfq10(ncell)
+c ---- potenatial applied to particles
+           pavolt=rfq11(ncell)
+           a31vb=pavolt*rfq9(ncell)
          endif
 c   c.o.g of the bunch
          tcog=0.
@@ -22998,13 +23454,24 @@ c ---  T-cell(itype = 1 , E-cell(itype = 2, fringe field region(itype = 4) RMS (
          if(itype(ncell).eq.1) cay=pi/(2.*cl)
          if(itype(ncell).eq.2) cay=pi/(2.*cl)
          if(itype(ncell).eq.5) cay=pi/(2.*cl)
-c --- fringe field region
+         if(itype(ncell).eq.6) cay=pi/(2.*cl)
+c --- fringe field region type 4
          if(itype(ncell).eq.4) then
            cay=pi/(2.*cl)
            NS=int(36.*CL/(BREF*WAVEL))
            if(ns.le.5) ns=6
            nsm=ns/2
          endif
+c §§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§
+c   Fringe field region type 7
+         if(itype(ncell).eq.7) then
+           cay=pi/(2.*cl)
+           NS=int(36.*CL/(BREF*WAVEL))
+           ns=3*ns
+cold           if(ns.le.5) ns=6
+           nsm=ns/2
+         endif
+c §§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§
 c ---  M-cell (itype = 3)
 cold sv         if(itype(ncell).eq.3) cay=pi/cl
          xl=cl/float(ns)
@@ -23049,7 +23516,7 @@ ccc            phfin=phref*180./pi
             else
               rfqdmp(ncell,1)=zl+rfqdmp(ncell-1,1)
             endif
-            rfqdmp(ncell,2)=phdep            
+            rfqdmp(ncell,2)=phdep
          write(70,9999)ncell,zl,tlgth,phdep,phfin,wref,wcog,ngood
 9999         format(2x,i5,6(3x,e12.5),3x,i6)
              go to 9527
@@ -23086,26 +23553,48 @@ c print in file rfq_list1.data
             if(n.eq.1) phdep=rfq4(ncell)
            endif
 c M-cell (type = 3)
-            if(itype(ncell).eq.3) then
-              dwref=0.
+           if(itype(ncell).eq.3) then
+             dwref=0.
 c print in file rfq_list1.data
-            if(n.eq.1) phdep=rfq4(ncell)
+             if(n.eq.1) phdep=rfq4(ncell)
            endif
 c Fringe-field region (itype = 4)
-            if(itype(ncell).eq.4) then
+           if(itype(ncell).eq.4) then
              rtvolt=rfq10(ncell)
              av=rfq2(ncell)*rtvolt
              c3kz=cos(3.*cay*z)
              skpz=.75*(skz+sin(3.*cay*z))
              dwref=.5*qst*cay*av*skpz*sp*xl
 c print in file rfq_list1.data
-            if(n.eq.1) phdep=rfq4(ncell)
+             if(n.eq.1) phdep=rfq4(ncell)
            endif
-c --- RMS (type = 5)
-            if(itype(ncell).eq.5) then
+c §§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§
+c Fringe-field region (itype = 7)
+            if(itype(ncell).eq.7) then
               dwref=0.
+c   rprof: current fringe field profile at the azimutal position z
+              c3kz=cos(3.*cay*z)
+              rproff=splinf(npf,z)
+cold              write(16,*) 'FF z,radius ',z,rproff
 c print in file rfq_list1.data
             if(n.eq.1) phdep=rfq4(ncell)
+           endif
+c §§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§
+c --- RMS (type = 5)
+           if(itype(ncell).eq.5) then
+             dwref=0.
+c print in file rfq_list1.data
+             if(n.eq.1) phdep=rfq4(ncell)
+           endif
+c --- RMS (type = 6)
+           if(itype(ncell).eq.6) then
+             dwref=0.
+c   rprof: current RMS profile given at z
+             rprof=spline(npt,z)
+ccc            write(16,4527) n,z,rprof,a31vb
+ccc4527        format(2x,i4,3(2x,e12.5))
+c print in file rfq_list1.data
+             if(n.eq.1) phdep=rfq4(ncell)
            endif
 c --- gain of energy (synchronous particle)
            wrefm=wref+0.5*dwref
@@ -23124,7 +23613,7 @@ c         coordinates x, xp,y, yp convert in m and rad
              yi=f(4,ip)*1.e-02
              ypi=f(5,ip)*1.e-03
              ww=f(7,ip)-er
-c remove from the bunch particles such that the energy < 0
+c remove from the bunch particles that have energy < 0
              if(ww.lt.0.) then
                f(8,ip)=0.
                ilost=ilost+1
@@ -23137,7 +23626,7 @@ c remove from the bunch particles such that the energy < 0
              gi=ww/er+1.
              bi=sqrt(1.-1./(gi*gi))
              bgi=bi*gi
-c move in the bunch particles such that abs(phi) > pi
+c move particles back in the bunch if they have abs(phi) > pi
              tim=f(6,ip)+hl/(bi*vlm)
              phi=fh*(tim-tref)
              if(phi.ge.pi) then
@@ -23147,7 +23636,7 @@ c move in the bunch particles such that abs(phi) > pi
                if(abs(phi).gt.pi) then
                 f(8,ip)=0.
                 ilost=ilost+1
-                write(49,5559) ip,ncell,phi
+                write(49,5559) ip,ncell,phi,f(9,ip)
                 iflag=.true.
                 go to 6525
                endif
@@ -23159,13 +23648,13 @@ c move in the bunch particles such that abs(phi) > pi
                if(abs(phi).gt.pi) then
                 f(8,ip)=0.
                 ilost=ilost+1
-                write(49,5559) ip,ncell,phi
+                write(49,5559) ip,ncell,phi,f(9,ip)
                 iflag=.true.
                 go to 6525
                endif
              endif
 5559           format(' § particle: ',i5,' cell: ',i5,
-     *               ' phi(rad): ',e12.5)
+     *               ' phi(rad): ',e12.5,' charge state ',f6.2)
              tim=f(6,ip)+hl/(bi*vlm)
              phi=phini+fh*tim
              qq=abs(f(9,ip))
@@ -23412,16 +23901,46 @@ c ---- Radial matching section (type = 5)
               erf=erf*rm
               etf=a31vb*qzrm*s2t/rm
              endif
-cc            endif
-              ex=erf*c1t-etf*s1t
-              ey=erf*s1t+etf*c1t
-              ex=signx*ex
-              ey=signy*ey
+             ex=erf*c1t-etf*s1t
+             ey=erf*s1t+etf*c1t
+             ex=signx*ex
+             ey=signy*ey
             endif
+c ****************************************************
+            if(itype(ncell).eq.6) then
+              BGFAC=GAV*BAV**2
+              cc=a31vb*qq*xl*sp/(bgfac*er)
+              rr1=-cc/(rprof*rprof)
+              rr2=cc/(rprof*rprof)
+              rr1=rr1*xm
+              rr2=rr2*ym
+            endif
+c §§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§
+c Fringe field profil from the disk (type 7)
+           if(itype(ncell).eq.7) then
+             BGFAC=GAV*BAV**2
+             c1=.75*(ckz+c3kz/3.)
+             cc=a31vb*qq*xl*sp/(bgfac*er)
+             rr1=-cc/(rproff*rproff)
+             rr2=cc/(rproff*rproff)
+c  test the cell parity
+             ncf=(ipari(ncell)/2)*2-ipari(ncell)
+             if(ncf.eq.0) then
+               rr1=-rr1
+               rr2=-rr2
+             endif
+             rr1=rr1*xm
+             rr2=rr2*ym
+cold       if(ip.eq.25) write(16,5287)n,z,rproff,rr1/xm,rr2/ym
+c5287       format(2x,i4,4(2x,e12.5))
+           endif
+c §§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§!
 C----  CHANGE ENERGY OVER the STEP XL
 c ------  standard accelerating cell or R-cell (Type = 0)
            if(itype(ncell).eq.0) then
              ez=0.5*(avb*bi0+a12vb*bi4*cos(4.*theta))*skz*cay
+c 2014 a12test line above replaced by line below
+c             ez=0.5*(avb*bi0)*skz*cay
              dw=qq*ez*sp*xl
            endif
 c -------  T-cell (Type = 1)
@@ -23437,12 +23956,19 @@ c -------  E-cell (Type = 2)
 c ------- M-cell (itype = 3)
            if(itype(ncell).eq.3) dw=0.
 c ----    fringe field region (itype = 4)
+c §§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§
            if(itype(ncell).eq.4) dw=.5*qq*cay*avb*skz*sp*xl
+           if(itype(ncell).eq.7) dw=0.
+c §§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§
 c --------RMS (itype = 5)
            if(itype(ncell).eq.5) then
              ez=-1./16.*a31vb*cay**3*rm*rm*(ckz-ckz3)*c2t
              dw=qq*ez*sp*xl
             endif
+c --------RMS (itype = 6)
+           if(itype(ncell).eq.6) then
+             dw=0.
+           endif
 c ----  WAV: energy at the middle of the element
              WAV=WW+.5*DW
              GA=WAV/ER
@@ -23464,14 +23990,19 @@ cold           endif
             amort=bgi/bg
             BGFAC=GAV*BAV**2
             cc=qq*xl*sp/(bgfac*er)
-            if(itype(ncell).ne.4) then
+c §§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§
+           if(itype(ncell).ne.4) then
+              if(itype(ncell).eq.6) go to 9766
+              if(itype(ncell).eq.7) go to 9766
               rr1=cc*ex
               rr2=cc*ey
+9766         continue
               xpm=xpi*amort+rr1
               ypm=ypi*amort+rr2
               xf=xm+xpm*hl
               yf=ym+ypm*hl
             endif
+c §§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§
 c ------- Fringe-field region (itype = 4)
            if(itype(ncell).eq.4) then
 c*********************************************************
@@ -23488,9 +24019,9 @@ cold              C1=C1*.75*(CKZ+C3KZ/3.)
 cold              C2=C2*.75*(CKZ+3.*C3KZ)
 cold              RR1=-(C1+C2)
 cold              RR2=(C1-C2)
-c rfq11(ncell) is (1.+avolt)*VV , where VV is intervane voltage seen by particles               
+c rfq11(ncell) is (1.+avolt)*VV , where VV is intervane voltage seen by particles
               pavolt=rfq11(ncell)
-c rfq9(ncell) is 1.+fvolt               
+c rfq9(ncell) is 1.+fvolt
               rpv=pavolt*rfq9(ncell)
               rf1=qq*rpv/(r0*r0*er)
 c avb is a10*rpv, but a10 is usually zero in fringe field
@@ -23537,7 +24068,7 @@ C      Space Charge
                iesp=.false.
              endif
            endif
-c --- change of reference over the half step hl
+c --- change the reference over the half step hl
            tref=tref+hl/(bref*vlm)
            if(itvol) ttvols=tref
            vref=bref*vl
@@ -23629,13 +24160,15 @@ c*et*2012*Jun*s
          eyns=bcog*suryph*10./sqrt(1.-bcog*bcog)
          emns=sqmdv*1.e12/fh
 c*et*2012*Jun*e
-         if(ncell.eq.1) write(50,*) '# rfqparm.dmp'
-         if(ncell.eq.1) write(50,*) '# cell    Z       trans   ',
+         if(ncell.eq.1) then
+           write(50,*) '# rfqparm.dmp'
+           write(50,*) '# cell    Z       trans   ',
      *   'PHIs     TOF(COG)    COG        Wcog          TOF(REF)   ',
      *   '    REF        Wref       Ex,RMS,n     Ey,RMS,n     El,RMS'
-         if(ncell.eq.1) write(50,*) '#  #     (m)       (%)    ',
+           write(50,*) '#  #     (m)       (%)    ',
      *  '(deg)     (deg)      beta       (MeV)          (deg)      ',
      *  '   beta       (MeV)      (mm.mrad)    (mm.mrad)    (ns.keV)'
+         endif
          write(50,7023) ncell,rfqdmp(ncell,1),trnsms,
      *   rfqdmp(ncell,2),tcgprt,bcog,wcog,trfprt,bref,wref,
      *   exns,eyns,emns
@@ -23665,6 +24198,11 @@ C   plots
 c --- end do ncell
        enddo
        call emiprt(0)
+c §§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§
+c v28/04/2015
+       ifcont=.false.
+       WRITE(16,*) 'After RFQ, bunched beam assumed'
+c §§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§
        RETURN
        END
         SUBROUTINE stripp
@@ -23960,7 +24498,7 @@ C       RS: radial distance of pole tip from axis (cm)
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
        COMMON/RIGID/BORO
        COMMON/FAISC/F(10,iptsz),IMAX,NGOOD
-       common/etcom/cog(8),exten(11),fd(iptsz)
+       common/etcom/cog(8),exten(17),fd(iptsz)
        COMMON/QMOYEN/QMOY
        COMMON/DCSPA/IESP
        LOGICAL IESP
@@ -24168,7 +24706,7 @@ C       RS: radial distance of pole tip from the axis (cm)
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
        COMMON/RIGID/BORO
        COMMON/FAISC/F(10,iptsz),IMAX,NGOOD
-       common/etcom/cog(8),exten(11),fd(iptsz)
+       common/etcom/cog(8),exten(17),fd(iptsz)
        COMMON/QMOYEN/QMOY
        COMMON/DCSPA/IESP
        LOGICAL IESP
@@ -24459,7 +24997,7 @@ C      TRANSIT TIME COEFFICIENTS
        common/compt1/ndtl,ncavmc,ncavnm
        COMMON/FENE/WDISP,WPHAS,WX,WY,RLIM,IFW
        COMMON/TAPES/IN,IFILE,META
-       common/etcom/cog(8),exten(11),fd(iptsz)
+       common/etcom/cog(8),exten(17),fd(iptsz)
        common/speda/dave,idave
        COMMON/SHIF/DTIPH,SHIFT
        COMMON/DAVCOM/dav1(maxcell1,40),davtot,iitem(maxcell1),idav
@@ -25585,7 +26123,7 @@ c   ............................................................................
        common/faisc/f(10,iptsz),imax,ngood
        common/cgtof/charm(20),cgtdv(20),nbch(20),netac
        common/mcs/imcs,ncstat,cstat(20)
-       common/etcom/cog(8),exten(11),fd(iptsz)
+       common/etcom/cog(8),exten(17),fd(iptsz)
        COMMON/FENE/WDISP,WPHAS,WX,WY,RLIM,IFW
 c
 c       COMMON/DYN/TREF,VREF
@@ -25663,7 +26201,7 @@ c           write(16,*) "Test2:",abs(fd(i)-1.)
          endif
          if(f(8,i).eq.0.) then
            write(16,3928) i,int(f(1,i)),f(2,i),f(3,i),f(4,i),f(5,i),
-     *                  f6i*fh*180./pi,f(7,i)-xmat,int(f(9,i))
+     *                  f6i*fh*180./pi,f(7,i)-xmat,f(9,i)
            ilost=ilost+1
          endif
        enddo
@@ -25691,7 +26229,7 @@ ccccc       cstat=1
        imcs=0
        if(ncstat.gt.1) imcs=1
 3927   FORMAT(' LIM R,X,Y ',3(f10.2,9x),'P,W ',e12.5,9x,e12.5)
-3928   FORMAT(' # ',i5,1x,i5,1x,6(f10.2,1x),1x,i2)
+3928   FORMAT(' # ',i5,1x,i5,1x,6(f10.2,1x),1x,f5.2)
 4030   FORMAT('Charge state(s): ',20(f5.1,1x))
        RETURN
        END
@@ -25739,7 +26277,7 @@ c ****************************************************************************
        common/faisc/f(10,iptsz),imax,ngood
        common/femt/iemgrw,iemqesg
        LOGICAL IEMGRW
-       common/etcom/cog(8),exten(11),fd(iptsz)
+       common/etcom/cog(8),exten(17),fd(iptsz)
        COMMON/QMOYEN/QMOY
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
        COMMON /BLOC23/ H, DEVI, NB, BDB,L
@@ -26350,7 +26888,7 @@ c  ky2 = 0
        common/faisc/f(10,iptsz),imax,ngood
        common/femt/iemgrw,iemqesg
        LOGICAL IEMGRW
-       common/etcom/cog(8),exten(11),fd(iptsz)
+       common/etcom/cog(8),exten(17),fd(iptsz)
        COMMON/QMOYEN/QMOY
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
        common /edef/avb,drad,kx2,ky2,L
@@ -26385,6 +26923,7 @@ c   nsector: nombre of sectors in the deflector
 c   rm0: radial radius (cm)
 c   devtot: bend angle (deg)
 c   radii: vertical (radial) radii of curvature (cm)
+c   elecf: nominal electric field
 c   characteristics of the synchronous particle
 c   wt0 :total energy (MeV)
 c   qst: electric charge
@@ -26395,7 +26934,7 @@ c   iseor = false ---> second ordre transport matrix not available for the defle
        iseor=.false.
 c
        read(in,*) nsector
-       read(in,*) rm0,devtot,radii
+       read(in,*) rm0,devtot,radii,elecf
        bd0=vref/vl
        gd0=sqrt(1.-bd0*bd0)
        gd0=1./gd0
@@ -26405,13 +26944,16 @@ c   edr0: electric rigidity (kV)
        edr0=wt0*bd0*bd0*1.e03/qst
 c     efd0: radial electric field (in kV/cm)
        efd0=edr0/rm0
-       WRITE(16,1020)RM0,DEVTOT,RADII,EDR0,EFD0,WT0C
+       edfnom=efd0
+       if(elecf.ge.0.) efd0=elecf
+       WRITE(16,1020)RM0,DEVTOT,RADII,EDR0,EDFNOM,EFD0,WT0C
 1020    FORMAT('    ELECTROSTATIC DEFLECTOR************',/,
      2 '  BENDING RADIUS:  ',E12.5,' cm ',/,
      2 '  BEND ANGLE:      ',E12.5,' deg',/,
      2 '  VERTICAL RADII OF CURVATURE: ',E12.5,' cm',/,
      2 '  RIGIDITY: ',e12.5,' kV ',/,
-     2 '  RADIAL ELECTRIC FIELD: ',e12.5,' kV/cm',/,
+     2 '  RADIAL ELECTRIC FIELD (nominal): ',e12.5,' kV/cm',/,
+     2 '  RADIAL ELECTRIC FIELD (applied): ',e12.5,' kV/cm',/,
      2 '  INPUT ENERGY: ',e12.5,' MeV',/)
        if(ichaes) then
         write(16,*)'***** beam current: ',beamc,' mA'
@@ -26450,6 +26992,9 @@ c     scl is the path length of the C.T. over two following sectors
        do ist=1,ncstat
         rmoy(ist)=0.
         rig(ist)=0.
+c*et*2015-May-13-s
+        alp(ist)=devi
+c*et*2015-May-13-e
        enddo
 c -------------------
 c ---- nsector: number of sectors in the deflector
@@ -26459,7 +27004,7 @@ c ---- nsector: number of sectors in the deflector
         xlsy=devi*rm0
         sdavtot=sdavtot+xlsy
 c ------------------------------------------------------------
-c --- nsctat: number of electric charges in the beam
+c --- nsctat: number of charges states in the beam
         do ist=1,ncstat
           charge(ist)=cstat(ist)
           xmoy(ist)=0.
@@ -26491,7 +27036,8 @@ c      electric rigidity (kV)
           rig(ist)=rig(ist)/float(ncs(ist))
           rmoy(ist)=rig(ist)/efd0
           avbt(ist)=avbt(ist)/float(ncs(ist))
-c   dispersion in dp/p relative with the cog of the bunch
+c          write(16,*) 'Debug ED=',ist,cstat(ist),rmoy(ist),rig(ist)
+c   dispersion in dp/p relative to the cog of the bunch
           gcog=sqrt(1.-avbt(ist)*avbt(ist))
 C ALT 5/28
           fdtot=0.
@@ -26515,11 +27061,19 @@ c       alp(ist): angle of the local deflector
 c        parametres kx2 and ky2
 c  eq.11
          oo1=rm0-rmoy(ist)+xmoy(ist)
+c         write(16,*) 'Debug ED2=',oo1,rm0,rmoy(ist),xmoy(ist)
 c  eq.10
-         abet=oo1*sin(devi)/rmoy(ist)
+c*et*2015-May-13-s
+c         abet=oo1*sin(devi)/rmoy(ist)
+         abet=oo1*sin(alp(ist))/rmoy(ist)
+c*et*2015-May-13-e
          abet=asin(abet)
 c  eq.12 (angle of the local central trajectory)
-         alp(ist)=devi+abet
+c*et*2015-May-13-s
+c         alp(ist)=devi+abet
+         alp(ist)=alp(ist)+abet
+c*et*2015-May-13-e
+c         write(16,*) 'Debug ED3=',abet,devi,alp(ist)
 c  eq.14 (field index)
          findex=1.+rmoy(ist)/radii
 c  eq.15 (parameters kx, ky)
@@ -27056,10 +27610,22 @@ c  .............................................................................
      2 ,er(861),rss(20), ismax(40), iemax(41)
        common/rcshef/sce(20)
        common/conti/irfqp
+c §§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§
+c v28/04/2015
+       common/fcont/ifcont
+       logical ifcont
+c §§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§
        logical irfqp
        idm=idum
 c     set up field tables with int=0
 comment       beami=beamc/1000.0
+c §§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§
+c v28/04/2015
+       if(ifcont) then
+         pib=180.
+         call compress(pib)
+       endif
+c §§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§
        gmoy=0.
        do np=1,ngood
          gmoy=f(7,np)/xmat+gmoy
@@ -27068,16 +27634,16 @@ comment       beami=beamc/1000.0
        beami=beams/gmoy
        IF (beami.eq.0. .OR. scdist.eq.0.) return
        IELL=IELL+1
-       write(16,*) ' *call SCHEFF  ',iell
+c       write(16,*) ' *call SCHEFF  ',iell
        call pintim
-       write(16,*) ' *after pintim '
+c       write(16,*) ' *after pintim '
        CALL sizrms(0,xrms,yrms,zrms,zz)
-       write(16,*) ' *after sizrms ',zz
-       write(16,6875) xrms,yrms,zrms
+c       write(16,*) ' *after sizrms ',zz
+       write(16,6875) iell,xrms,yrms,zrms
 c   write the size rms in the output file 17
 comment       write(17,25) iell,xrms,yrms,zrms
 comment25     format(2x,i5,3(2x,e12.5))
-6875   format(' RMS size(m)',e12.5,2x,e12.5,2x,e12.5)
+6875   format(' Cell ',i4,' RMS size(m)',e12.5,2x,e12.5,2x,e12.5)
        rrms=sqrt(xrms*xrms+yrms*yrms)
 c    change unit: m==>cm
        zrms1=zrms*100.
@@ -27911,7 +28477,7 @@ c   ............................................................................
        common/etcha1/dav2(maxcell1,33),ichas(iptsz),chasit
        COMMON/TTFC/TK,T1K,T2K,SK,S1K,S2K,FH
        common/faisc/f(10,iptsz),imax,ngood
-       common/etcom/cog(8),exten(11),fd(iptsz)
+       common/etcom/cog(8),exten(17),fd(iptsz)
        COMMON/FENE/WDISP,WPHAS,WX,WY,RLIM,IFW
        common/corec/tref1
        COMMON/QMOYEN/QMOY
