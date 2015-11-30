@@ -48,11 +48,11 @@ c opsy=1 --> LINUX   GNUPLOT version
 c opsy=2 --> WINDOWS GNUPLOT version
 c opsy=3 --> MAC     GNUPLOT version
         if(opsy.eq.1) then
-          write(6,'(A)') 'PLOTIT V2.6 13-Nov-2013 LINUX'
+          write(6,'(A)') 'PLOTIT V2.7 30-Nov-2015 LINUX'
         elseif(opsy.eq.2) then
-          write(6,'(A)') 'PLOTIT V2.6 13-Nov-2013 WINDOWS'
+          write(6,'(A)') 'PLOTIT V2.7 30-Nov-2015 WINDOWS'
         elseif(opsy.eq.3) then
-          write(6,'(A)') 'PLOTIT V2.6 13-Nov-2013 MAC'
+          write(6,'(A)') 'PLOTIT V2.7 30-Nov-2015 MAC'
         else
           write(6,*) 'Error in operating system type entry'
           stop
@@ -71,6 +71,9 @@ c      02 Apr); fill the blank with the character '0' to avoid error message on 
 c      copy
 c      Fix color of points used in particle plots for MAC (changed from grey to black)
 c V2.6 Change from 100k to 250k macro particles
+c V2.7 Various changes related to changes in the names of certain GNUPLOT parameters; these
+c      changes in dyndat.f were needed to for instance avoid that the dots in the
+c      particle distributions would no longer be plotted.
          write(6,*)
 C igrtyp is type of graph (there is no igrtyp=8,9,10,13,14,15 or 16)
 C single charge state, no zones:
@@ -952,7 +955,7 @@ C WINDOWS
           endif
         endif
         write(50,1010) 
-1000    format('set style data points')
+1000    format('set style data dots')
 1001    format('set label "',A80,'" at screen 0.1 ,',f5.3)
 1002    format('set xlabel "',A40,'"')
 1003    format('set ylabel "',A40,'"')
@@ -960,9 +963,9 @@ C WINDOWS
 1005    format('set yrange [',f12.5,':',f12.5,']')
 1006    format('set size 1., 1.')
 1007    format('set samples 50')   
-1008    format('plot "dynac.plt" using 1:2 with points pt 0 lc 0, ',
+1008    format('plot "dynac.plt" using 1:2 with dots lc 0, ',
      *         A1)
-1011    format('plot "dynac.plt" using 1:2 with points pt 0 lc 0')
+1011    format('plot "dynac.plt" using 1:2 with dots lc 0')
 1012    format('plot "dynac.plt" using 1:2 with lines, ',
      *         A1)
 1013    format('"dynac.plt" using 3:4 with lines')
@@ -1514,7 +1517,7 @@ c new end
 c
         write(50,1201)
         write(50,9020)        
-1000    format('set style data points',/,'set pointsize 0.01')
+1000    format('set style data dots',/,'set pointsize 0.01')
 1001    format('set label "',A80,'" at screen 0.13 ,',f5.3)
 1500    format('set label "',A6,' particles" at screen 0.45,0.52')
 1510    format('set label "',A6,' particles" at screen 0.45,0.49')
@@ -1530,10 +1533,10 @@ c
 1105    format('set origin 0.,0.')
 1107    format('set origin 0.5,0.')
 1007    format('set samples 50')   
-1008    format('plot "dynac.plt" using 1:2 with points pt 0 lc 0')
-8008    format('plot "dynac.plt" using 1:2 with points pt 0 lc 9')
-1010    format('plot "dynac.plt" using 3:4 with points pt 0 lc 0')
-8010    format('plot "dynac.plt" using 3:4 with points pt 0 lc 9')
+1008    format('plot "dynac.plt" using 1:2 with dots lc 0')
+8008    format('plot "dynac.plt" using 1:2 with dots lc 8')
+1010    format('plot "dynac.plt" using 3:4 with dots lc 0')
+8010    format('plot "dynac.plt" using 3:4 with dots lc 8')
 1200    format('set multiplot')
 1201    format('set nomultiplot')
 1202    format('set key at screen 0.54, 0.95 spacing 0.8', 
@@ -1555,20 +1558,20 @@ c
 1214    format('set key at screen 0.56, 0.95 spacing 0.8', 
      *         ' samplen 1 textcolor rgb variable ')
 1203    format('unset key')
-2008    format('plot "',a21,'" using 1:2 with points pt 0 lc 0')
-2010    format('plot "',a21,'" using 3:4 with points pt 0 lc 0')
-8808    format('plot "',a21,'" using 1:2 with points pt 0 lc 9')
-8810    format('plot "',a21,'" using 3:4 with points pt 0 lc 9')
+2008    format('plot "',a21,'" using 1:2 with dots lc 0')
+2010    format('plot "',a21,'" using 3:4 with dots lc 0')
+8808    format('plot "',a21,'" using 1:2 with dots lc 8')
+8810    format('plot "',a21,'" using 3:4 with dots lc 8')
 3003    format('plot "',a11,'" using 1:2 title "',A3,
-     *         '" with points pt 1, ',A1)
+     *         '" with dots lc 1, ',A1)
 3033    format('     "',a11,'" using 1:2 title "',A3,
-     *         '" with points pt ',I2,',',A1)
+     *         '" with dots lc ',I2,',',A1)
 3013    format('     "',a11,'" using 1:2 title " >',A3,
-     *         '" with points pt ',I2)
+     *         '" with dots lc ',I2)
 3043    format('     "',a11,'" using 1:2 title " ',A3,
-     *         '" with points pt ',I2)
+     *         '" with dots lc ',I2)
 4003    format('plot "',a11,'" using 3:4',
-     *         ' with points pt 1, ',A1)
+     *         ' with dots lc 1, ',A1)
 4303    format('plot "',a11,'" using 1:2 title "',A2,
      *         '" with lines, ',A1)
 4305    format('     "',a11,'" using 1:2 title "',A2,
@@ -1576,23 +1579,23 @@ c
 4313    format('     "',a11,'" using 1:2 title "',A2,
      *         '" with lines ls 3')
 4033    format('     "',a11,'" using 3:4',
-     *         ' with points pt ',I2,',',A1)
+     *         ' with dots lc ',I2,',',A1)
 4013    format('     "',a11,'" using 3:4',
-     *         ' with points pt ',I2)
+     *         ' with dots lc ',I2)
 5003    format('plot "',a23,'" using 1:2 title "',A3,
-     *         '" with points pt 1, ',A1)
+     *         '" with dots lc 1, ',A1)
 5033    format('     "',a23,'" using 1:2 title "',A3,
-     *         '" with points pt ',I2,',',A1)
+     *         '" with dots lc ',I2,',',A1)
 5013    format('     "',a23,'" using 1:2 title " >',A3,
-     *         '" with points pt ',I2)
+     *         '" with dots lc ',I2)
 5043    format('     "',a23,'" using 1:2 title " ',A3,
-     *         '" with points pt ',I2)
+     *         '" with dots lc ',I2)
 6003    format('plot "',a23,'" using 3:4',
-     *         ' with points pt 1, ',A1)
+     *         ' with dots lc 1, ',A1)
 6033    format('     "',a23,'" using 3:4',
-     *         ' with points pt ',I2,',',A1)
+     *         ' with dots lc ',I2,',',A1)
 6013    format('     "',a23,'" using 3:4',
-     *         ' with points pt ',I2)
+     *         ' with dots lc ',I2)
 6303    format('plot "',a23,'" using 1:2 title "',A2,
      *         '" with lines, ',A1)
 6305    format('     "',a23,'" using 1:2 title "',A2,
@@ -1878,7 +1881,7 @@ c dW-dPHI
         ENDIF
         write(50,1201)
         write(50,1020) 
-1000    format('set style data points',/,'set pointsize 0.01')
+1000    format('set style data dots',/,'set pointsize 0.01')
 1001    format('set label "',A80,'" at screen 0.13 ,',F5.3)
 1500    format('set label "',A6,' particles" at screen 0.45,0.52')
 1510    format('set label "',A6,' particles" at screen 0.45,0.49')
@@ -1895,23 +1898,23 @@ c dW-dPHI
 1104    format('set origin 0.5,0.')
 1007    format('set samples 50')   
 1008    format('plot "dynac.plt" using 1:2 title "" with ',
-     *         'points pt 0 lc 0, ',A1)
+     *         'dots lc 0, ',A1)
 8008    format('plot "dynac.plt" using 1:2 title "" with ',
-     *         'points pt 0 lc 9, ',A1)
+     *         'dots lc 8, ',A1)
 1009    format('     "dynac.cnt" using 1:2 title "" with lines')
 1011    format('plot "dynac.plt" using 3:4 with',
-     *         ' points pt 0 lc 0, ',A1)
+     *         ' dots lc 0, ',A1)
 8011    format('plot "dynac.plt" using 3:4 with',
-     *         ' points pt 0 lc 9, ',A1)
+     *         ' dots lc 8, ',A1)
 1012    format('     "dynac.cnt" using 3:4 with lines')
 1013    format('plot "dynac.plt" using 1:3',
-     *         ' with points pt 0 lc 0')
+     *         ' with dots lc 0')
 8013    format('plot "dynac.plt" using 1:3',
-     *         ' with points pt 0 lc 9')
+     *         ' with dots lc 8')
 1014    format('plot "dynac.plt" using 5:6 with',
-     *         ' points pt 0 lc 0, ',A1)
+     *         ' dots lc 0, ',A1)
 8014    format('plot "dynac.plt" using 5:6 with',
-     *         ' points pt 0 lc 9, ',A1)
+     *         ' dots lc 8, ',A1)
 1015    format('     "dynac.cnt" using 5:6 with lines')
 1020    format('pause -1 "hit return to continue"')
 1200    format('set multiplot')
@@ -1923,70 +1926,70 @@ c dW-dPHI
 1206    format('set key at screen 0.56, 0.95 spacing 0.8',
      *         ' samplen 1 textcolor rgb variable ')
 1203    format('set nokey')
-2002    format('plot "',a23,'" using 1:2 with points pt 0, ',
+2002    format('plot "',a23,'" using 1:2 with dots, ',
      *         A1)
 2022    format('plot "',a21,'" using 1:2 title "" with ',
-     *         'points pt 0, ',A1)
-2008    format('     "',a23,'" using 1:2 with points pt 1, ',
+     *         'dots lc 0, ',A1)
+2008    format('     "',a23,'" using 1:2 with dots lc 1, ',
      *         A1)
 2009    format('     "',a23,'" using 1:2 title "" with lines')
 2019    format('     "',a21,'" using 1:2 title "" with lines')
 2011    format('plot "',a23,'" using 3:4 with',
-     *         ' points pt 0, ',A1)
+     *         ' dots lc 0, ',A1)
 2031    format('plot "',a21,'" using 3:4 with',
-     *         ' points pt 0, ',A1)
+     *         ' dots lc 0, ',A1)
 2012    format('     "',a23,'" using 3:4 with lines')
 2042    format('     "',a21,'" using 3:4 with lines')
 2013    format('plot "',a23,'" using 1:3',
-     *         ' with points pt 0 lc 0')
+     *         ' with dots lc 0')
 2033    format('plot "',a21,'" using 1:3',
-     *         ' with points pt 0 lc 0')
+     *         ' with dots lc 0')
 2014    format('plot "',a23,'" using 5:6 with',
-     *         ' points pt 0, ',A1)
+     *         ' dots lc 0, ',A1)
 2015    format('     "',a23,'" using 5:6 with lines')
 2024    format('plot "',a21,'" using 5:6 with',
-     *         ' points pt 0, ',A1)
+     *         ' dots lc 0, ',A1)
 2025    format('     "',a21,'" using 5:6 with lines')
 3001    format('plot "',a11,'" using 1:2 title "',A5,
-     *         '" with points pt 1, ',A1)
+     *         '" with dots lc 1, ',A1)
 3008    format('     "',a11,'" using 1:2 title "',A5,
-     *         '" with points pt ',I2,',',A1)
+     *         '" with dots lc ',I2,',',A1)
 3018    format('     "',a11,'" using 1:2 title " >',A3,
-     *         '" with points pt ',I2,',',A1)
+     *         '" with dots lc ',I2,',',A1)
 3002    format('plot "',a11,'" using 3:4 with',
-     *         ' points pt 1, ',A1)
+     *         ' dots lc 1, ',A1)
 3011    format('     "',a11,'" using 3:4 with',
-     *         ' points pt ',I2,',',A1)
+     *         ' dots lc ',I2,',',A1)
 3003    format('plot "',a11,'" using 1:3',
-     *         ' with points pt 1, ',A1)
+     *         ' with dots lc 1, ',A1)
 3033    format('     "',a11,'" using 1:3',
-     *         ' with points pt ',I2,',',A1)
+     *         ' with dots lc ',I2,',',A1)
 3013    format('     "',a11,'" using 1:3',
-     *         ' with points pt ',I2)
+     *         ' with dots lc ',I2)
 3004    format('plot "',a11,'" using 5:6 with',
-     *         ' points pt 1, ',A1)
+     *         ' dots lc 1, ',A1)
 3014    format('     "',a11,'" using 5:6 with',
-     *         ' points pt ',I2,',',A1)
+     *         ' dots lc ',I2,',',A1)
 4001    format('plot "',a23,'" using 1:2 title "',A3,
-     *         '" with points pt 1, ',A1)
+     *         '" with dots lc 1, ',A1)
 4008    format('     "',a23,'" using 1:2 title "',A3,
-     *         '" with points pt ',I2,',',A1)
+     *         '" with dots lc ',I2,',',A1)
 4018    format('     "',a23,'" using 1:2 title " >',A3,
-     *         '" with points pt ',I2,',',A1)
+     *         '" with dots lc ',I2,',',A1)
 4002    format('plot "',a23,'" using 3:4 with',
-     *         ' points pt 1, ',A1)
+     *         ' dots lc 1, ',A1)
 4011    format('     "',a23,'" using 3:4 with',
-     *         ' points pt ',I2,',',A1)
+     *         ' dots lc ',I2,',',A1)
 4003    format('plot "',a23,'" using 1:3',
-     *         ' with points pt 1, ',A1)
+     *         ' with dots lc 1, ',A1)
 4033    format('     "',a23,'" using 1:3',
-     *         ' with points pt ',I2,',',A1)
+     *         ' with dots lc ',I2,',',A1)
 4013    format('     "',a23,'" using 1:3',
-     *         ' with points pt ',I2)
+     *         ' with dots lc ',I2)
 4004    format('plot "',a23,'" using 5:6 with',
-     *         ' points pt 1, ',A1)
+     *         ' dots lc 1, ',A1)
 4014    format('     "',a23,'" using 5:6 with',
-     *         ' points pt ',I2,',',A1)
+     *         ' dots lc ',I2,',',A1)
 5000    format('set label "',A3,'" at screen ',f4.2,',',f4.2)
 6000    format('set terminal aqua title "DYNAC" size 750 675') 
 7000    format('set term wxt size 750,675')     
