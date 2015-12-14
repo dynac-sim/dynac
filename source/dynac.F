@@ -27,18 +27,24 @@
      4          .135136368,.111883847,.085036148,
      5          .055459529,.024148303/
        END
-c ******************************************************************
+c *******************************************************************
+C      PROGRAM DYNAC
+C      THIS SOFTWARE WAS ORIGINALLY PRODUCED BY CERN/PS, CEN/SACLAY
+C
+C      @version 6.0R15
+C      @date 13-Dec-2015
+C
+C      @author P. LAPOSTOLLE  CONSULTANT (Paris, France)
+C      @author E. TANKE       ESS (Lund, Sweden)
+C      @author S. VALERO      CONSULTANT (Paris, France)
+C
+C      Modified and maintained by :
+C       - TANKE Eugene
+C       - VALERO Saby
+c *******************************************************************
        PROGRAM dynac
        implicit real*8 (a-h,o-z)
-C Version 6.0R14  1-Jun-2015
-C      THIS SOFTWARE WAS ORIGINALLY PRODUCED BY CERN/PS, CEN/SACLAY
-C   AUTHORS :P. LAPOSTOLLE  CONSULTANT (Paris, France)
-C            E. TANKE       ESS (Lund, Sweden)
-C            S. VALERO      CONSULTANT (Paris, France)
-C      Modified and maintained by :
-C      TANKE Eugene
-C      VALERO Saby
-       parameter(ncards=63,iptsz=100002,maxcell=3000,maxcell1=3000)
+       parameter(ncards=64,iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/ITVOLE/ITVOL,IMAMIN
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
        COMMON/FENE/WDISP,WPHAS,WX,WY,RLIM,IFW
@@ -88,6 +94,7 @@ C      VALERO Saby
        character*80 cara,cmnt,text,patitl,ofeldf,ofelds
        character*80 davprt(maxcell1)
        character*8 KLE(ncards),kley
+       character*12 fdrft
        character*160 titre
        character iitime*30
        COMMON/CESPCH/NCHGE,ICHSP,NPPI
@@ -112,14 +119,17 @@ C      VALERO Saby
 c allow plotting the beam after sector nsprint ******
        common/isector/nsector,nsprint
        common/mingw/mg
-c §§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§
-c v28/04/2015
+       common/xposi/xpost(10),xlce(2),xpax(2),iscx(2)
        common/fcont/ifcont
-       logical ifcont
-       logical mg,ffound
+       logical ifcont,mg,ffound
+c********************************************
+c reservation for TRACE3D related stuff
+       common/trace3d/trace3h(100),trace3t(maxcell1),tif,kt3h,kt3t,fid
+       common/t3dfld/fldctr(15),zend(15),T3D
+       logical T3D,xiset
+       character*128 trace3h,trace3t,tif,tifa,tifb
 c********************************************
        logical izrot
-c ******
        LOGICAL IRAYSH
       DATA KLE/'GEBEAM','INPUT','RDBEAM','ETAC','DRIFT',
      *          'QUADRUPO','SEXTUPO','QUADSXT','SOLENO','SOQUAD',
@@ -133,14 +143,15 @@ c ******
      *          'PROFGR','SECORD','RASYN','FDRIFT','FSOLE',
      *          'EGUN','COMPRES','REFCOG','FPART','QUAELEC',
      *          'QUAFK','CAVNUM','EDFLEC','EMITL','RFKICK',
-     *          'FIRORD','DCBEAM','STOP'/
-cet2010s
+     *          'FIRORD','DCBEAM','T3D','STOP'/
        integer narg,i
        character*80 inarg,myarg(10),myfile,wfile,infiln,shortl
        character*10 plane
        logical g77,gfortran
-c if mg=.true., use MINGW on windows, which has a different result for ctime function than standard gfortran
-c default is mg=.false. This can be set by giving mingw as argument on the command line
+c if mg=.true., use MINGW on windows, which has a different result for
+c ctime function than standard gfortran
+c default is mg=.false. This can be set by giving mingw as argument on
+c the command line
         mg=.false.
 c get arguments from the command line
 c format for dynac:
@@ -148,7 +159,8 @@ c dynac file1 [-h]
 c where: -file1 is the input file, describing the beamline
 c        -h  print help info
         gfortran=.true.
-cg77 in case of g77, set g77=.true. ; in case of gfortran, set g77=.false.
+c g77 in case of g77, set g77=.true. ; in case of gfortran,
+c set g77=.false.
         g77=.false.
         if(g77) gfortran=.false.
         narg=0
@@ -157,14 +169,15 @@ cg77 in case of g77, set g77=.true. ; in case of gfortran, set g77=.false.
             call GET_COMMAND_ARGUMENT(narg,inarg)
             if(LEN_TRIM(inarg).eq.0) exit
             narg=narg+1
-cg77 in case of g77, comment out the next line; in case of gfortran, leave it in
+c g77 in case of g77, comment out the next line; in case of
+c gfortran, leave it in
              myarg(narg)=TRIM(inarg)
           ENDDO
         else
           write(6,*) 'Compatible with g77'
         endif
 c       INPUT ARGUMENTS:
-c ********************************************************************************
+c *******************************************************************
         if (gfortran) then
           ffound=.false.
           do i=2,narg
@@ -174,14 +187,14 @@ c the input argument is the name of the input file
               write(6,2917)myarg(i)
 2917          format('Input file: ',A)
               infiln=myarg(i)
-C     7 or 'in' is the unit corresponding to the dynac input file describing the accelerator
-C     or transport line
+C 7 or 'in' is the unit corresponding to the dynac input file
+c describing the accelerator or transport line
               open(7,file=myarg(i),status='unknown')
               ffound=.true.
             else
               if(myarg(i).eq.'-mingw') then
-c if mg=.true., use MINGW on windows, which has a different result for ctime function than
-c standard gfortran
+c if mg=.true., use MINGW on windows, which has a different result
+c for ctime function than standard gfortran
                 mg=.true.
                 write(6,*) 'Using MINGW gfortran format on MSWindows'
               endif
@@ -209,39 +222,41 @@ c     print out of help message, starting with DYNAC version
             stop
           endif
         endif
-cet2010e
-c***************************************************************************************************
-c***************************************************************************************************
-c     OUTPUT FILES:
+c *******************************************************************
+c  OUTPUT FILES:
 c
-c     'dynac.long'  :  print extensive information concerning the computations
+c 'dynac.long'  : print extensive computations information
 c
-c     'dynac.short' : print essentials of beam dynamics information
+c 'dynac.short' : print essentials of beam dynamics information
 c
-c     'dynac.print' : printout of the envelope and the emittance of the beam in the directions  x, y and z
-c                     at each position of the optical and accelerating elements, as well as # of good
-c                     particles
+c 'dynac.print' : printout of the envelope and the emittance of the
+c                 beam in the directions  x, y and z at each position
+c                 of the optical and accelerating elements, as well as
+c                 the number of good particles
 c
-c     'dynac.dmp'   :  printout of cavity cell related data:
-c                     cell number,synchronous phase (deg),relativistic beta (output), output energy (MeV),
-c                     hor. emittance (mm.mrad, normalized), ver. emittance (mm.mrad, normalized),
-c                     longitudinal emittance (ns.kev)
+c 'dynac.dmp'   : printout of cavity cell related data:
+c                 cell number,synchronous phase (deg),relativistic
+c                 beta (output), output energy (MeV),
+c                 hor. emittance (mm.mrad, normalized),
+c                 ver. emittance (mm.mrad, normalized),
+c                 longitudinal emittance (ns.kev)
 c
-c     'beam_core.dst': as 'beam.dst' but with CHASE, print the coordinates of the particles
-c                       kept by CHASE
+c 'beam_core.dst': print the coordinates of the particles kept by
+c                  CHASE
 c
-c     'beam_remove.dst': as 'beam.dst' but with CHASE, print the coordinates of the particles
-c                          removed by CHASE
-c     'dynac_in_pr.dst'   : print of the coordinates of the particles at the input of the machine
+c 'beam_remove.dst': print the coordinates of the particles
+c                    removed by CHASE
 c
-c     'emit.plot'   :datafile used for the plots
+c 'dynac_in_pr.dst': print of the coordinates of the particles at the
+c                    input of the machine
+c
+c 'emit.plot'      : datafile used for the plots
 c
 c *************************************************************************************************
        open(16,file='dynac.long',status='unknown')
        open(12,file='dynac.short',status='unknown')
        open(71,file='dynac.print',status='unknown')
        open(50,file='dynac.dmp',status='unknown')
-c       open(58,file='beam.dst',status='unknown') (now handled through variable wfile)
        open(61,file='beam_core.dst',status='unknown')
        open(60,file='beam_remove.dst',status='unknown')
        open(11,file='dynac_in_pr.dst',status='unknown')
@@ -271,7 +286,8 @@ c     'egun_prtcl.data'   : print of the coordinates of the particle icont (see 
 c
 c     'champ_sol.data'    : plot  field in the solenoid
 c   ****************************************************************************************
-cold       open(13,file='emlg.data',status='unknown')
+c  SV 24/08/2015
+       open(13,file='emlg.data',status='unknown')
 cold       open(14,file='emtr.data',status='unknown')
 comment       open(15,file='chemlg.data',status='unknown')
 comment       open(17,file='rms.size',status='unknown')
@@ -286,19 +302,57 @@ comment7787   format(4x,'N',6x,'length',5x,'emitx',5x,'emity')
 comment       write(13,7788)
 comment       write(15,7788)
 comment7788   format(4x,'N',6x,'length',5x,'emitz',6x,'energy',1x,'part.good')
-c   *******************************************************
+c********************************************************
+c  SV 24/10/2015
+cc       write(13,99)
+cc99     format(3x,'ncav',2x,'ncell',2x,'pos I(cm)',4x,'pos S(cm)',6x,
+cc     *'L cell(cm)',5x,'W(Mev)',7x,'dw(Mev)',6x,'TOF(dg)',7x,'Ph RF(dg)'
+cc     *,6x,'pos M(cm)',5x,'WM(Mev)',7x,'dwM(Mev)',6x,
+cc     *'TOFM(dg)',5x,'PhM RF(dg)')
+c**************************************************************************************
 c    initialize constants
 C    in corresponds to dynac input file
        in=7
+C    itout corresponds to TRACE3D input file
+       itout=48
+c
        PI=4.*ATAN(1.)
-c initialiye the number of charge state to 1
+c initialize the number of charge states to 1
        ncstat=1
 c initialize the # of zones (see ZONES card) to zero
        izrot=.false.
        ofeldf=' '
        ofelds=' '
        icour=0
-cccc       ibcont=.false.
+c initialize trace3d related stuff
+c frequency indicator
+       fid=1.
+       T3D=.false.
+       xiset=.false.
+       kt3h=1
+       trace3h(kt3h)=' $DATA'
+       kt3t=0
+c DONE:
+c      DATA KLE/'GEBEAM','INPUT',        ,'ETAC','DRIFT',
+c     1*        'QUADRUPO',         ,         ,'SOLENO',        ,
+c     2*        'BMAGNET',          ,'CAVSC'  ,        ,        ,
+c     3*        'BUNCHER',          ,'NEWF'   ,        ,        ,
+c TO LOOK AT:
+c      DATA KLE/                ,'RDBEAM',
+c     1*                 ,'SEXTUPO','QUADSXT',        ,'SOQUAD',
+c     2*        '       ',  'CAVMC' ,         ,'FIELD' , 'HARM' ,
+c     3*                 ,'RFQCL',    ,'NREF','SCDYNAC',
+c     4*        'SCDYNEL','SCPOS','TILT','TILZ','CHANGREF',
+c     5*        'TOF','REJECT','ZROT','ALINER',
+c     7*        'RWFIELD','RANDALI','TWQA','EMIPRT',
+c     8*        'MMODE','RFQPTQ','STRIPPER','STEER',
+c     9*        'PROFGR','SECORD','RASYN','FDRIFT','FSOLE',
+c    10*        'EGUN','COMPRES','REFCOG','FPART','QUAELEC',
+c    11*        'QUAFK','CAVNUM','EDFLEC','EMITL','RFKICK'
+C
+c IGNORE: 'ZONES','STOP','T3D','DCBEAM','FIRORD','COMMENT'
+C         'EMIT','EMITGR','WRBEAM','ENVEL','REJECT','CHASE'
+C         'ACCEPT',
        irfqp=.false.
        ttvols=0.
        iprf=1
@@ -369,8 +423,7 @@ c   *******************************************************
        WRITE(6,3101)
        WRITE(16,3101)
        WRITE(12,3101)
-cet2010s
-3101   FORMAT('****** DYNAC V6.0R14 (Beta test), 1-Jun-2015 *******')
+3101   FORMAT('****** DYNAC V6.0R15 (Beta test), 13-Dec-2015 *******')
        if (gfortran) then
          write(16,*) 'Input file: ',infiln
          write(12,*) 'Input file: ',infiln
@@ -410,7 +463,6 @@ c standard gfortran format: Tue Mar 30 20:51:06 2010
        write(16,*) 'Started on ',text(1:27)
        write(12,*) 'Started on ',text(1:27)
        call cpu_time(exstrt)
-cet2010e
 C  Read title
        READ (in,3333) titre(1:80)
        WRITE(16,3334) titre(1:80)
@@ -441,8 +493,8 @@ c key not found, go to STOP
      *        31,32,33,34,35,36,37,38,39,40,
      *        41,42,43,44,45,46,47,48,49,50,
      *        51,52,54,55,56,57,58,59,60,61,
-     *        62,63,53),I
-c**************************************************************************************
+     *        62,63,64,53),I
+c*********************************************************************
 c  GEBEAM     1  INPUT     2  RDBEAM    3   ETAC    4   DRIFT     5
 c  QUADRUPO   6  SEXTUPO   7  QUADSXT   8   SOLENO  9   SOQUAD    10
 c  BMAGNET    11 CAVMC     12 CAVSC     13  FIELD   14  HARM      15
@@ -455,8 +507,8 @@ c  MMODE      41 RFQPTQ    42 STRIPPER  43  STEER   44  ZONES     45
 c  PROFGR     46 SECORD    47 RASYN     48  FDRIFT  49  FSOLE     50
 c  EGUN       51 COMPRES   52 REFCOG    54  FPART   55  QUAELEC   56
 c  QUAFK      57 CAVNUM    58 EDFLEC    59  EMITL   60  RFKICK    61
-c  FIRORD     62 DCBEAM    63 STOP      53
-c**************************************************************************************
+c  FIRORD     62 DCBEAM    63 T3D       64  STOP    53
+c*********************************************************************
 1      CONTINUE
 C AFTER GEBEAM:Generates randomly the input beam
        write(16,*) ' TYPE CODE:GEBEAM********* '
@@ -499,7 +551,8 @@ c ---     iflag = 2 particle coordinates x,xp,y,yp,z,zp,q with z in rad
 c ---     iflag = 10 particle coordinates x,xp,y,yp,z,zp with z in ns
 c ---     iflag = 11 particle coordinates x,xp,y,yp,z,zp,q,m0 with z in ns
 c ---     iflag = 12 particle coordinates x,xp,y,yp,z,zp,q with z in ns
-c
+c ---     add 100 to the above iflg values to read a file that has Wref as
+c ---     4th parameter on line 1
 c ---- 3) freq, tof
 c ---     freq: RF frquency (MHz)
 c ---     tof: phase offset to be applied  to the beam (deg)
@@ -516,6 +569,8 @@ c
 C   AFTER ETAC :possibility of a multiple charge state beam
 4      CONTINUE
        write(16,*) 'TYPE CODE:ETAC **********'
+       kt3h=kt3h+1
+       trace3h(kt3h)='ERROR: ETAC multi-charge states not supported'
        CALL ETAC
        write(16,*) '********************************'
        GO TO 200
@@ -523,6 +578,10 @@ C  AFTER DRIFT : dl:drift length (cm),if dl is negatif no space charge effect
 5      CONTINUE
        write(16,*) 'TYPE CODE:DRIFT **********'
        READ(IN,*)DL
+       kt3t=kt3t+1
+       write(tif,6001) kt3t,kt3t,10.*DL
+6001   format('  nt(',i4,')= 1, a(1,',i4,')=',f12.6)
+       trace3t(kt3t)=tif
        CALL DRIFT(DL)
        write(16,*) '********************************'
        GO TO 200
@@ -533,6 +592,10 @@ C   XLQUA: EFFECTIVE LENGHT (cm )
 C   RG:    APERTURE RADIUS (cm)
        write(16,*) 'TYPE CODE:QUADRUPO**********'
        READ(IN,*)XLQUA,BQUAD,RG
+       kt3t=kt3t+1
+       write(tif,6002) kt3t,kt3t,10.*BQUAD/RG,XLQUA*10.
+6002   format('  nt(',i4,')= 3, a(1,',i4,')= ',f9.5,' , ',f9.5)
+       trace3t(kt3t)=tif
        call qalva(bquad,xlqua,rg)
        write(16,*) '********************************'
        GO TO 200
@@ -580,7 +643,8 @@ c     If IKSQ = 0 then ARGS = K (cm-1), otherwise ARGS = B(kG)
 c --ARGQ: STRENGTH or FIELD of QUADRUPOLE
 c     If IKSQ = 0 then ARGQ = K2 (cm-2), otherwise ARGQ = B(kG)
 c    SIGN CONVENTIONS:
-c     SOLENOID: K positive => rotate the transverse coordinates about the z-axis in the clockwise direction.
+c     SOLENOID: K positive => rotate the transverse coordinates about the
+c                             z-axis in the clockwise direction.
 c     QUADRUPOLE: K2 positive => focusing in the H plane (x,z)
 C --XLSOL : EFFECTIVE LENGHT OF THE LENS(cm)
 C --RG : APERTURE RADIUS OF THE LENS (cm)
@@ -629,6 +693,27 @@ c if apb(1) ne 0 and if ek1 = 0 the program inserts a default value of ek1 = 0.5
         READ(IN,*)PENT2,RAB2,SK1,SK2,APB(2)
 c if apb(2) ne 0 and  sk1 = 0 the program inserts a default value of sk1 = 0.5
         if(apb(2).ne.0..and.sk1.lt.0.) sk1=0.5
+c trace3d
+c edge
+       kt3t=kt3t+1
+       write(tif,6005) kt3t,kt3t,PENT1,10.*abs(RMO),
+     *  20.*APB(1),EK1,EK2
+6005    format('  nt(',i4,')= 9, a(1,',i4,')=',f9.5,' , ',f9.2,
+     *  ' , ',f9.2,' , ',f9.2,' , ',f9.2)
+       trace3t(kt3t)=tif
+c bend
+       kt3t=kt3t+1
+       write(tif,6006) kt3t,kt3t,ANGL,10.*abs(RMO)
+6006    format('  nt(',i4,')= 8, a(1,',i4,')=',f9.5,' , ',f9.2,
+     *  ' , 0 , 0 ')
+       trace3t(kt3t)=tif
+c edge
+       kt3t=kt3t+1
+       write(tif,6005) kt3t,kt3t,PENT2,10.*abs(RMO),
+     *  20.*APB(2),SK1,SK2
+       trace3t(kt3t)=tif
+c
+
         CALL aimalv (ANGL,RMO,BAIM,XN,XB,EK1,EK2,PENT1,RAB1,
      *                   SK1,SK2,PENT2,RAB2)
         write(16,*) '********************************'
@@ -703,6 +788,11 @@ c      PHARM: harmonic factor (bucher fq.)/(DTL freq.)
        write(16,7777) pv,pdp,prlim
 7777   format(' BUNCHER CAVITY ',/,' Voltage ',E12.5,' MV',/,
      X ' RF Phase ',e12.5,' deg',' Aperture Radius ',e12.5,' cm')
+       kt3t=kt3t+1
+       write(tif,6007) kt3t,kt3t,pv,pdp,pharm
+6007   format('  nt(',i4,')=10, a(1,',i4,')=',f9.5,' , ',f9.2,
+     &        ' , 1 , 1 , ',f5.1)
+       trace3t(kt3t)=tif
        pdp=pdp*pi/180.
        call bunparm(pv,pdp,pharm,prlim)
        write(16,*) '********************************'
@@ -753,7 +843,9 @@ C  AFTER NEWF:define a new frequency (Hertz)
       ENDIF
       write(16,*) 'TYPE CODE:NEWF ************************'
       READ (IN,*) FH1
+c record frequency change in view of trace3d file
       FH1=2.*PI*FH1
+      fid=fh1/fh
 c adjust beam current
       beamc=beamc*fh1/fh
       rflvl=rflvl*fh1/fh
@@ -792,6 +884,13 @@ c      sce10 =2 : call in drifts,accelarating elements
 c      sce10 =3 : call in quads,solenoids,drifts,accelarating elements
 C      BEAM CURRENT IN ma
        READ(IN,*) BEAMC,sce10
+       if(.not.xiset) then
+         kt3h=kt3h+1
+         write(tif,7001) BEAMC
+7001     format(' XI= ',f9.4)
+         trace3h(kt3h)=tif
+         xiset=.true.
+       endif
        if(iscsp.le.1) write(16,*) 'HERSC method  '
        if(iscsp.eq.2) write(16,*) 'SCHERM method  '
        if(iscsp.eq.3) write(16,*) 'SCHEFF method  '
@@ -814,14 +913,8 @@ c---  SCHERM, read third line as dummy
 c --- SCHEFF
 c      initialise the mesh of routine SCHEFF
        if(iscsp.eq.3) then
-cccc        ibcont=.false.
         call schfdyn
        endif
-c --- Special SCHEFF for continuous beam
-ccc       if(iscsp.eq.4) then
-ccc        ibcont=.true.
-ccc	    call schfdyn
-ccc       endif
        if (beamc.eq.0.) ichaes=.FALSE.
        write(16,*) '****************************'
        GO TO 200
@@ -875,8 +968,10 @@ c ---  icor = 0  : no adjustement on the phase offset, otherwise adjustments are
 C   AFTER REJECT: defining limits in X,X',Y,Y',Z,Z'
 c ---- aperture of the Beam
 c ----  WDISP: in half dispersion
-C ------  IF IFW=0 ==> WDISP in (+-) dW/W
-C ------  IF IFW=1 ==> WDISP in (+-) dW (MeV)
+C ------  IF IFW=0  ==> WDISP in (+-) dW/W
+C ------  IF IFW=1  ==> WDISP in (+-) dW (MeV)
+c ------  IF IFW=10 ==> wdisp = dW/W relative to REF
+c ------  IF IFW=11 ==> wdisp = dW relative to REF
 c ----  WPHAS: in half phase (+-) deg
 c ----  WX   : in x-direction (+-) cm
 c ----  WY   : in y-direction (+-) cm
@@ -1083,12 +1178,6 @@ c      'rfq_coeflist.data' list of coefficients
        tvolt=tvolt/100.
        avolt=avolt/100.
        fph=(1.+fph/100.)
-c COLD*************
-c      write(16,5279)nceltot,tvolt,avolt
-c5279  format(' RFQ number of cells: ',i5,/,
-c     *  '  intervane voltage (synchronous particle):',e12.5,' kV',/,
-c     *  '  intervane voltage (bunch)               :',e12.5,' kV')
-c **********************************************************************
        if(ichaes) then
         write(16,*)'***** beam current: ',beamc,' mA'
         if(iscsp.lt.3) then
@@ -1431,9 +1520,91 @@ C  AFTER DCBEAM : select DC or bunched beam
        endif
        write(16,*) '****************************'
        go to 200
+64     CONTINUE
+C  AFTER T3D : request TRACE3D input file
+       T3D=.true.
+       write(16,*) '***********************************'
+       write(16,*) ' TRACE3D INPUT FILE WILL BE WRITTEN'
+       write(16,*) '***********************************'
+       go to 200
 53     CONTINUE
 c AFTER STOP: mandatory, stop the computations
-      write(16,100) kle(ncards)
+       write(16,100) kle(ncards)
+c write trace file (if requested)
+       if(T3D) then
+c write trace file (header part)
+         open(itout,file='for_trace3d.t3d',status='unknown')
+         write(itout,'(A)') trace3h(1)
+         write(itout,1990) kt3t,kt3t,kt3t
+1990     format(' N1= 1, N2= ',I4,', NEL1= 1, NEL2= ',I4,
+     *        ', NP1= 1, NP2= ',I4)
+         do i=2,kt3h
+           write(itout,'(A)') trace3h(i)
+         enddo
+         write(itout,1992)
+1992     format(' PQEXT= 2.5, ICHROM= 0, IBS= 0, SMAX= 2.0')
+         write(itout,1993)
+1993     format(' XM=  15.00, XPM=  50.00, YM=  15.00')
+         write(itout,1994)
+1994     format(' XMI= 15.00, XPMI= 50.00, XMF= 15.00, XPMF= 25.00')
+         write(itout,1995)
+1995     format(' DPM=  90.0, DWM=  50.00, DPP= 90.00')
+         write(itout,1996)
+1996     format(' DPMI= 90.0, DPMF= 35.00, DWMI= 50.0, DWMF= 200.0')
+c write trace file (beam line part)
+c
+c deal with negative drifts (typical within DTLs)
+c if the current drift is negative, then see if there is a drift before or
+c after it. If so, add the 2 drifts, devide by 2 and put this result in both
+c drifts
+         do k=2,kt3t-1
+           trdrifa=0.
+           trdrifb=0.
+           tif=trace3t(k)
+           tifb=trace3t(k-1)
+           tifa=trace3t(k+1)
+           if(tif(12:13).eq.' 1' .and. tifb(12:13).eq.' 1') then
+             read(tif(28:50),*) trdrift
+             if(trdrift.lt.0.) then
+               read(tifb(28:50),*) trdrifb
+               if(trdrifb.gt.0.) then
+                 aver=(trdrifb+trdrift)/2.
+                 trdrifb=aver
+                 trdrift=aver
+c                 write(6,*) k,'beforeb',tif(12:13),trdrift,trdrifb
+                 write(fdrft,555) trdrift
+555              format(f12.6)
+                 tif(28:40)=fdrft
+                 write(fdrft,555) trdrifb
+                 tifb(28:40)=fdrft
+                 trace3t(k)=tif
+                 trace3t(k-1)=tifb
+               endif
+             endif
+           elseif(tif(12:13).eq.' 1' .and. tifa(12:13).eq.' 1') then
+             read(tif(28:50),*) trdrift
+             if(trdrift.lt.0.) then
+               read(tifa(28:50),*) trdrifa
+               if(trdrifa.gt.0.) then
+                 aver=(trdrifa+trdrift)/2.
+                 trdrifa=aver
+                 trdrift=aver
+c                 write(6,*) k,'aftera',tif(12:13),trdrift,trdrifa
+                 write(fdrft,555) trdrift
+                 tif(28:40)=fdrft
+                 write(fdrft,555) trdrifa
+                 tifa(28:40)=fdrft
+                 trace3t(k)=tif
+                 trace3t(k+1)=tifa
+               endif
+             endif
+           endif
+         enddo
+         do k=1,kt3t
+           write(itout,'(A)') trace3t(k)
+         enddo
+         write(itout,'(A)') ' $END'
+       endif
 1010   CONTINUE
        call daves
        call eugwrt
@@ -1495,7 +1666,8 @@ c   files actived in the code
        close(75)
        close(49)
 c  files not actived in the code
-comment       close(13)
+c  SV 24/08/2015
+       close(13)
 cold       close(14)
 comment       close(15)
 comment       close(17)
@@ -1518,19 +1690,25 @@ comment       close(49)
        iitime=ctime(inttim)
        return
        end
+c *******************************************************************
+c       SUBROUTINE rmami
+c activate the time of flight for bunchers, cavities and accelerating
+c gaps
+c - indic and icor:integer flags
+c - itvol and imamin: logical flags
+c - itvol = true =>   the time of flight is activated, otherwise
+c - itvol = false =>  the time of flight is passive
+c - imamin = true =>  adjustments are automatically made on the phase
+c                     of bunchers, cavities and acc. gaps
+c - imamin = false => no adjustments on the phase of accelerating
+c                     elements
+c - indic = 0 => itvol = true, in this case the time of flight is
+c                activited for accelerating elements
+c - indic (<>) 0 => itvol = false and imamin = false
+c - icor = 0 => imamin = false
+c - icor (<>) 0 => imamin = true
+c *******************************************************************
        SUBROUTINE rmami
-c ...................................................................................
-c ---  activate the time of flight for bunchers, cavities and acc. gaps
-c --- indic and icor:integer flags
-c --- itvol and imamin: logical flags
-c ----- itvol = true => the time of flight is activated, otherwise itvol = false => the time of flight is passive
-c ----- imamin = true => adjustments are automatically made on the phase of bunchers, cavities and acc. gaps
-c ----- imamin = false => no adjustments on the phase of accelerating elements
-c ---   indic = 0 => itvol = true, in this case the time of flight is activited for accelerating elements
-c ---   indic (<>) 0 => itvol = false and imamin = false
-c ---   icor = 0 => imamin = false
-c ---   icor (<>) 0 => imamin = true
-c ...................................................................................
        implicit real*8 (a-h,o-z)
        parameter (maxcell1=3000)
        common/tapes/in,ifile,meta
@@ -1557,16 +1735,10 @@ c ..............................................................................
      * /,3x,'tof of the reference: ',e12.5,' deg')
        imamin = .false.
        if(itvol.and.icor.ne.0) imamin = .true.
-c 13/08/2009       if(itvol) then
-c 13/08/2009        if(icor.eq.0) imamin = .false.
-c 13/08/2009        if(icor.ne.0) imamin = .true.
-c 13/08/2009       else
-c 13/08/2009        imamin = .false.
-c 13/08/2009       endif
        if(imamin)
-     * write(16,*)'  adjustments on phase offset of acc. elements'
+     * write(16,*)' Adjustments on phase offset of acc. elements'
        if(.not.imamin)
-     *  write(16,*) 'no adjustments on phase offset'
+     *  write(16,*) ' No adjustments on phase offset'
        RETURN
        END
        SUBROUTINE kick
@@ -1576,7 +1748,7 @@ C     ALIGNMENT DEFAULTS :
 C       HORIZONTAL : XL(cm)
 C       VERTICAL   : YL(cm)
 C     ..................................
-       parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
+       parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/DESA/XL,YL,IFLAG
        common/faisc/f(10,iptsz),imax,ngood
        WRITE(16,100) XL,YL
@@ -1600,7 +1772,7 @@ c  Reshuffles f(i,j) array so that the "good" particles
 c  are on top of the stack.  The number of "good" particles
 c  (ngood) is passed back.
 c  ...............................................................................
-       parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
+       parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        common/faisc/f(10,iptsz),imax,ngood
        common/mcs/imcs,ncstat,cstat(20)
        common/macro/ratei
@@ -1619,7 +1791,11 @@ c  .............................................................................
        goto 1
   5    continue
        ngood=ngood1
-       ratei=float(imax)/float(ngood)
+       if(ngood.eq.0) then
+         ratei=0.
+       else
+         ratei=float(imax)/float(ngood)
+       endif
 c*ets*2015/05/20
        ncstat=1
        cstat(1)=f(9,1)
@@ -1643,6 +1819,7 @@ c*ete*2015/05/20
 comment       write(16,*) '***reshuffle: ',ngood,' good particles'
        if(ngood.lt.10) then
          write(16,*)'Less than 10 particles left, statistics too low'
+         write(6,*)
          write(6,*)'Less than 10 particles left, statistics too low'
          stop
        endif
@@ -1817,10 +1994,7 @@ c  .....................................................................
      X              H1AKI,H1AKIM,H1AKM,H1BKI,H1BKIM,H1BKM
        common/gaus17/H1(17),T1(17)
        FH0=FH/VL
-c   valero 08/08/07
-comment       CGI=ABS(QSC/XMAT)
        CGI=QSC/XMAT
-c   *
        GAM2=GAMI**2
        BETI=SQRT(1. - 1./GAM2 )
        XK1=FH0/BETI
@@ -2010,10 +2184,7 @@ c   ...............................................................
        COMMON/TYPLP2/HAPPI,HBPPI
        common/gaus17/H1(17),T1(17)
        FH0=FH/VL
-c     valero  08/08/07
-comment       CGI=ABS(QSC/XMAT)
        CGI=QSC/XMAT
-c     *
        GAM2=GAMI**2
        BETI=SQRT(1. - 1./GAM2 )
        XK1=FH0/BETI
@@ -2158,10 +2329,7 @@ c  ........................................................................
        COMMON/TYPLPK/YH10PK,YH11PK,YH20PK,YH21PK
        common/gaus17/H1(17),T1(17)
        FH0=FH/VL
-c   valero  08/08/07
-comment       CGI=ABS(QSC/XMAT)
        CGI=QSC/XMAT
-c     *
        GAM2=GAMI**2
        BETI=SQRT(1. - 1./GAM2 )
        XK1=FH0/BETI
@@ -2276,10 +2444,7 @@ c  ...............................................................
      X               YFS0,YFS1,YFS2
        common/gaus17/H1(17),T1(17)
        FH0=FH/VL
-c     valero  08/08/07
-comment       CGI=ABS(QSC/XMAT)
        CGI=QSC/XMAT
-c       *
        GAM2=GAMI**2
        BETI=SQRT(1. - 1./GAM2 )
        XK1=FH0/BETI
@@ -2409,10 +2574,7 @@ c   ....................................................................
      X               YNS0,YNS1,YNS2
        common/gaus17/H1(17),T1(17)
        FH0=FH/VL
-c    valero 08/08/07
-comment       CGI=ABS(QSC/XMAT)
        CGI=QSC/XMAT
-c    *
        DTILK=EQVL
        YNS0=0.
        YNS1=0.
@@ -2514,10 +2676,7 @@ c  ........................................................................
        common/gaus17/H1(17),T1(17)
        GAMCI=0.
        IF(IST.GT.17) RETURN
-c    valero  08/08/07
-comment       CGI=ABS(QSC/XMAT)
        CGI=QSC/XMAT
-c     *
        TILTA2=PHSLIP/(2.*EQVL)
        I=IST
        XCC= EQVL*(1.+H1(I))/2.
@@ -2539,7 +2698,7 @@ c Calculate the bean self fields acting on each particle (called by SCHERM)
 c        Gauss quadrature
 c   ........................................................................
        implicit real*8 (a-h,o-z)
-       parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
+       parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
        COMMON/TTFC/TK,T1K,T2K,SK,S1K,S2K,FH
        COMMON/HERMT/AFXT(22),AFYT(22),AFZT(22)
@@ -2648,7 +2807,7 @@ c   ........................................................................
 c   Computes the R.M.S. of the bunch at positions of space charge computation
 c   .......................................................................
        implicit real*8 (a-h,o-z)
-       parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
+       parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/part/xc(iptsz),yc(iptsz),zc(iptsz)
        COMMON/CGRMS/xsum,ysum,zsum
        common/faisc/f(10,iptsz),imax,ngood
@@ -2694,7 +2853,7 @@ c   ........................................................................
 c   partial R.M.S. (called by SCHERM)
 c   ........................................................................
        implicit real*8 (a-h,o-z)
-       parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
+       parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/part/xc(iptsz),yc(iptsz),zc(iptsz)
        COMMON/CGRMS/xsum,ysum,zsum
        common/faisc/f(10,iptsz),imax,ngood
@@ -2810,7 +2969,6 @@ c   ........................................................................
          Z= (CC+DD)/2.+(DD-CC)*H1(I)/2.
          DENZ=DENSZ(NMAZ,Z,0)
          IF(DENZ.LT.0.) GO TO 13
-comment     ZZ=(Z-CC)*ZRMS/ZRMSS1
          ZZ=(Z-CC)/ZRMSS1
          PRINZ=PRINZ+T1(I)*HERM(2*K,ZZ)*DENZ
        ENDDO
@@ -3010,7 +3168,6 @@ c   ........................................................................
      X     DENDIFR=DENSZ(NMAZ,Z,0)-DENSZ(NMAZ,Z1,0)
          ENDIF
          ZZ=Z-EE
-comment     ZZ=ZZ*ZRMS/ZRMS2
          IF(DENDIFR.LT.0.) DENDIFR=0.
          CODI1=CODI1+H(I)*ZZ*ZZ*DENDIFR
          CODI2=CODI2+H(I)*DENDIFR
@@ -3418,7 +3575,7 @@ c       cog(6) : y-direction (cm)
 c       cog(7) : yp(mrd)
 c   ........................................................................
        implicit real*8 (a-h,o-z)
-       parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
+       parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        common/faisc/f(10,iptsz),imax,ngood
        common/etcha1/dav2(maxcell1,33),ichas(iptsz),chasit
        common/etcom/cog(8),exten(17),fd(iptsz)
@@ -3494,7 +3651,7 @@ c  exten(16): Sum( (dp/p)*y(i) )  (cm), with p of COG
 c  exten(17): Sum( (dp/p)*(dp/p) )  compared to p of COG
 c   ........................................................................
        implicit real*8 (a-h,o-z)
-       parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
+       parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
        COMMON/TTFC/TK,T1K,T2K,SK,S1K,S2K,FH
        common/faisc/f(10,iptsz),imax,ngood
@@ -3554,10 +3711,10 @@ c --- with CHASE
            EXTEN(9)=EXTEN(9)+TRYF*TRPF
            exten(12)=exten(12)+FDPP*TRXF
            exten(13)=exten(13)+FDPP*TRYF
-           exten(14)=exten(14)+FDDP**2
+           exten(14)=exten(14)+FDPP**2
            exten(15)=exten(15)+FFDPP*TRXF
            exten(16)=exten(16)+FFDPP*TRYF
-           exten(17)=exten(17)+FFDDP**2
+           exten(17)=exten(17)+FFDPP**2
            qmoy=qmoy+f(9,i)
            imaxf=imaxf+1
          ENDIF
@@ -3574,10 +3731,10 @@ c --- without CHASE
            EXTEN(9)=EXTEN(9)+TRYF*TRPF
            exten(12)=exten(12)+FDPP*TRXF
            exten(13)=exten(13)+FDPP*TRYF
-           exten(14)=exten(14)+FDDP**2
+           exten(14)=exten(14)+FDPP**2
            exten(15)=exten(15)+FFDPP*TRXF
            exten(16)=exten(16)+FFDPP*TRYF
-           exten(17)=exten(17)+FFDDP**2
+           exten(17)=exten(17)+FFDPP**2
            qmoy=qmoy+f(9,i)
            imaxf=imaxf+1
          ENDIF
@@ -3630,7 +3787,7 @@ C      IDCH = 1:WITH  CHASE TEST
 C      IDCH NE 1:OTHERWISE
 c   ........................................................................
        implicit real*8 (a-h,o-z)
-       parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
+       parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
        COMMON/TTFC/TK,T1K,T2K,SK,S1K,S2K,FH
        common/faisc/f(10,iptsz),imax,ngood
@@ -3755,7 +3912,7 @@ c    YC   : DISPLACEMENT IN THE VERTICAL DIRECTION   (CM)
 c    A    : ROTATION ABOUT THE vertical AXIS         (DEG)
 c .................................................................
        implicit real*8 (a-h,o-z)
-       parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
+       parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
        common/faisc/f(10,iptsz),imax,ngood
        COMMON/QMOYEN/QMOY
@@ -3798,7 +3955,7 @@ c        EOFF(I)      : absolute energy offset of charge state w.r.t. COG (MeV)
 c        ix           : RANDOM NUMBER GENERATOR
 c   ..............................................................................
        implicit real*8 (a-h,o-z)
-       parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
+       parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
        common/faisc/f(10,iptsz),imax,ngood
        COMMON/QMOYEN/QMOY
@@ -3816,7 +3973,6 @@ c   ............................................................................
        imcs=1
        IF(N.EQ.0) then
 c read charge state distribution from file
-cet2010  open(56,file='dynac_cs_in.dst',status='unknown')
          READ(in,3333) myfile(1:80)
 3333     FORMAT(A80)
          write(16,*) 'Charge state distribution file: ',myfile(1:80)
@@ -3880,13 +4036,10 @@ c for each charge state write charge, percentage and energy offset
          enddo
          len=1
 C FIRST TRAJECTORY HAS CHARGE STATE AS DEFINED BY INPUT
-comment         f(9,1)=Q
-cet*2012*march*18         f(9,1)=qst
          PCENT(1)=PCENT(1)/100.
          DO I=2,N
            PCENT(I)=PCENT(I-1)+PCENT(I)/100.
          enddo
-cet*2012*march*18         DO I=2,IMAX
          DO I=1,IMAX
            call rlux(vecx,len)
            XARPHA=VECX(1)
@@ -3903,7 +4056,7 @@ cet*2012*march*18         DO I=2,IMAX
            ENDIF
          ENDDO
        ENDIF
-c*et*2012*March*02 print energy, boro for each charge state
+c print energy, boro for each charge state
        DO k=1,ncstat
          NDP(k)=0
          do j=2,7
@@ -4020,7 +4173,7 @@ c---     if rat.gt.4, use 2 x 6 point array
 c---if opt.lt.0, use 2 x 2 point array regardless of rat
 c  .....................................................................
        implicit real*8 (a-h,o-z)
-       parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
+       parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        dimension r(6),z(6),wr(6),wz(6),xx(3,3),wx(3,3)
        data ((xx(i,j),i=1,3),j=1,3)/.2113248654,0.0,0.0,
      1   .06943184420,
@@ -4080,9 +4233,8 @@ c     evaluate fields at r1,z1 due to ring of charge at r,z.
 c     er=(pi/2)*r/d**3.     ez=(pi/2)*z/d**3.
 c   ..................................................................
        implicit real*8 (a-h,o-z)
-       parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
+       parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        common/fldcom/ rp, zp,pl,opt,nip
-c TEST*****
        r1=rp
        z1=zp
 c **********************************
@@ -4119,7 +4271,7 @@ c   ............................................................................
 c      evaluate elliptic integrals  ( called by SCHEFF)
 c   .............................................................................
        implicit real*8 (a-h,o-z)
-       parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
+       parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        b=1.0-a
        c=log(b)
        ee=1.0+b*(.4630106-0.2452740*c+b*(0.1077857-0.04125321*c))
@@ -4132,7 +4284,7 @@ c  ......................................................................
 c      Skew the right ellipse generated by GEBEAM in the phase plane (x,z)
 c  ........................................................................
        implicit real*8 (a-h,o-z)
-       parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
+       parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
        common/faisc/f(10,iptsz),imax,ngood
        COMMON/QMOYEN/QMOY
@@ -4185,7 +4337,7 @@ C----      2, FRINGE-FIELD, NO ACCELERATION
 C----      3, FRINGE FIELD, ACCELERATION
 c****************************************************************
        implicit real*8 (a-h,o-z)
-       parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
+       parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/RIGID/BORO
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
        COMMON/DYN/TREF,VREF
@@ -4370,7 +4522,7 @@ c         rlimm=rlim*1.e-02
            iflag=.true.
            ilost=ilost+1
            write(16,5556) ip,rm,rlimm
-5556       format(' § particle lost: ',i5,' radius (m): ',e12.5,
+5556       format(' particle lost: ',i5,' radius (m): ',e12.5,
      *           ' barrier (m):',e12.5)
            go to 6525
           endif
@@ -4539,7 +4691,7 @@ c ----- convert wdisp in dp/p
         if(dese.gt.dispr) then
          ilost=ilost+1
          f(8,i)=0.
-         write(16,*) '§ particle lost: ',i,' dp/p: ',dese,
+         write(16,*) ' particle lost: ',i,' dp/p: ',dese,
      *             ' in window :',dispr
          iflag=.true.
         endif
@@ -4677,7 +4829,7 @@ c Calculate the electric field components acting on each particle
 c        Gauss method
 c  .....................................................................
        implicit real*8 (a-h,o-z)
-       parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
+       parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
        COMMON/TTFC/TK,T1K,T2K,SK,S1K,S2K,FH
        COMMON/HERMT/AFXT(22),AFYT(22),AFZT(22)
@@ -4755,7 +4907,7 @@ c   .....................................................................
 C      PRINT OF PARTICLE COORDINATES
 c   .....................................................................
        implicit real*8 (a-h,o-z)
-       parameter(iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
+       parameter(iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
        common/faisc/f(10,iptsz),imax,ngood
        common/etcha1/dav2(maxcell1,33),ichas(iptsz),chasit
@@ -4824,22 +4976,28 @@ c   cog of the bunch
        yav=yav/float(ngood)
        ypav=ypav/float(ngood)
 C write particle coordinates to files,  phase in radian
-       open(58,file=wfile,status='unknown')
-c*et*2014-Apr-10 Change frequency from Hz to MHz
-       write(58,*) ngood,beamc, fh/(2000000.*pi)
-       if (chasit) then
-        write(60,*) ngood,beamc, fh/(2000000.*pi)
-        write(61,*) ngood,beamc, fh/(2000000.*pi)
-       endif
        BEREF=VREF/VL
        GAMREF=1./SQRT(1.-(BEREF*BEREF))
        ENREF=XMAT*GAMREF
+       open(58,file=wfile,status='unknown')
+       if(iflg.lt.100) then
+         write(58,*) ngood,beamc, fh/(2000000.*pi)
+         if (chasit) then
+           write(60,*) ngood,beamc, fh/(2000000.*pi)
+           write(61,*) ngood,beamc, fh/(2000000.*pi)
+         endif
+       else
+         write(58,*) ngood,beamc, fh/(2000000.*pi),enref-xmat
+         if (chasit) then
+           write(60,*) ngood,beamc, fh/(2000000.*pi),enref-xmat
+           write(61,*) ngood,beamc, fh/(2000000.*pi),enref-xmat
+         endif
+       endif
        f2=0.
        f3=0.
        f4=0.
        f5=0.
        do i=1,ngood
-c*et*2010-12-12 match WRBEAM to RDBEAM
          if(irec.eq.2) then
 c coordinates relative to the reference
            eprt=f(7,i)-enref
@@ -4852,10 +5010,7 @@ c coordinates relative to the reference
          if(irec.eq.1) then
 c absolute values for phase and energy
            eprt=f(7,i)-xmat
-c           tprt=fh*f(6,i)
-c ****sv to be compatible with the output files IMPACT
-c           tprt=fh*(f(6,i)-tref)
-            tprt=fh*(f(6,i)-tcog)
+           tprt=fh*(f(6,i)-tcog)
 c **********************************
            f2=f(2,i)
            f3=f(3,i)
@@ -4871,50 +5026,52 @@ c values for phase and energy relative to the COG
            f4=f(4,i)-yav
            f5=f(5,i)-ypav
          endif
-         if(iflg.eq.0)
+         if(iflg.eq.0 .or. iflg.eq.100)
      *    write(58,100)f2,f3/1000.,f4,f5/1000.,tprt,eprt
-         if(iflg.eq.1)
+         if(iflg.eq.1 .or. iflg.eq.101)
      *    write(58,101)f2,f3/1000.,f4,f5/1000.,tprt,eprt,f(1,i)
-         if(iflg.eq.2)
+         if(iflg.eq.2 .or. iflg.eq.102)
      *    write(58,102)f2,f3/1000.,f4,f5/1000.,tprt,eprt,f(9,i)
-         if(iflg.eq.3)
+         if(iflg.eq.3 .or. iflg.eq.103)
      *    write(58,103)f2,f3/1000.,f4,f5/1000.,tprt,eprt,f(9,i),f(1,i)
-         if(iflg.eq.10)
+         if(iflg.eq.10 .or. iflg.eq.110)
      *   write(58,100)f2,f3/1000.,f4,f5/1000.,1.e09*tprt/fh,eprt
-         if(iflg.eq.11)
+         if(iflg.eq.11 .or. iflg.eq.111)
      *   write(58,101)f2,f3/1000.,f4,f5/1000.,1.e09*tprt/fh,eprt,f(1,i)
-         if(iflg.eq.12)
+         if(iflg.eq.12 .or. iflg.eq.112)
      *   write(58,102)f2,f3/1000.,f4,f5/1000.,1.e09*tprt/fh,eprt,f(9,i)
-         if(iflg.eq.13)
+         if(iflg.eq.13 .or. iflg.eq.113)
      *   write(58,103)f2,f3/1000.,f4,f5/1000.,1.e09*tprt/fh,eprt,
      *   f(9,i),f(1,i)
 c  ************** only with CHASE, write to file particles removed
          if (chasit) then
           if(ichxyz(i).eq.0) then
-           if(iflg.eq.0)write(60,100)f2,f3/1000.,f4,f5/1000.,tprt,eprt
-           if(iflg.eq.10)
+           if(iflg.eq.0 .or. iflg.eq.100)
+     *   write(60,100)f2,f3/1000.,f4,f5/1000.,tprt,eprt
+           if(iflg.eq.10 .or. iflg.eq.110)
      *   write(60,100)f2,f3/1000.,f4,f5/1000.,1.e09*tprt/fh,eprt
-           if(iflg.eq.1)write(60,101)f2,f3/1000.,f4,f5/1000.,tprt,eprt
-     *                              ,f(1,i)
-           if(iflg.eq.11)
+           if(iflg.eq.1 .or. iflg.eq.101)
+     *   write(60,101)f2,f3/1000.,f4,f5/1000.,tprt,eprt,f(1,i)
+           if(iflg.eq.11 .or. iflg.eq.111)
      *   write(60,102)f2,f3/1000.,f4,f5/1000.,1.e09*tprt/fh,eprt,f(1,i)
-           if(iflg.eq.2)write(60,101)f2,f3/1000.,f4,f5/1000.,tprt,eprt
-     *                               ,f(9,i)
-           if(iflg.eq.12)
+           if(iflg.eq.2 .or. iflg.eq.102)
+     *   write(60,101)f2,f3/1000.,f4,f5/1000.,tprt,eprt,f(9,i)
+           if(iflg.eq.12 .or. iflg.eq.112)
      *   write(60,102)f2,f3/1000.,f4,f5/1000.,1.e09*tprt/fh,eprt,f(9,i)
           endif
 c  ************** only with CHASE, write to file particles kept
           if(ichxyz(i).eq.1) then
-           if(iflg.eq.0)write(61,100)f2,f3/1000.,f4,f5/1000.,tprt,eprt
-           if(iflg.eq.10)
+           if(iflg.eq.0 .or. iflg.eq.100)
+     *   write(61,100)f2,f3/1000.,f4,f5/1000.,tprt,eprt
+           if(iflg.eq.10 .or. iflg.eq.110)
      *   write(61,100)f2,f3/1000.,f4,f5/1000.,1.e09*tprt/fh,eprt
-           if(iflg.eq.1)write(61,101)f2,f3/1000.,f4,f5/1000.,tprt,eprt
-     *                              ,f(1,i)
-           if(iflg.eq.11)
+           if(iflg.eq.1 .or. iflg.eq.101)
+     *   write(61,101)f2,f3/1000.,f4,f5/1000.,tprt,eprt,f(1,i)
+           if(iflg.eq.11 .or. iflg.eq.111)
      *   write(61,102)f2,f3/1000.,f4,f5/1000.,1.e09*tprt/fh,eprt,f(1,i)
-           if(iflg.eq.2)write(61,101)f2,f3/1000.,f4,f5/1000.,tprt,eprt
-     *                               ,f(9,i)
-           if(iflg.eq.12)
+           if(iflg.eq.2 .or. iflg.eq.102)
+     *   write(61,101)f2,f3/1000.,f4,f5/1000.,tprt,eprt,f(9,i)
+           if(iflg.eq.12 .or. iflg.eq.112)
      *   write(61,102)f2,f3/1000.,f4,f5/1000.,1.e09*tprt/fh,eprt,f(9,i)
           endif
          endif
@@ -4922,10 +5079,8 @@ c  ************** only with CHASE, write to file particles kept
        close(58)
 100    format(6(e13.6,1x))
 101    format(7(e13.6,1x))
-comment101    format(7(F16.11,1x))
 102    format(7(e13.6,1x))
 103    format(8(e13.6,1x))
-c200    format(F4.0)
        return
        end
        SUBROUTINE gausse
@@ -5555,9 +5710,7 @@ c        y-direction
            if(s3.ne.0.) then
 c       it=2*(it1+it2+it3)+1
              pwas3=apwas3
-c*2012*apw3as3 pas defini!
-c*21-Apr-2014*apw3as3 pas defini!
-             pw3as3=apw3as3
+             pw3as3=apwas3
            endif
            ey=eiip(it1,it2,it3)
 c        z-direction
@@ -5871,7 +6024,7 @@ c        z-direction
            if(s3.ne.0.) pwas3=apwas3
 c       it=2*(it1+it2+it3)+1
            ez=eiii(it1,it2,it3)
-           return
+          return
          endif
          if(itpar.eq.8) then
 c       I I I and  b<a,c
@@ -6862,7 +7015,7 @@ c   term T(2t3+1,2t2+1,2t1+1,j1) in table 41
              jm1=jm1+1
              jj1=jj1+1
            enddo
-           tipi=tt1*ck(k)+tipi
+           tiii=tt1*ck(k)+tiii
            kk=kk+1
          enddo
          return
@@ -8591,7 +8744,7 @@ c  .............................................................................
 C      Particles too far from the C. of G. of the bunch are eliminated
 c      for the Almn computations with HERSC
 c  ..............................................................................
-       parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
+       parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        common/faisc/f(10,iptsz),imax,ngood
        common/consta/vl,pi,xmat,rpel,qst
        common/dyn/tref,vref
@@ -8698,7 +8851,7 @@ c  ....................................................................
 c    the significant Hermite coefficients (called by HERSC)
 c  ....................................................................
        implicit real*8 (a-h,o-z)
-       parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
+       parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        common/faisc/f(10,iptsz),imax,ngood
        common/consta/vl,pi,xmat,rpel,qst
        common/const/pi2,sqpi,pwtpi,sqpi2,sq2pi
@@ -8986,7 +9139,7 @@ c  ........................................................................
 c       space charge method: HERSC
 c  ........................................................................
        implicit real*8 (a-h,o-z)
-       parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
+       parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        common/faisc/f(10,iptsz),imax,ngood
        common/consta/vl,pi,xmat,rpel,qst
        common/sc3/beamc,scdist,sce10,cplm,ectt,apl,ichaes,iscsp
@@ -9016,6 +9169,7 @@ c  ........................................................................
        common/macro/ratei
        common/tapes/in,ifile,meta
        common/posc/xpsc
+       common/locher/rx,ry,rz,nx,ny,nz
        logical ichaes,iesp
        dimension exk(15,15,30),eyk(15,15,30),ezk(15,15,30)
 c   pi2=pi*pi, sqpi=(pi/2)**3/2 , pwtpi=(2*pi)**3/2 ,sqpi2=sqrt(pi/2.)
@@ -9134,16 +9288,16 @@ c   qmpart=macro-charge
          wcg=0.
          do i=1,ngood
           wcg=wcg+f(7,i)
-       enddo
-       wcg=wcg/float(ngood)
-       gcg=wcg/xmat
-       gmoy=gcg
-       bcg=sqrt(1.-1./(gcg*gcg))
-       bmoy=bcg
+         enddo
+         wcg=wcg/float(ngood)
+         gcg=wcg/xmat
+         gmoy=gcg
+         bcg=sqrt(1.-1./(gcg*gcg))
+         bmoy=bcg
 c  relativistic correction
-       cmacro=cmacro/gmoy
+         cmacro=cmacro/gmoy
 c
-       cmacrxy=cmacro/(bmoy*bmoy*gmoy*gmoy)
+         cmacrxy=cmacro/(bmoy*bmoy*gmoy*gmoy)
 c   beam self-fields at the nodes of the mesh
          imail=0
          rcy=-ry
@@ -9812,7 +9966,7 @@ c  .............................................................................
 c  analysis of emittance by elimination of remote particles in  z-direction
 c  ...................................................................................
        implicit real*8 (a-h,o-z)
-       parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
+       parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/TTFC/TK,T1K,T2K,SK,S1K,S2K,FH
        COMMON/FENE/WDISP,WPHAS,WX,WY,RLIM,IFW
        common/faisc/f(10,iptsz),imax,ngood
@@ -9948,7 +10102,7 @@ c  .............................................................................
 c  analysis of emittance by elimination of remote particles in x-direction
 c  ...................................................................................
        implicit real*8 (a-h,o-z)
-       parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
+       parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/TTFC/TK,T1K,T2K,SK,S1K,S2K,FH
        COMMON/FENE/WDISP,WPHAS,WX,WY,RLIM,IFW
        common/faisc/f(10,iptsz),imax,ngood
@@ -10087,7 +10241,7 @@ c  .............................................................................
 c  analysis of emittance by elimination of remote particles (read the parameters)
 c  ...................................................................................
        implicit real*8 (a-h,o-z)
-       parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
+       parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        common/tapes/in,ifile,meta
        common/etchas/fractx,fracty,fractl
        common/etcha1/dav2(maxcell1,33),ichas(iptsz),chasit
@@ -10110,7 +10264,7 @@ c  .............................................................................
 c  analysis of emittance by elimination of remote particles in y-direction
 c  ...................................................................................
        implicit real*8 (a-h,o-z)
-       parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
+       parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/TTFC/TK,T1K,T2K,SK,S1K,S2K,FH
        COMMON/FENE/WDISP,WPHAS,WX,WY,RLIM,IFW
        common/faisc/f(10,iptsz),imax,ngood
@@ -10248,7 +10402,7 @@ c  ...........................................................................
 c     correction over the beam generated by MONTE
 c  ...........................................................................
        implicit real*8 (a-h,o-z)
-       parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
+       parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON /COM4/CORD(IPTSZ,6)
        DIMENSION A(6,6),B(6,6),C(6,6),D(6),E(6),F(6),G(6)
        DO I =1,6
@@ -10365,7 +10519,7 @@ C   Divide by 100. to convert from cm to meters
 c    called by SCHEFF or SCHERM
 c   ..................................................................
        implicit real*8 (a-h,o-z)
-       parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
+       parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        common/faisc/f(10,iptsz),imax,ngood
        COMMON/QMOYEN/QMOY
        COMMON/PART/XC(iptsz),YC(iptsz),ZC(iptsz)
@@ -10452,7 +10606,7 @@ c   ..................................................................
 c     Called by SCHERMI when the bunch can be represented
 c      by a simple ellipse in the longitudinal direction
 c   ..................................................................
-       parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
+       parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/TTFC/TK,T1K,T2K,SK,S1K,S2K,FH
        COMMON/HERMT/AFXT(22),AFYT(22),AFZT(22)
        COMMON/HERMD/AFXM(20),AFYM(20),AFZM(20)
@@ -10676,7 +10830,7 @@ c    SCHERM space charge method
 c     See NIM A 309(1996) 21-40
 c   ..................................................................
        implicit real*8 (a-h,o-z)
-       parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
+       parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/TTFC/TK,T1K,T2K,SK,S1K,S2K,FH
        COMMON/HERMT/AFXT(22),AFYT(22),AFZT(22)
        COMMON/HERMD/AFXM(20),AFYM(20),AFZM(20)
@@ -11089,7 +11243,7 @@ c
 c    REMARK : After INPUT the reference coincides with the c.o.g.
 c   ............................................................................
        implicit real*8 (a-h,o-z)
-       parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
+       parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
        common/speda/dave,idave
        COMMON/TTFC/TK,T1K,T2K,SK,S1K,S2K,FH
@@ -11110,6 +11264,9 @@ c   ............................................................................
        common/tof/tofini
        common/strip/atm,qs,atms,ths,qop,sqst(6),anp,nqst
        common/mcs/imcs,ncstat,cstat(20)
+       common/trace3d/trace3h(100),trace3t(maxcell1),tif,kt3h,kt3t,fid
+       common/trace3e/tracebi(6),traceei(3)
+       character*128 trace3h,trace3t,tif
        logical dave
 c       dimension foo(9)
         DAVE=.FALSE.
@@ -11132,6 +11289,28 @@ c --- xmat= rest mass
        tofini=tofini*pi/(180.*fh)
        gdep=enedep/xmat+1.
        bdep=sqrt(1.-1./(gdep*gdep))
+c
+       tracebi(6)=tracebi(6)*sqrt(atm)
+       write(tif,901) (tracebi(i),i=1,6)
+901    format(' BEAMI(1)= ',5(f12.6,1x),f12.4)
+       kt3h=kt3h+1
+       trace3h(kt3h)=tif
+       traceei(3)=traceei(3)/sqrt(atm)
+       write(tif,902) (traceei(i),i=1,3)
+902    format(' EMITI(1)= ',f12.6,1x,f12.6,1x,f12.4)
+       kt3h=kt3h+1
+       trace3h(kt3h)=tif
+c
+c       write(tif,903) uem,int(qst),fhinit/2./pi/1.E6
+c903    format(' ER= ',E16.7,', Q= ',I2,', FREQ= ',E14.7)
+       write(tif,903) uem*atm/qst,fhinit/2./pi/1.E6
+903    format(' ER= ',E16.7,', Q=1 FREQ= ',E14.7)
+       kt3h=kt3h+1
+       trace3h(kt3h)=tif
+       write(tif,7001) enedep/qst
+7001   format(' W= ',f12.4)
+       kt3h=kt3h+1
+       trace3h(kt3h)=tif
 c fo(index,i), index=1 initial particle # ,
 c              index=2 x
 c              index=3 xp
@@ -11244,7 +11423,7 @@ c   ITWISS=1   read Twiss parameters for emittance definition
 c   ITWISS<>1  reading emittance bounderies for upright ellips
 c  .....................................................................................
        implicit real*8 (a-h,o-z)
-       parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
+       parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/DCSPA/IESP
        COMMON/TTFC/TK,T1K,T2K,SK,S1K,S2K,FH
        COMMON /COM4/CORD(IPTSZ,6)
@@ -11261,10 +11440,13 @@ c  .............................................................................
        COMMON/DYNI/VREFI,TREFI,FHINIT
        common/speda/dave,idave
        common/ragau/ntir
-c §§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§
+c********************************************
 c v28/04/2015
        common/fcont/ifcont
        logical ifcont
+       common/trace3d/trace3h(100),trace3t(maxcell1),tif,kt3h,kt3t,fid
+       common/trace3e/tracebi(6),traceei(3)
+       character*128 trace3h,trace3t,tif
        logical iesp,chasit,dave
 c       dimension fn(9,iptsz),foo(9),so(6),vecx(1)
        dimension vecx(1)
@@ -11284,22 +11466,26 @@ C    X X' Y Y' Z' Z
        read(in,*)(CENTRE(J),J=2,5),CENTRE(1),CENTRE(6)
        if (itwiss.ne.1) then
          read(in,*)YMAX,TMAX,ZMAX,PMAX,DMAX,TTMAX
+         kt3h=kt3h+1
+         trace3h(kt3h)='ERROR: GEBEAM ITWISS.NE.1 not yet implemented'
        else
          read(in,*) alphax,betax,emitx
          read(in,*) alphay,betay,emity
          read(in,*) alphaz,betaz,emitz
          gammax=(1.+alphax*alphax)/betax
          gammay=(1.+alphay*alphay)/betay
-         gammaz=(1.+alphaz*alphaz)/betaz
          ymax=0.1*sqrt(emitx/gammax)
          tmax=sqrt(emitx*gammax)
          zmax=0.1*sqrt(emity/gammay)
          pmax=sqrt(emity*gammay)
-         dmax=0.001*sqrt(emitz*gammaz)
-         ttmax=pi*sqrt(emitz/gammaz)/(fh*180.)
          twissa(1)=-alphax*ymax
          twissa(2)=-alphay*zmax
-         twissa(3)=alphaz*sqrt(emitz/gammaz)
+         if(loi.ne.5) then
+           gammaz=(1.+alphaz*alphaz)/betaz
+           dmax=0.001*sqrt(emitz*gammaz)
+           ttmax=pi*sqrt(emitz/gammaz)/(fh*180.)
+           twissa(3)=alphaz*sqrt(emitz/gammaz)
+         endif
          if(loi.ge.5) then
            dmax=alphaz
            twissa(3)=0.
@@ -11308,6 +11494,16 @@ C    X X' Y Y' Z' Z
          if(loi.eq.6) then
            sig=betaz
          endif
+c store parameters for trace3d, write them in ENTRE
+         tracebi(1)=alphax
+         tracebi(2)=betax
+         tracebi(3)=alphay
+         tracebi(4)=betay
+         tracebi(5)=alphaz
+         tracebi(6)=betaz
+         traceei(1)=emitx
+         traceei(2)=emity
+         traceei(3)=emitz
        endif
 c --- beam centre is activated in SUBROUTINE entre
        cph=centre(6)*fh*180/pi
@@ -11964,7 +12160,7 @@ c   ............................................................................
 c    read the coordinates of particles from file
 c   ............................................................................
        implicit real*8 (a-h,o-z)
-       parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
+       parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
        COMMON/DAVCOM/dav1(maxcell1,40),davtot,iitem(maxcell1),idav
        common/speda/dave,idave
@@ -11983,15 +12179,21 @@ c   ............................................................................
        common/strip/atm,qs,atms,ths,qop,sqst(6),anp,nqst
        logical dave
        read(in,*) iflag
-       if(iflag.eq.0)write(16,*)'Standard file, phase in rad'
-       if(iflag.eq.1)write(16,*)'File with charge state and rest ',
+       if(iflag.eq.0 .or. iflag.eq.100)
+     *   write(16,*)'Standard file, phase in rad'
+       if(iflag.eq.1 .or. iflag.eq.101)
+     *   write(16,*)'File with charge state and rest ',
      *               'mass, phase in rad'
-       if(iflag.eq.2)write(16,*)'File with several charge states',
+       if(iflag.eq.2 .or. iflag.eq.102)
+     *   write(16,*)'File with several charge states',
      *               ', phase in rad'
-       if(iflag.eq.10)write(16,*)'Standard file, phase in ns'
-       if(iflag.eq.11)write(16,*)'File with charge state and rest',
+       if(iflag.eq.10 .or. iflag.eq.110)
+     *   write(16,*)'Standard file, phase in ns'
+       if(iflag.eq.11 .or. iflag.eq.111)
+     *   write(16,*)'File with charge state and rest',
      *               ' mass, phase in ns'
-       if(iflag.eq.12)write(16,*)'File with several charge states',
+       if(iflag.eq.12 .or. iflag.eq.112)
+     *   write(16,*)'File with several charge states',
      *               ', phase in ns'
 c ---  input: freq.(MHertz) tofini: phase offset (deg) to be applied both to the reference and the beam
        read(in,*) freq,tofini
@@ -12067,7 +12269,7 @@ c   ............................................................................
 c  convert the particles  in DYNAC units
 c   ............................................................................
        implicit real*8 (a-h,o-z)
-       parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
+       parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        common/etcom/cog(8),exten(17),fd(iptsz)
        COMMON/SHIF/DTIPH,SHIFT
        COMMON/TTFC/TK,T1K,T2K,SK,S1K,S2K,FH
@@ -12229,7 +12431,7 @@ c9999   format(6(2x,e12.5))
        END
        SUBROUTINE stapl(zpos)
        implicit real*8 (a-h,o-z)
-       parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
+       parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        common/pltprf/sprfx(3000),sprfy(3000),sprfl(3000),sprfw(3000),
      *               sprfp(3000),SPRNG(3000),iprf
        common/pltprf1/sprww(3000),eprfw(3000),eprnx(3000),eprny(3000),
@@ -12371,7 +12573,6 @@ c  tmin(ns) tmax(ns) pmin(deg) pmax(deg) wmin(MeV) wmax(MeV) Dxref(m) Dyref(m) D
      *        5x,'tmin(s)',6x,'tmax(s)',5x,'phmin(deg)',
      *        4x,'phmax(deg)',3x,'Wmin(MeV)',4x,'Wmax(MeV)',
      *        4x,'Dx(m)',8x,'Dy(m)')
-c     *        4x,'Drx(m)',8x,'Dry(m)',4x,'Dcx(m)',8x,'Dcy(m)')
        iprf1=iprf-1
        do i=1,iprf1
 c     x and y: cm-->mm
@@ -12403,7 +12604,7 @@ c      etcell(13)= actual length(cm), etcell(14)=TPP
 c      etcell(15)=frequency (MHz), etcell(16)=field factor
 c   ............................................................................
        implicit real*8 (a-h,o-z)
-       parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
+       parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/TTFS/DYNT(MAXCELL),DYNTP(MAXCELL),DYNTPP(MAXCELL),
      *   DYNE0(MAXCELL),DYNPH(MAXCELL),DYNLG(MAXCELL),FHPAR,NC
        COMMON/POSI/IST
@@ -12449,6 +12650,8 @@ C      TRANSIT TIME COEFFICIENTS
        common/tofev/ttvols
 C*bugfix*2010_07_03 : next line was missing; caused z=0 in envelope plot
        common/pstpla/tstp
+       common/trace3d/trace3h(100),trace3t(maxcell1),tif,kt3h,kt3t,fid
+       character*128 trace3h,trace3t,tif
 c --- synchronous particle:
 c *****     DWRFS(MeV): energy gain
 c *****     SPHRFS(rad): phase jump
@@ -12478,6 +12681,25 @@ c allow for print out on terminal of gap# on one and the same line
      *        '      Accelerating gap    :',i5,a1,$)
        WRITE(16,*)'ACCELERATING GAP N :',NDTL
        read(IN,*) (etcell(iet),iet=1,16)
+c trace3d
+c split cell into drif-gap-drift
+       kt3t=kt3t+1
+       write(tif,6001) kt3t,kt3t,10.*etcell(4)/2.
+6001   format('  nt(',i4,')= 1, a(1,',i4,')=',f12.6)
+       trace3t(kt3t)=tif
+c
+       tre0tl=etcell(11)*etcell(5)*etcell(4)/100.
+       trphase=etcell(12)
+       kt3t=kt3t+1
+       write(tif,6005) kt3t,kt3t,tre0tl,trphase,fid
+6005   format('  nt(',i4,')=10, a(1,',i4,')=',f9.5,' , ',f9.2,
+     &        ', 0., 1.,',f5.3,',')
+       trace3t(kt3t)=tif
+c
+       kt3t=kt3t+1
+       write(tif,6001) kt3t,kt3t,10.*etcell(4)/2.
+       trace3t(kt3t)=tif
+c end trace3d drift-gap-drift
        FH=etcell(15)
        FAKT=etcell(16)
        if (FAKT.eq.0.) FAKT=1.e-12
@@ -12900,7 +13122,7 @@ c      ETGAP or RESTAY ==> GAP
 c        dynamics in the accelerating element
 c   ............................................................................
        implicit real*8 (a-h,o-z)
-       parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
+       parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/TTFS/DYNT(MAXCELL),DYNTP(MAXCELL),DYNTPP(MAXCELL),
      *   DYNE0(MAXCELL),DYNPH(MAXCELL),DYNLG(MAXCELL),FHPAR,NC
        COMMON/POSI/IST
@@ -13158,7 +13380,7 @@ c         call shuffle
        SUBROUTINE cogetc
 c      COG of TOF with regard the various charge states
        implicit real*8 (a-h,o-z)
-       parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
+       parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        common/faisc/f(10,iptsz),imax,ngood
        common/cgtof/charm(20),cgtdv(20),nbch(20),netac
        itot=0
@@ -13204,7 +13426,7 @@ c      RESTAY or ETGAP ==> GAP ==> BOUCLE
 c      compute the dynamics of the fictitiuos reference and of particles
 c   ............................................................................
        implicit real*8 (a-h,o-z)
-       parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
+       parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/POSI/IST
        COMMON/MIDGAP/ENMIL,VAPMI
        COMMON/AZMTCH/DLG,XMCPH,XMCE
@@ -13932,7 +14154,7 @@ c   ............................................................................
 C          BUNCHER  (NO SPACE CHARGE EFFECT)
 c   ............................................................................
        implicit real*8 (a-h,o-z)
-       parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
+       parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/RIGID/BORO
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
        COMMON/DYN/TREF,VREF
@@ -14159,7 +14381,7 @@ c   ............................................................................
 c  change the longitudinal position of the reference
 c   ............................................................................
        implicit real*8 (a-h,o-z)
-       parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
+       parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/TTFC/TK,T1K,T2K,SK,S1K,S2K,FH
        COMMON/DYN/TREF,VREF
        common/faisc/f(10,iptsz),imax,ngood
@@ -14279,7 +14501,7 @@ c ------ the new reference is:
        IMPLICIT REAL*8 (A-H,O-Z)
 C---- TRANSFORM BEAM THRU THIN STEERER
 C     4/15/14 - Daniel Alt: Added electrostatic steerers.
-       parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
+       parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/TTFC/TK,T1K,T2K,SK,S1K,S2K,FH
        COMMON/DYN/TREF,VREF
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
@@ -14392,7 +14614,7 @@ c  exten(9) : Sum( y*yp )   cm*mrad
 c
 c  ......................................................................
        implicit real*8 (a-h,o-z)
-       parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
+       parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        common/etchas/fractx,fracty,fractl
        common/dyn/tref,vref
        common/faisc/f(10,iptsz),imax,ngood
@@ -14669,24 +14891,30 @@ c*et*2012*March*02 print energy, boro etc for each charge state in long
            endif
          ENDDO
          DO k=1,ncstat
-           do j=2,7
-             foo(k,j)=foo(k,j)/float(NDP(k))
-           enddo
+           if(NDP(k).ne.0) then
+             do j=2,7
+               foo(k,j)=foo(k,j)/float(NDP(k))
+             enddo
+           endif
          ENDDO
          write(16,*) ' Q     Particles  beta       Wcog(MeV)',
      *     '    Wcog(MeV/u)  Pcog(kG.cm)     TOF(deg)   TOF(sec)   ',
      *     '     X_avg(cm)     Xp_avg(mrad)  ',
      *     'Y_avg(cm)     Yp_avg(mrad)'
          DO k=1,ncstat
-           gref=foo(k,7)/xmat
-           bref=sqrt(1.-1./(gref*gref))
-           xe=(gref-1.)*xmat
+           if(NDP(k).ne.0) then
+             gref=foo(k,7)/xmat
+             bref=sqrt(1.-1./(gref*gref))
+             xe=(gref-1.)*xmat
 c   magnetic rigidity
-           bor=3.3356*xmat*bref*gref/cstat(k)
-           write(16,'(2x,f5.2,3x,I5,5x,F9.7,
-     *      5(1x,E12.5),1x,4(F12.5,2x))')
-     *     cstat(k),NDP(k),bref,xe,xe/atm,bor,foo(k,6)*180.*fh/pi,
-     *     foo(k,6),foo(k,2),foo(k,3),foo(k,4),foo(k,5)
+             bor=3.3356*xmat*bref*gref/cstat(k)
+             write(16,'(2x,f5.2,3x,I5,5x,F9.7,
+     *       5(1x,E12.5),1x,4(F12.5,2x))')
+     *       cstat(k),NDP(k),bref,xe,xe/atm,bor,foo(k,6)*180.*fh/pi,
+     *       foo(k,6),foo(k,2),foo(k,3),foo(k,4),foo(k,5)
+           else
+             write(16,'(2x,f5.2,3x,I5)') cstat(k),NDP(k)
+           endif
          ENDDO
          write(16,*)
        endif
@@ -14707,7 +14935,7 @@ c  exten(8) : Sum( x(i)*xp(i) )   cm*mrad
 c  exten(9) : Sum( y(i)*yp(i) )   cm*mrad
 c  ......................................................................
        implicit real*8 (a-h,o-z)
-       parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
+       parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/DYN/TREF,VREF
        COMMON/TTFC/TK,T1K,T2K,SK,S1K,S2K,FH
        common/faisc/f(10,iptsz),imax,ngood
@@ -14795,7 +15023,7 @@ c  ......................................................................
 c   tilt and shift of the beam with regard to the cog
 c  ......................................................................
        implicit real*8 (a-h,o-z)
-       parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
+       parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
        COMMON/DAVCOM/dav1(maxcell1,40),davtot,iitem(maxcell1),idav
        COMMON/TILT/TIPHA,TIX,TIY,SHIFW,SHIFP
@@ -14985,7 +15213,7 @@ c  ......................................................................
 c   Change the positions of the beam in the phase planes
 c  ......................................................................
        implicit real*8 (a-h,o-z)
-       parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
+       parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
        COMMON/DAVCOM/dav1(maxcell1,40),davtot,iitem(maxcell1),idav
        COMMON/TILT/TIPHA,TIX,TIY,SHIFW,SHIFP
@@ -15184,7 +15412,7 @@ c ..........................................................
 c   computes a physical beam acceptance at the entrance of the machine
 c ..........................................................
        implicit real*8 (a-h,o-z)
-       parameter(iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
+       parameter(iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/TTFC/TK,T1K,T2K,SK,S1K,S2K,FH
        COMMON/TAPES/IN,IFILE,META
        common/faisc/f(10,iptsz),imax,ngood
@@ -15308,7 +15536,7 @@ c ..........................................................
 C      STORAGE OF PARTICLE COORDINATES FOR PLOTS
 c ..........................................................
        implicit real*8 (a-h,o-z)
-       parameter(iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
+       parameter(iptsz=100002,maxcell=3000,maxcell1=3000)
        CHARACTER*80 TEXT,PATITL
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
        COMMON/TTFC/TK,T1K,T2K,SK,S1K,S2K,FH
@@ -15677,7 +15905,7 @@ c ..........................................................
 c      routine for plots
 c ..........................................................
        implicit real*8 (a-h,o-z)
-       parameter(iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
+       parameter(iptsz=100002,maxcell=3000,maxcell1=3000)
        CHARACTER*80 TEXT,PATITL
        COMMON/TTFC/TK,T1K,T2K,SK,S1K,S2K,FH
        common/faisc/f(10,iptsz),imax,ngood
@@ -15894,7 +16122,7 @@ c    or it read in the command list on the form of a Fourier series expansion
 c   ............................................................................
        implicit real*8 (a-h,o-z)
 C      ****************************************************
-       parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
+       parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/TTFS/DYNT(MAXCELL),DYNTP(MAXCELL),DYNTPP(MAXCELL),
      *   DYNE0(MAXCELL),DYNPH(MAXCELL),DYNLG(MAXCELL),FHPAR,NC
        COMMON/POSI/IST
@@ -16467,6 +16695,7 @@ c.....................................................................
        common/spl/xspl(4000),yspl(4000),s(5000),p(5000),q(5000)
        common/mode/eflvl,rflvl
        common/cavnum1/xnh,xpas,ffield,npt
+       common/kcell/avrg(15)
        logical ifield
        part=1.
        ifield=.true.
@@ -16486,6 +16715,12 @@ cnov02       att=att*(1.+eflvl)
        enddo
 10     continue
        npt=npt-1
+c **************************************
+        tdep=xspl(1)
+        do it=1,npt
+         xspl(it)=xspl(it)-tdep
+        enddo
+c **************************************
        call deriv2(npt)
        xpas=(xspl(3)-xspl(2))/part
        xcour=xspl(1)
@@ -16530,11 +16765,91 @@ c       write(16,*) ' ******Read the field of the cavity************'
        write(16,100) ncell,flength,att,fhc
 100    format(' Number of cells: ',i3,' field length: ',e12.5,'cm',
      *        ' field factor: ',e12.5,' frequency: ',e12.5,' Hz')
+c ******************************************
+c  sv 28/10/2015
+       call celint
+c *****************************************
        do i=1,ncell
-         write(16,200) i,xlim(i),xlim(i+1)
+         write(16,200) i,xlim(i),xlim(i+1),avrg(i)
        enddo
 200    format(' Cell number ',i3,' lower limit ',e12.5,' cm ',
-     *              ' upper limit ',e12.5,' cm')
+     *        ' upper limit ',e12.5,' cm ','average ',e12.5,' cm')
+       return
+       end
+       SUBROUTINE celint
+c ********************************************
+c   average position in the cell
+c ********************************************
+       implicit real*8 (a-h,o-z)
+       common/cavnum1/xnh,xpas,fmult,npt
+       common/consta/vl,pi,xmat,rpel,qst
+       common/spl/xspl(4000),yspl(4000),s(5000),p(5000),q(5000)
+       common/cell/yf(10000),xf(10000),xlim(15),flength,fhc,att,
+     *             npoint(15),ncell
+       common/kcell/avrg(15)
+       xlpos=0.
+       isce=20
+       xlcum=0.
+      do inc=1,ncell
+       xint1=0.
+       xint2=0.
+        xnh=0.
+        xlcel=xlim(inc+1)-xlim(inc)
+        xlpos=xlpos+xlcel
+        xpas=xlcel/float(isce)
+        xnhc=0
+       estop=xpas/10.
+       istop=0
+20     continue
+        xpat=xnhc*xpas
+        if(xpat.lt.(xlcel-estop)) then
+         z0=xnh*xpas
+         z1=(xnh+0.20)*xpas
+         z2=(xnh+0.40)*xpas
+         z3=(xnh+0.60)*xpas
+         z4=(xnh+0.80)*xpas
+         z5=(xnh+1.00)*xpas
+         fpos0=xnh*xpas+xlcum
+         fpos1=(xnh+0.20)*xpas+xlcum
+         fpos2=(xnh+0.40)*xpas+xlcum
+         fpos3=(xnh+0.60)*xpas+xlcum
+         fpos4=(xnh+0.80)*xpas+xlcum
+         fpos5=(xnh+1.0)*xpas+xlcum
+         tspl0=spline(npt,fpos0)
+         tspl1=spline(npt,fpos1)
+         tspl2=spline(npt,fpos2)
+         tspl3=spline(npt,fpos3)
+         tspl4=spline(npt,fpos4)
+         tspl5=spline(npt,fpos5)
+         xspl0=z0*tspl0
+         xspl1=z1*tspl1
+         xspl2=z2*tspl2
+         xspl3=z3*tspl3
+         xspl4=z4*tspl4
+         xspl5=z5*tspl5
+c     integral E(z)*z over the cell
+         tspl11=19.*xspl0+75.*xspl1+50.*xspl2+50.*xspl3+75.*xspl4
+     *     +19.*xspl5
+         xi1=xpas/288. * tspl11
+         xint1=xint1+xi1
+         xspl0=tspl0
+         xspl1=tspl1
+         xspl2=tspl2
+         xspl3=tspl3
+         xspl4=tspl4
+         xspl5=tspl5
+c     integral E(z) over the cell
+         tspl2=19.*xspl0+75.*xspl1+50.*xspl2+50.*xspl3+75.*xspl4
+     *     +19.*xspl5
+         xi2=xpas/288. * tspl2
+         xint2=xint2+xi2
+         xnh=xnh+1.
+         xnhc=xnhc+1
+         go to 20
+        endif
+        avrg(inc)=xint1/xint2+xlcum
+        xlcum=xlcum+xlcel
+       enddo
        return
        end
        FUNCTION fcav(xc,nrc)
@@ -16544,8 +16859,13 @@ c  .......................................................................
        implicit real*8 (a-h,o-z)
        common/cell/yf(10000),xf(10000),xlim(15),flength,fhc,att,
      *             npoint(15),ncell
+       common/fcv/jsav
        fcav=0.
-       if(nrc.eq.1) j=1
+       if(nrc.eq.1) then
+         j=1
+       else
+         j=jsav
+       endif
        do k=1,npoint(nrc)
          tk=xc-xf(j)
          if(tk.eq.0.)then
@@ -16561,6 +16881,7 @@ c  .......................................................................
          j=j+1
        enddo
 10     continue
+       jsav=j
        return
        end
        FUNCTION ta0(betr,nrc)
@@ -16573,6 +16894,7 @@ c  .......................................................................
      *             npoint(15),ncell
        common/gaus13/H(13),T(13)
        common/gaus17/H1(17),T1(17)
+       common/fcv/jsav
        xk=fhc*2.*pi/(betr*vl)
        ar=0.
        xc1=xlim(nrc)
@@ -16604,7 +16926,6 @@ c  .......................................................................
          do i=1,ncell
            tta0=tta0+ta0(betr,i)
          enddo
-         return
        else
          xk=fh/(betr*vl)
          xmin(1)=0.
@@ -16632,6 +16953,7 @@ c  .......................................................................
          IPAS=IPAS+1
          GO TO 101
        endif
+       return
        end
        FUNCTION ta1(betr,nrc)
 c  .......................................................................
@@ -17450,6 +17772,24 @@ c    ncel: number of cells in the cavity
          a(i)=a(i)*atte
        enddo
        fh=fh*2.*pi
+c **********************************************
+c  sv 24/10/2015
+       xp=ylg/100.
+       open(18,file='chemtr.txt',status='unknown')
+       zx=0.
+       yh=0.
+98     continue
+       do inh=1,nharm
+cc        xl=pi*float(inh-1)/ylg
+cc        yh=yh+a(inh)*cos(xl*zx)
+        ff=fone(zx)
+       enddo
+       write(18,99) zx/100.,ff
+99     format(3(2x,e12.5))
+       zx=zx+xp
+       if(zx.lt.ylg) go to 98
+       close(18)
+c **********************************************
        return
        end
        SUBROUTINE profil
@@ -17867,7 +18207,7 @@ C    selection of the regions in the space x/a, y/b and z/c. The values a,b and 
 c    are the RMS of the bunch in the space x, y, and z
 c    The particles lying in a region are affected with the same color.
 c  ..............................................................................
-       parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
+       parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        common/faisc/f(10,iptsz),imax,ngood
        common/consta/vl,pi,xmat,rpel,qst
        common/ttfc/tk,t1k,t2k,sk,s1k,s2k,fh
@@ -17892,109 +18232,115 @@ c       ityp=1, the zones are defined in the plane (x/a,y/b)
 c The regions are selected in the space x/xrms,y/yrms and z/zrms
 c limits of the zones ; read the upper limits of the regions
          frms(1)=0.
-         read(in,*) (frms(i), i=2,nzone)
-         frms(nzone+1)=100.
-         do i=1,nzone
-           write(16,*) 'Zone: ',i,' lower limit: ',frms(i),
+         if(nzone.ne.0) then
+           read(in,*) (frms(i), i=2,nzone)
+           frms(nzone+1)=100.
+           do i=1,nzone
+             write(16,*) 'Zone: ',i,' lower limit: ',frms(i),
      *                 ' upper limit:',frms(i+1)
-         enddo
+           enddo
+         else
+           read(in,*) frms(2)
+         endif
        endif
-       trmoy=0.
-       do i=1,ngood
-         trmoy=trmoy+f(6,i)
-       enddo
-       trmoy=trmoy/float(ngood)
-       xbar=0.
-       ybar=0.
-       zbar=0.
-       imaxx=0
+       if(nzones.ge.2) then
+         trmoy=0.
+         do i=1,ngood
+           trmoy=trmoy+f(6,i)
+         enddo
+         trmoy=trmoy/float(ngood)
+         xbar=0.
+         ybar=0.
+         zbar=0.
+         imaxx=0
 c   Divide by 100. to convert from centimeters to meters
-       do np=1,ngood
-         gnp=f(7,np)/xmat
-         vnp=vl*sqrt(1.-1./(gnp*gnp))
-         zc(np)=(trmoy-f(6,np))*vnp
+         do np=1,ngood
+           gnp=f(7,np)/xmat
+           vnp=vl*sqrt(1.-1./(gnp*gnp))
+           zc(np)=(trmoy-f(6,np))*vnp
 C   convert from mrad to rad
-         f3=f(3,np)*1.e-03
-         f5=f(5,np)*1.e-03
+           f3=f(3,np)*1.e-03
+           f5=f(5,np)*1.e-03
 C   convert from cm   to m
-         xc(np)=(f(2,np)+zc(np)*f3)/100.
-         yc(np)=(f(4,np)+zc(np)*f5)/100.
-         zc(np)=zc(np)/100.
+           xc(np)=(f(2,np)+zc(np)*f3)/100.
+           yc(np)=(f(4,np)+zc(np)*f5)/100.
+           zc(np)=zc(np)/100.
 c evaluate xbar , ybar , zbar
-         xbar=xbar+xc(np)
-         ybar=ybar+yc(np)
-         zbar=zbar+zc(np)
-       enddo
-       eng=float(ngood)
-       xbar=xbar/eng
-       ybar=ybar/eng
-       zbar=zbar/eng
-       do np=1,ngood
-         xc(np)=xc(np)-xbar
-         yc(np)=yc(np)-ybar
-         zc(np)=zc(np)-zbar
-       enddo
+           xbar=xbar+xc(np)
+           ybar=ybar+yc(np)
+           zbar=zbar+zc(np)
+         enddo
+         eng=float(ngood)
+         xbar=xbar/eng
+         ybar=ybar/eng
+         zbar=zbar/eng
+         do np=1,ngood
+           xc(np)=xc(np)-xbar
+           yc(np)=yc(np)-ybar
+           zc(np)=zc(np)-zbar
+         enddo
 c    evaluate the rms sizes
-       xsqsum=0.
-       ysqsum=0.
-       zsqsum=0.
-       do j=1,ngood
-         xcj=xc(j)
-         ycj=yc(j)
-         zcj=zc(j)
-         xsqsum=xsqsum+xcj*xcj
-         ysqsum=ysqsum+ycj*ycj
-         zsqsum=zsqsum+zcj*zcj
-       enddo
-       xrmsz=xsqsum/float(ngood)
-       yrmsz=ysqsum/float(ngood)
-       zrmsz=zsqsum/float(ngood)
-       xrmsz=sqrt(xrmsz)
-       yrmsz=sqrt(yrmsz)
-       zrmsz=sqrt(zrmsz)
+         xsqsum=0.
+         ysqsum=0.
+         zsqsum=0.
+         do j=1,ngood
+           xcj=xc(j)
+           ycj=yc(j)
+           zcj=zc(j)
+           xsqsum=xsqsum+xcj*xcj
+           ysqsum=ysqsum+ycj*ycj
+           zsqsum=zsqsum+zcj*zcj
+         enddo
+         xrmsz=xsqsum/float(ngood)
+         yrmsz=ysqsum/float(ngood)
+         zrmsz=zsqsum/float(ngood)
+         xrmsz=sqrt(xrmsz)
+         yrmsz=sqrt(yrmsz)
+         zrmsz=sqrt(zrmsz)
 c  select the particles in the regions and count them
-       if(ityp.eq.0) then
+         if(ityp.eq.0) then
 c       ityp=0, the zones are defined in the 3-d space (x/a,y/b,x/c)
-         do i=1,nzone
-           inzonn(i)=0
-         do j=1,ngood
-             xcp=xc(j)/xrmsz
-             ycp=yc(j)/yrmsz
-             zcp=zc(j)/zrmsz
-             rxyz=sqrt((xcp*xcp+ycp*ycp+zcp*zcp)/3.)
-             if(rxyz.lt.frms(i+1).and.rxyz.ge.frms(i)) then
-               inzonn(i)=inzonn(i)+1
-               if(init.eq.1) f(10,j)=frms(i+1)
+           do i=1,nzone
+             inzonn(i)=0
+             do j=1,ngood
+               xcp=xc(j)/xrmsz
+               ycp=yc(j)/yrmsz
+               zcp=zc(j)/zrmsz
+               rxyz=sqrt((xcp*xcp+ycp*ycp+zcp*zcp)/3.)
+               if(rxyz.lt.frms(i+1).and.rxyz.ge.frms(i)) then
+                 inzonn(i)=inzonn(i)+1
+                 if(init.eq.1) f(10,j)=frms(i+1)
+               endif
+               if(f(10,j).eq.100. .and. init.eq.1) f(10,j)=0.
+             enddo
+             if(init.eq.1) then
+               write(16,*) inzonn(i),' particles initially in zone ',i
+             else
+               write(16,*) inzonn(i),' particles in zone ',i
              endif
-             if(f(10,j).eq.100. .and. init.eq.1) f(10,j)=0.
            enddo
-           if(init.eq.1) then
-             write(16,*) inzonn(i),' particles initially in zone ',i
-           else
-             write(16,*) inzonn(i),' particles in zone ',i
-           endif
-         enddo
-       else
+         else
 c       ityp=1, the zones are defined in the plane (x/a,y/b)
-         do i=1,nzone
-           inzonn(i)=0
-         do j=1,ngood
-             xcp=xc(j)/xrmsz
-             ycp=yc(j)/yrmsz
-             zcp=zc(j)/zrmsz
-             rxyz=sqrt((xcp*xcp+ycp*ycp)/2.)
-             if(rxyz.lt.frms(i+1).and.rxyz.ge.frms(i)) then
-               inzonn(i)=inzonn(i)+1
-               if(init.eq.1) f(10,j)=frms(i+1)
+           do i=1,nzone
+             inzonn(i)=0
+             do j=1,ngood
+               xcp=xc(j)/xrmsz
+               ycp=yc(j)/yrmsz
+               zcp=zc(j)/zrmsz
+               rxyz=sqrt((xcp*xcp+ycp*ycp)/2.)
+               if(rxyz.lt.frms(i+1).and.rxyz.ge.frms(i)) then
+                 inzonn(i)=inzonn(i)+1
+                 if(init.eq.1) f(10,j)=frms(i+1)
+               endif
+               if(f(10,j).eq.100. .and. init.eq.1) f(10,j)=0.
+             enddo
+             if(init.eq.1) then
+               write(16,*) inzonn(i),' particles initially in zone ',i
+             else
+               write(16,*) inzonn(i),' particles in zone ',i
              endif
-             if(f(10,j).eq.100. .and. init.eq.1) f(10,j)=0.
            enddo
-           if(init.eq.1) then
-             write(16,*) inzonn(i),' particles initially in zone ',i
-           else
-             write(16,*) inzonn(i),' particles in zone ',i
-           endif
-         enddo
+         endif
        endif
        return
        end
@@ -18424,7 +18770,7 @@ c  with CHASE These parameters are in the array dav2 like above
 c
 c  ......................................................................
        implicit real*8 (a-h,o-z)
-       parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
+       parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
        common/faisc/f(10,iptsz),imax,ngood
        COMMON/SPEDA/DAVE,idave
@@ -19002,7 +19348,7 @@ c QUAELEC electric quadrupole
      *   ,e12.5,' mm aperture radius = ',e12.5,' mm',/,
      *   '  voltage = ',f8.3,' kV  K2 = ',e12.5,' cm-2  gradient = ',
      *   e12.5,' kV/(cm*cm) ',/,
-     *   '  momentum = ',e12.5,' kV  particles left  ',f7.0)
+     *   '  rigidity = ',e12.5,' kV  particles left  ',f7.0)
          write(12,*)
        endif
 c  QUAFK  quadrupole(magnetic or electric)
@@ -19014,7 +19360,7 @@ c  electric quadrupole
 2110    format(f9.2,' mm  Quadrupole (electric): length = '
      *  ,e12.5,' mm   aperture radius = ',e12.5,' mm',/,' voltage = '
      *  ,e12.5,' kV   K2 = ',e12.5,' cm-2  gradient = ',e12.5,
-     * ' kV/cm2',/,' momentum = ',e12.5,' kV   particles left  ',f7.0)
+     * ' kV/cm2',/,' rigidity = ',e12.5,' kV   particles left  ',f7.0)
         else
 c  magnetic quadrupole
          write(12,2111) dav1(i,4),dav1(i,1),dav1(i,7),dav1(i,2),
@@ -19588,7 +19934,7 @@ c  RADIATION  EXITATION FOR PARTICLE ii
 C   The method is described in 'synchrotron radiation in DYNAC'
 c **************************************************************
        implicit real*8 (a-h,o-z)
-       parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
+       parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
        common/faisc/f(10,iptsz),imax,ngood
        COMMON /BLOC11/ R(6,6), T(6,6,6)
@@ -19629,7 +19975,7 @@ c  RADIATION  EXITATION FROM PARTICLE REFERENCE
 C   The method is described in 'synchrotron radiation in DYNAC'
 c **************************************************************
        implicit real*8 (a-h,o-z)
-       parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
+       parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
        COMMON/RADIA/TRT,RMOY,XINTF,CRAE
        COMMON/DYN/TREF,VREF
@@ -19667,7 +20013,7 @@ C       magnetic sextupole
 c       space charge at the middle of the lens
 c   ............................................................................
        implicit real*8 (a-h,o-z)
-       parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
+       parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/FENE/WDISP,WPHAS,WX,WY,RLIM,IFW
        COMMON/TTFC/TK,T1K,T2K,SK,S1K,S2K,FH
        COMMON/DYN/TREF,VREF
@@ -19815,6 +20161,8 @@ c ---- Change the dispersion with the new energy
        enddo
 c Test window after the first half sextupole
        call cogetc
+c  Change the t.o.f of the reference
+       tref=tref+xlsex/(2.*vref)
        call reject(nlost)
 c  Reshuffles f(i,j) array after window (now done in 'reject')
 c         call shuffle
@@ -19832,12 +20180,12 @@ c    second half sextupole
        enddo
 c Test window after the second half sextupole (only in transverse directions and phase)
        call cogetc
+c  Change the t.o.f of the reference
+       tref=tref+xlsex/(2.*vref)
        call reject(ilost)
        ilost=ilost+nlost
 c  Reshuffles f(i,j) array after window (now done in 'reject')
 c         call shuffle
-c  Change the t.o.f of the reference
-       tref=tref+xlsex/vref
        dav1(idav,36)=ngood
        write(16,*)'TOF at output:',tref*fh*180./pi,' deg'
        write(16,*)' particles lost in sextupole :',ilost
@@ -19861,7 +20209,7 @@ C   XLQUA: EFFECTIVE LENGHT (cm )
 C   RG:    APERTURE RADIUS (cm)
 c
        implicit real*8 (a-h,o-z)
-       parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
+       parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/FENE/WDISP,WPHAS,WX,WY,RLIM,IFW
        COMMON/TTFC/TK,T1K,T2K,SK,S1K,S2K,FH
        COMMON/DYN/TREF,VREF
@@ -19998,6 +20346,8 @@ c Test window after the first half quadrupole (after s.c. computations)
        gcour=1./sqrt(1.-bcour*bcour)
        wcg=(gcour-1.)*xmat
 c ----- window control
+c  Change the t.o.f of the reference
+       tref=tref+xlqua/(2.*vref)
        call reject(nlost)
 c  Reshuffles f(i,j) array after window (now done in 'reject')
 c         call shuffle
@@ -20022,12 +20372,12 @@ comment        endif
        enddo
 c Test window after the second half quadrupole
        call cogetc
+c  Change the t.o.f of the reference
+       tref=tref+xlqua/(2.*vref)
        call reject(ilost)
        ilost=ilost+nlost
 c  Reshuffles f(i,j) array after window (now done in 'reject')
 c         call shuffle
-c  Change the t.o.f
-       tref=tref+xlqua/vref
        if(itvol) ttvols=tref
        tcog=0.
        do i=1,ngood
@@ -20070,7 +20420,7 @@ C    XLQUA : EFFECTIVE LENGHT OF THE LENS(cm)
 C    RG : APERTURE RADIUS OF THE LENS (cm)
 c   ............................................................................
        implicit real*8 (a-h,o-z)
-       parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
+       parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/FENE/WDISP,WPHAS,WX,WY,RLIM,IFW
        COMMON/TTFC/TK,T1K,T2K,SK,S1K,S2K,FH
        COMMON/DYN/TREF,VREF
@@ -20234,6 +20584,8 @@ c Test window after the first half quasex (after s.c. computations)
        wcg=(gcour-1.)*xmat
 c ----- window control
        call cogetc
+c  Change the t.o.f of the reference
+       tref=tref+xlqua/(2.*vref)
        call reject(nlost)
 c  Reshuffles f(i,j) array after window (now done in 'reject')
 c         call shuffle
@@ -20262,12 +20614,12 @@ C       ********END CONTROL
        enddo
 c Test window after the second half quasex (only in transverse directions and phase)
        call cogetc
+c  Change the t.o.f of the reference
+       tref=tref+xlqua/(2.*vref)
        call reject(ilost)
        ilost=ilost+nlost
 c  Reshuffles f(i,j) array after window (now done in 'reject')
 c         call shuffle
-c  t.o.f of the reference
-       tref=tref+xlqua/vref
        dav1(idav,36)=ngood
        write(16,*)'TOF at output:',tref*fh*180./pi,' deg'
        write(16,*)' particles lost:',ilost
@@ -20492,7 +20844,7 @@ c   ....................................................................
 C           Solenoid with an arbitrary magnetic field
 c   ....................................................................
        implicit real*8 (a-h,o-z)
-       parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
+       parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/TTFC/TK,T1K,T2K,SK,S1K,S2K,FH
        COMMON/FENE/WDISP,WPHAS,WX,WY,RLIM,IFW
        COMMON/DYN/TREF,VREF
@@ -20570,12 +20922,14 @@ c  start prints in file 'short.data'
        enddo
        bisol=0.
        bisol2=0.
+       fnpas=float(npas)
        do i=1,npas
          zcf=zc+dsol
          zcf2=zc+dsol/2.
          bsol=bcret*spline(ncord,zcf2)
 comment        write(70,110) i,zcf2,bsol
          dscm=dsol*100.
+         tref=tref+xlsol/(vref*fnpas)
          call fldsol(bsol,dscm)
          write(16,520) i,zc,zcf,bsol
 520      format(2x,'**STEP: ',i2,' LIMITS: inf(m)= ',f7.5,
@@ -20641,8 +20995,8 @@ c   print first order matrix
        ENDDO
 100    format(6(3x,e12.5))
 c **************************************************
-c   evolution of the t.o.f of the reference
-       TREF=TREF+XLSOL/VREF
+c   evolution of the t.o.f of the reference (moved inside loop - Alt)
+c       TREF=TREF+XLSOL/VREF
        dav1(idav,36)=ngood
 C   plots
        CALL STAPL(davtot*10.)
@@ -20652,7 +21006,7 @@ C   plots
        END
        SUBROUTINE fldsol(dbs,step)
        implicit real*8 (a-h,o-z)
-       parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
+       parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        common/faisc/f(10,iptsz),imax,ngood
        COMMON/FENE/WDISP,WPHAS,WX,WY,RLIM,IFW
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
@@ -20711,7 +21065,7 @@ C     ARG:  IMKS = 0 then ARG is K (cm-1), otherwise ARG is the field BSOL (kG)
 C     XLSOL : EFFECTIVE LENGHT (CM )
 C
        implicit real*8 (a-h,o-z)
-       parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
+       parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/TTFC/TK,T1K,T2K,SK,S1K,S2K,FH
        COMMON/FENE/WDISP,WPHAS,WX,WY,RLIM,IFW
        COMMON/DYN/TREF,VREF
@@ -20734,6 +21088,8 @@ C
        COMMON /BLOC11/ R(6,6), T(6,6,6)
        common/itvole/itvol,imamin
        common/tofev/ttvols
+       common/trace3d/trace3h(100),trace3t(maxcell1),tif,kt3h,kt3t,fid
+       character*128 trace3h,trace3t,tif
        logical itvol,imamin
 c       dimension rs(6,6),rcul(6,6)
        logical iesp,ichaes,shift,ialin,iemgrw
@@ -20782,6 +21138,12 @@ c   KO = 2 * K (see ELSOL)
        call clear
        call elsol
        xkql=(kl/2.)*57.29578
+c trace3d
+       kt3t=kt3t+1
+       write(tif,6002) kt3t,kt3t,B*1000.,10.*XLSOL
+6002   format('  nt(',i4,')= 5, a(1,',i4,')= ',f12.5,' , ',f9.5)
+       trace3t(kt3t)=tif
+c
        WRITE(16,101) XLSOL,B,ko/2.,ri,xkql
 101    FORMAT('  LENGTH = ',F7.3,' CM ',/,
      X        '  FIELD = ',F10.4,' KG' ,/,
@@ -20840,6 +21202,7 @@ C test window after the first half solenoid
        gcour=1./sqrt(1.-bcour*bcour)
        wcg=(gcour-1.)*xmat
 c ----- window control
+       tref=tref+xlsol/(vref*2.)
        call reject(ilost)
 c  Reshuffles f(i,j) array after window (now done in 'reject')
 c         call shuffle
@@ -20857,7 +21220,8 @@ c  second half solenoid
         CALL cobeam(ii,l)
        enddo
 c   t.o.f
-       TREF=TREF+XLSOL/VREF
+       TREF=TREF+XLSOL/(VREF*2.)
+       call reject(ilost)
        if(itvol) ttvols=tref
        tcog=0.
        do i=1,ngood
@@ -20976,7 +21340,7 @@ C        SOLENOID FIELD ASSOCIATED WITH QUADRUPOLE FIELD
 c        space charge computations at the middle of the lens
 c   ....................................................................
        implicit real*8 (a-h,o-z)
-       parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
+       parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/TTFC/TK,T1K,T2K,SK,S1K,S2K,FH
        COMMON/FENE/WDISP,WPHAS,WX,WY,RLIM,IFW
        COMMON/DYN/TREF,VREF
@@ -21136,6 +21500,7 @@ C test window after the first half solquad
        gcour=1./sqrt(1.-bcour*bcour)
        wcg=(gcour-1.)*xmat
 c ----- convert wdisp in dp/p (for window control)
+       tref=tref+xlsol/(2.*vref)
        call reject(ilost)
 c  Reshuffles f(i,j) array after window (now done in 'reject')
 c         call shuffle
@@ -21164,7 +21529,8 @@ C     if KQO is negative set up 90 degree rotation on the beam
         ENDIF
        enddo
 c    t.o.f of reference
-       TREF=TREF+XLSOL/VREF
+       TREF=TREF+XLSOL/(VREF*2.)
+       call reject(ilost)
        dav1(idav,36)=ngood
 C   plots
        CALL STAPL(davtot*10.)
@@ -21177,7 +21543,7 @@ c    .........................................................................
 C     (+-) 90 DEG BEAM ROTATION
 c    .........................................................................
        implicit real*8 (a-h,o-z)
-       parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
+       parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        common/faisc/f(10,iptsz),imax,ngood
        DIMENSION  FF(6)
        IF(II.GE.0) THEN
@@ -21375,7 +21741,7 @@ C          DRIFT LENGHT
 c         space charge computation at the middle of the drift
 c   ............................................................................
        implicit real*8 (a-h,o-z)
-       parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
+       parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/RIGID/BORO
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
        COMMON/DYN/TREF,VREF
@@ -21443,6 +21809,7 @@ c     Change the dispersion dE/E with respect to the C.O.G of the bunch
          endif
        endif
 c Test window after the first half drift
+       tref=tref+dl/(vref*2.)
        call reject(ilost)
 c  Reshuffles f(i,j) array after window (now done in 'reject')
 c         call shuffle
@@ -21461,12 +21828,12 @@ cold         f(6,i)=f(6,i)+dg2/vpai
        enddo
 c Test window after the second half drift (only in transverse directions and phase)
 c  TEST *****
+       tref=tref+dl/(vref*2.)
        call reject(ilost)
 c  Reshuffles f(i,j) array after window (now done in 'reject')
 cold         call shuffle
        il=il+ilost
 C     change the reference and the TOF
-       tref=tref+dl/vref
        if(itvol) ttvols=tref
        if(dl.gt.0.)then
          dav1(idav,36)=ngood
@@ -21523,7 +21890,7 @@ C   CLEAR T
        SUBROUTINE cobeam(ii,xl)
 C       BEAM COMPUTATION
        implicit real*8 (a-h,o-z)
-       parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
+       parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        common/faisc/f(10,iptsz),imax,ngood
        COMMON /BLOC11/ R(6,6), T(6,6,6)
        common/etcom/cog(8),exten(17),fd(iptsz)
@@ -21576,7 +21943,7 @@ C   CONVERT RD ==> MRD    M ==> CM
       SUBROUTINE disp
 c     Compute the dispersion dE/E with respect to the center of gravity of the bunch
        implicit real*8 (a-h,o-z)
-       parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
+       parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        common/faisc/f(10,iptsz),imax,ngood
        common/etcom/cog(8),exten(17),fd(iptsz)
        common/mcs/imcs,ncstat,cstat(20)
@@ -21589,7 +21956,11 @@ c     Compute the dispersion dE/E with respect to the center of gravity of the b
        bcog=sqrt(1.-1./(gcog*gcog))
        do i=1,ngood
          gpai=f(7,i)/xmat
-         bpai=sqrt(1.-1./(gpai*gpai))
+         if(gpai.ge.1.) then
+           bpai=sqrt(1.-1./(gpai*gpai))
+         else
+           bpai=0.
+         endif
          fd(i)=bpai/bcog * gpai/gcog
        enddo
        return
@@ -21623,7 +21994,7 @@ c     through an angle about the axis tangent to the
 c     central trajectory at the point in question.
 c    .........................................................................
        implicit real*8 (a-h,o-z)
-       parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
+       parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        common/faisc/f(10,iptsz),imax,ngood
        common/grot/rzot,izrot
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
@@ -21644,6 +22015,14 @@ c  Daves start
        idav=idav+1
        iitem(idav)=20
        dav1(idav,1)=zrot
+c*et*2015-07-07*s
+c initialize
+       DO IA=1,4
+         DO IB=1,4
+           RS(IA,IB)=0.
+         ENDDO
+       ENDDO
+c*et*2015-07-07*e
 C      Conversion DEG ==> RAD
        ZROT=  ZROT*pi/180.
        RS44  =  COS(ZROT)
@@ -21683,7 +22062,7 @@ c     through an angle about the axis tangent to the
 c     central trajectory at the point in question.
 c    .........................................................................
        implicit real*8 (a-h,o-z)
-       parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
+       parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        common/faisc/f(10,iptsz),imax,ngood
        common/grot/rzot,izrot
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
@@ -21730,7 +22109,7 @@ C     ALIGNMENT  errors:
 C       HORIZONTAL : XL(cm) XLP(mrad)
 C       VERTICAL   : YL(cm) YLP(mrad)
 C     ..................................
-       parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
+       parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/ALIN/XL,YL,XPL,YPL
        common/faisc/f(10,iptsz),imax,ngood
        WRITE(16,100) XL,YL,XPL,YPL
@@ -21753,7 +22132,7 @@ C      RANDOM ALIGNMENT  errors :
 C       HORIZONTAL PLANE : XL(cm) XLP(mrad)
 C       VERTICAL PLANE   : YL(cm) YLP(mrad)
 C     ..................................
-       parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
+       parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/ALIN/XL,YL,XPL,YPL
        common/faisc/f(10,iptsz),imax,ngood
        common/apel/iapel
@@ -21827,7 +22206,7 @@ c  read on the disk the axial field of the DC gun field
 c     z (m)   E(z) is normalized
 c **********************************************************************************
        implicit real*8 (a-h,o-z)
-       parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
+       parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        common/ttfc/tk,t1k,t2k,sk,s1k,s2k,fh
        common/faisc/f(10,iptsz),imax,ngood
        common/consta/ vl,pi, xmat,rpel,qst
@@ -22176,7 +22555,7 @@ c	     explanation.
 c      SCE(10)=same meaning as SCE10 above
 c  ..............................................................................
        implicit real*8 (a-h,o-z)
-       parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
+       parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/DYN/TREF,VREF
        COMMON/CMPTE/IELL
        COMMON/part/xc(iptsz),yc(iptsz),zc(iptsz)
@@ -23050,7 +23429,7 @@ cold        rfq1(nc)=a01*1.e04
         rfq10(nc)=(1.+tvolt)*a(9)
         rfq11(nc)=(1.+avolt)*a(9)
        endif
-c §§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§
+c********************************************
 c  fringe field region the profil is read from disk
        if(itype(nc).eq.7) then
 c  read the ff profile in the form (z,R(z)) in M
@@ -23102,7 +23481,7 @@ c     rfq11(nc):intervane voltage applied to the particles (KV)
 ccc        write(16,579)nc,npt,cl,phim,r0,rfq10(nc),rfq11(nc)
 ccc579     format(2(2x,i4),5(2x,e12.5))
        endif
-c §§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§
+c********************************************
 60     continue
        if(netc.lt.nceltot) then
          write(6,*) 'Error: Parameter NCELTOT after RFQPTQ entry in',
@@ -23149,7 +23528,7 @@ c  Do so by shifting particles belonging to the same bunch from outside
 c  to inside (+/-) pi w.r.t.the synchronous particle
 c   .....................................................................
        implicit real*8 (a-h,o-z)
-       parameter(iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
+       parameter(iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
        common/faisc/f(10,iptsz),imax,ngood
        common/etcha1/dav2(maxcell1,33),ichas(iptsz),chasit
@@ -23260,7 +23639,7 @@ c     rfq11(nc):intervane voltage applied to the particles (KV)
 c
 c**********************************************************************************************
        implicit real*8 (a-h,o-z)
-       parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
+       parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/RIGID/BORO
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
        COMMON/DYN/TREF,VREF
@@ -23298,11 +23677,11 @@ cold       common/rfq3ptq/itype(500),evens,evenr
        common/spl/xspl(4000),yspl(4000),s(5000),p(5000),q(5000)
        common/spff/xspf(400),yspf(400),sf(500),pf(500),qf(500)
        common/rms_prfl/npt,npf
-c §§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§
+c********************************************
 c v28/04/2015
        common/fcont/ifcont
        logical ifcont
-c §§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§
+c********************************************
 c       logical irfqp,evens,evenr,evenf
        logical irfqp,evens,evenr
        dimension rfqdmp(500,10)
@@ -23389,7 +23768,7 @@ c --- particles
            pavolt=rfq11(ncell)
            avb=rfq2(ncell)*pavolt*rfq9(ncell)
          endif
-c §§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§
+c********************************************
 c  fringe field type 7
          if(itype(ncell).eq.7) then
 c -------, F-cell (ityp = 7)
@@ -23399,7 +23778,7 @@ c --- particles
            pavolt=rfq11(ncell)
            a31vb=pavolt*rfq9(ncell)
          endif
-c §§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§
+c********************************************
 c -----Radial matching section from potential function(Type = 5)
          if(itype(ncell).eq.5) then
 c ---- synchronous particle
@@ -23462,7 +23841,7 @@ c --- fringe field region type 4
            if(ns.le.5) ns=6
            nsm=ns/2
          endif
-c §§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§
+c********************************************
 c   Fringe field region type 7
          if(itype(ncell).eq.7) then
            cay=pi/(2.*cl)
@@ -23471,7 +23850,7 @@ c   Fringe field region type 7
 cold           if(ns.le.5) ns=6
            nsm=ns/2
          endif
-c §§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§
+c********************************************
 c ---  M-cell (itype = 3)
 cold sv         if(itype(ncell).eq.3) cay=pi/cl
          xl=cl/float(ns)
@@ -23568,7 +23947,7 @@ c Fringe-field region (itype = 4)
 c print in file rfq_list1.data
              if(n.eq.1) phdep=rfq4(ncell)
            endif
-c §§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§
+c********************************************
 c Fringe-field region (itype = 7)
             if(itype(ncell).eq.7) then
               dwref=0.
@@ -23579,7 +23958,7 @@ cold              write(16,*) 'FF z,radius ',z,rproff
 c print in file rfq_list1.data
             if(n.eq.1) phdep=rfq4(ncell)
            endif
-c §§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§
+c********************************************
 c --- RMS (type = 5)
            if(itype(ncell).eq.5) then
              dwref=0.
@@ -23614,16 +23993,25 @@ c         coordinates x, xp,y, yp convert in m and rad
              ypi=f(5,ip)*1.e-03
              ww=f(7,ip)-er
 c remove from the bunch particles that have energy < 0
-             if(ww.lt.0.) then
+             if(ww.lt.0.)then
                f(8,ip)=0.
                ilost=ilost+1
                write(49,5558) ip,ncell,ww
                iflag=.true.
                go to 6525
              endif
-5558         format(' § particle: ',i5,' cell: ',i5,
+5558         format(' particle: ',i5,' cell: ',i5,
      *           ' energy: ',e12.5)
              gi=ww/er+1.
+             if(gi.lt.1.) then
+                f(8,ip)=0.
+                ilost=ilost+1
+c needs to be on energy
+                write(49,*) ' particle lost: ',i,' W: ',ww,
+     *             ' MeV'
+                iflag=.true.
+                go to 6525
+             endif
              bi=sqrt(1.-1./(gi*gi))
              bgi=bi*gi
 c move particles back in the bunch if they have abs(phi) > pi
@@ -23653,7 +24041,7 @@ c move particles back in the bunch if they have abs(phi) > pi
                 go to 6525
                endif
              endif
-5559           format(' § particle: ',i5,' cell: ',i5,
+5559           format(' particle: ',i5,' cell: ',i5,
      *               ' phi(rad): ',e12.5,' charge state ',f6.2)
              tim=f(6,ip)+hl/(bi*vlm)
              phi=phini+fh*tim
@@ -23681,7 +24069,7 @@ c ---- particle is lost if abs(xm) > vanx or abs(ym) > vany
               if(f(8,ip).eq.0.) then
                ilost=ilost+1
                write(49,5556) ip,ncell,abs(xm),vanx,abs(ym),vany,rm
-5556           format(' § particle: ',i5,' cell: ',i5,
+5556           format(' particle: ',i5,' cell: ',i5,
      *       ' abs(x) (m): ',e12.5,' x-v(m): ',e12.5,
      *      ' abs(y) (m):',e12.5,' y-v(m): ',e12.5,
      *      ' radius (m) ',e12.5)
@@ -23694,7 +24082,7 @@ c ---- particle is lost if abs(xm) > vanx or abs(ym) > vany
                f(8,ip)=0.
                ilost=ilost+1
                write(49,5557) ip,ncell,rm,r0
-5557           format(' § particle: ',i5,' cell: ',i5,
+5557           format(' particle: ',i5,' cell: ',i5,
      *           ' radius (ptcl) (m): ',e12.5,
      *           ' radius (cell) (m):',e12.5)
                iflag=.true.
@@ -23760,18 +24148,18 @@ c ---   transverse fields (cylindrical coordinates)
              etf=etf/2.
 cold sv            evens=.false.
 cold            ncf=(ncell/2)*2-ncell
-            ncf=(ipari(ncell)/2)*2-ipari(ncell)
-            if(ncf.eq.0) then
-             erf=-erf
-             etf=-etf
+             ncf=(ipari(ncell)/2)*2-ipari(ncell)
+             if(ncf.eq.0) then
+               erf=-erf
+               etf=-etf
 cold sv            evens=.true.
-            endif
+             endif
 c  cartesian fields Ex and Ey
-            ex=erf*c1t-etf*s1t
-            ey=erf*s1t+etf*c1t
-            ex=signx*ex
-            ey=signy*ey
-          endif
+             ex=erf*c1t-etf*s1t
+             ey=erf*s1t+etf*c1t
+             ex=signx*ex
+             ey=signy*ey
+           endif
 c ---- T-cell (Type = 1)
            if(itype(ncell).eq.1) then
 c   transverse fields (cylindrical coordinates)
@@ -23809,6 +24197,7 @@ cold             if(rm.ne.6.*0.) bi13p=bi13/rm
              ex=signx*ex
              ey=signy*ey
            endif
+c   tof over the length xl
 c ---- E-cell (Type = 2)
            if(itype(ncell).eq.2) then
 c ---   transverse fields (cylindrical coordinates)
@@ -23831,7 +24220,10 @@ cold             if(rm.ne.6.*0.) bi13p=bi13/rm
              pavolt=rfq11(ncell)
              rpv=pavolt*rfq9(ncell)
              erf=-rpv/(r0*r0)*c2t*rm
-             erf=erf+0.5*cay*(av10b*bi1*skz+3.*a31vb*bi13*skz3)
+c*et*2015-07-07*s
+c            erf=erf+0.5*cay*(av10b*bi1*skz+3.*a31vb*bi13*skz3)
+             erf=erf+0.5*cay*(a10vb*bi1*skz+3.*a31vb*bi13*skz3)
+c*et*2015-07-07*e
              etf=rpv/(r0*r0)*s2t*rm
 c  control polarity of the cell
 cold            ncf=(ncell/2)*2-ncell
@@ -23915,7 +24307,7 @@ c ****************************************************
               rr1=rr1*xm
               rr2=rr2*ym
             endif
-c §§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§
+c********************************************
 c Fringe field profil from the disk (type 7)
            if(itype(ncell).eq.7) then
              BGFAC=GAV*BAV**2
@@ -23934,7 +24326,7 @@ c  test the cell parity
 cold       if(ip.eq.25) write(16,5287)n,z,rproff,rr1/xm,rr2/ym
 c5287       format(2x,i4,4(2x,e12.5))
            endif
-c §§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§!
+c********************************************
 C----  CHANGE ENERGY OVER the STEP XL
 c ------  standard accelerating cell or R-cell (Type = 0)
            if(itype(ncell).eq.0) then
@@ -23956,10 +24348,10 @@ c -------  E-cell (Type = 2)
 c ------- M-cell (itype = 3)
            if(itype(ncell).eq.3) dw=0.
 c ----    fringe field region (itype = 4)
-c §§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§
+c********************************************
            if(itype(ncell).eq.4) dw=.5*qq*cay*avb*skz*sp*xl
            if(itype(ncell).eq.7) dw=0.
-c §§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§
+c********************************************
 c --------RMS (itype = 5)
            if(itype(ncell).eq.5) then
              ez=-1./16.*a31vb*cay**3*rm*rm*(ckz-ckz3)*c2t
@@ -23970,27 +24362,45 @@ c --------RMS (itype = 6)
              dw=0.
            endif
 c ----  WAV: energy at the middle of the element
-             WAV=WW+.5*DW
-             GA=WAV/ER
-             BGAV=SQRT(GA*(2.+GA))
-             GAV=1.+GA
-             BAV=BGAV/GAV
+           WAV=WW+.5*DW
+           GA=WAV/ER
+           if(ga.le.0.) then
+             f(8,ip)=0.
+             ilost=ilost+1
+c needs to be on energy
+             write(49,*) ' particle lost: ',i,' W: ',wav,
+     *           ' MeV'
+             iflag=.true.
+             go to 6525
+           endif
+           BGAV=SQRT(GA*(2.+GA))
+           GAV=1.+GA
+           BAV=BGAV/GAV
 c ---- energy over step xl
-             WW=WW+DW
-             GA=WW/ER
-             GAM=1.+GA
-             BG=SQRT(GA*(2.+GA))
-             beta=sqrt(1.-1/(gam*gam))
+           WW=WW+DW
+           GA=WW/ER
+           GAM=1.+GA
+           if(gam.le.1.) then
+             f(8,ip)=0.
+             ilost=ilost+1
+c needs to be on energy
+             write(49,*) ' particle lost: ',i,' W: ',ww,
+     *           ' MeV'
+             iflag=.true.
+             go to 6525
+           endif
+           BG=SQRT(GA*(2.+GA))
+           beta=sqrt(1.-1/(gam*gam))
 cold jump of phase (sec) of particles (only for standard accelerating cells)
            delt=0.
 cold           if(itype(ncell).eq.0) then
 cold             dez=.5*qq*cay*avb*skz*sp
 cold             delt=.5*(dez/er) * xl*xl/(bav**3*gav**3*vlm)
 cold           endif
-            amort=bgi/bg
-            BGFAC=GAV*BAV**2
-            cc=qq*xl*sp/(bgfac*er)
-c §§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§
+           amort=bgi/bg
+           BGFAC=GAV*BAV**2
+           cc=qq*xl*sp/(bgfac*er)
+c********************************************
            if(itype(ncell).ne.4) then
               if(itype(ncell).eq.6) go to 9766
               if(itype(ncell).eq.7) go to 9766
@@ -24002,7 +24412,7 @@ c §§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§
               xf=xm+xpm*hl
               yf=ym+ypm*hl
             endif
-c §§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§
+c********************************************
 c ------- Fringe-field region (itype = 4)
            if(itype(ncell).eq.4) then
 c*********************************************************
@@ -24044,14 +24454,18 @@ c  test cell parity
               yf=ym+ypm*hl
             endif
 c      restore coordinates x, xp, y, yp in cm and mrad
-             f(2,ip)=xf*100.
-             f(4,ip)=yf*100.
-             f(3,ip)=xpm*1000.
-             f(5,ip)=ypm*1000.
+            f(2,ip)=xf*100.
+            f(4,ip)=yf*100.
+            f(3,ip)=xpm*1000.
+            f(5,ip)=ypm*1000.
 c   tof over the length xl
-             f(6,ip)=f(6,ip)+hl/(bi*vlm)+hl/(beta*vlm)
-             f(7,ip)=ww+er
-6525         continue
+            if(beta.eq.0.) then
+              f(6,ip)=f(6,ip)+hl/(bi*vlm)
+            else
+              f(6,ip)=f(6,ip)+hl/(bi*vlm)+hl/(beta*vlm)
+            endif
+            f(7,ip)=ww+er
+6525        continue
 c --- end do ip (particle loop)
            enddo
 c ----- reshuffle the good particles at the end of each element
@@ -24082,6 +24496,7 @@ c print in file rfq_list1.phase RF in the middle of the cell
             endif
 c     Change  dp/p over the cell
            call disp
+c      end of do n=1,nsp1 (steps in cell)
          enddo
 9527     continue
 c----  c.o.g of the bunch at the output of the cell
@@ -24100,15 +24515,19 @@ c---  window control relative to the energy of the c.o.g of the bunch
 c ---- ifw = 0 ===> wdisp = dW/W
 c ---- ifw = 1 ===> wdisp = dW (MeV)
 c ----- convert wdisp in dp/p
-         if(ifw.eq.0) dispr=gcog*gcog*wdisp/(gcog*(gcog+1.))
-         if(ifw.eq.1) dispr=gcog*gcog*wdisp/(gcog*(gcog+1.)*wcog)
+         if(ifw.eq.0 .or. ifw.eq.10) then
+           dispr=gcog*gcog*wdisp/(gcog*(gcog+1.))
+         endif
+         if(ifw.eq.1 .or. ifw.eq.11) then
+           dispr=gcog*gcog*wdisp/(gcog*(gcog+1.)*wcog)
+         endif
          iflag=.false.
          do i=1,ngood
            dese=abs(fd(i)-1.)
            if(dese.gt.dispr) then
              ilost=ilost+1
              f(8,i)=0.
-             write(49,*) '§ particle lost: ',i,' dp/p: ',dese,
+             write(49,*) ' particle lost: ',i,' dp/p: ',dese,
      *             ' window :',dispr
              iflag=.true.
            endif
@@ -24198,11 +24617,11 @@ C   plots
 c --- end do ncell
        enddo
        call emiprt(0)
-c §§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§
+c********************************************
 c v28/04/2015
        ifcont=.false.
        WRITE(16,*) 'After RFQ, bunched beam assumed'
-c §§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§
+c********************************************
        RETURN
        END
         SUBROUTINE stripp
@@ -24210,7 +24629,7 @@ c*******************************************************************************
 c --- solid stripper foils for 'slow' hadron particles
 c************************************************************************************************
         implicit real*8 (a-h,o-z)
-        parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
+        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
         COMMON /SPL/X(4000),Y(4000),S(5000),P(5000),Q(5000)
         common/strip/atm,qs,atms,ths,qop,sqst(6),anp,nqst
         common/mcs/imcs,ncstat,cstat(20)
@@ -24491,7 +24910,7 @@ c       VOLT: electric voltage at pole tip (kV)
 C       XLQUA: effective length  (cm)
 C       RS: radial distance of pole tip from axis (cm)
        implicit real*8 (a-h,o-z)
-       parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
+       parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/FENE/WDISP,WPHAS,WX,WY,RLIM,IFW
        COMMON/TTFC/TK,T1K,T2K,SK,S1K,S2K,FH
        COMMON/DYN/TREF,VREF
@@ -24581,7 +25000,7 @@ c   misalignments
        qi=qst
 c      electric rigidity (kV)
        rigid=eni*bet*bet/qi *1.e03
-c     electric field gradiant: xgrad (kV/cm-2)
+c     electric field gradient: xgrad (kV/cm-2)
         xgrad=2.*volt/rs**2
         dav1(idav,2)=volt
         dav1(idav,3)=rigid
@@ -24593,7 +25012,7 @@ c   qk2 (cm-2)
        write(16,100) xlqua,rs,volt,kq2,xgrad,rigid
 100   format(' LENGTH = ',e12.5,' cm   APERTURE RADIUS= ',e12.5,' cm',
      *  /,' VOLTAGE = ',e12.5,' kV  K2 = ',e12.5,' cm-2  GRADIENT = ',
-     *  e12.5,' kV/cm2',/,' MOMENTUM = ',e12.5,' kV',/)
+     *  e12.5,' kV/cm2',/,' RIGIDITY = ',e12.5,' kV',/)
         call clear
         call elqua
 c    print out the transport matrix (cog)
@@ -24634,28 +25053,29 @@ c Test window after the first half quadrupole (after s.c. computations)
        gcour=1./sqrt(1.-bcour*bcour)
        wcg=(gcour-1.)*xmat
 c ----- window control
+       tref=tref+xlqua/(2.*vref)
        call reject(nlost)
 c  Reshuffles f(i,j) array after window (now done in 'reject')
 c         call shuffle
 c    second half quadrupole
        do ii=1,ngood
-        call clear
-        gpa=f(7,ii)/xmat
-        bet=sqrt(gpa*gpa-1.)/gpa
-        qi=f(9,ii)
-        rigi=f(7,ii)*bet*bet/qi *1.e03
-        kq2=xgrad/rigi
-        call elqua
-        call cobeam(ii,l)
+         call clear
+         gpa=f(7,ii)/xmat
+         bet=sqrt(gpa*gpa-1.)/gpa
+         qi=f(9,ii)
+         rigi=f(7,ii)*bet*bet/qi *1.e03
+         kq2=xgrad/rigi
+         call elqua
+         call cobeam(ii,l)
        enddo
 c Test window after the second half quadrupole
        call cogetc
+       tref=tref+xlqua/(2.*vref)
        call reject(ilost)
        ilost=ilost+nlost
 c  Reshuffles f(i,j) array after window (now done in 'reject')
 c         call shuffle
 c  Change the t.o.f
-       tref=tref+xlqua/vref
        if(itvol) ttvols=tref
 C  envelope
        call stapl(davtot*10.)
@@ -24699,7 +25119,7 @@ c       ARG: strength K (cm-2)
 C       XLQUA: effective length  (cm)
 C       RS: radial distance of pole tip from the axis (cm)
        implicit real*8 (a-h,o-z)
-       parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
+       parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/FENE/WDISP,WPHAS,WX,WY,RLIM,IFW
        COMMON/TTFC/TK,T1K,T2K,SK,S1K,S2K,FH
        COMMON/DYN/TREF,VREF
@@ -24803,7 +25223,7 @@ c    compute the electric voltage VOLT (kV) from K(cm-2)
         volt=volt/2.
 c   kq2 (cm-2)
         kq2=xfqu
-c     electric field gradiant: xgrad (kV/cm2)
+c     electric field gradient: xgrad (kV/cm2)
         xgrad=kq2*rigid
         dav1(idav,2)=volt
         dav1(idav,3)=rigid
@@ -24891,6 +25311,7 @@ c Test window after the first half quadrupole (after s.c. computations)
        gcour=1./sqrt(1.-bcour*bcour)
        wcg=(gcour-1.)*xmat
 c ----- convert window control
+       tref=tref+xlqua/(2.*vref)
        call reject(nlost)
 c  Reshuffles f(i,j) array after window (now done in 'reject')
 c         call shuffle
@@ -24922,12 +25343,12 @@ c    kq2 (cm-2)
        enddo
 c Test window after the second half quadrupole
        call cogetc
+       tref=tref+xlqua/(2.*vref)
        call reject(ilost)
        ilost=ilost+nlost
 c  Reshuffles f(i,j) array after window (now done in 'reject')
 c         call shuffle
 c  Change the t.o.f
-       tref=tref+xlqua/vref
        if(itvol) ttvols=tref
 C  envelope
        call stapl(davtot*10.)
@@ -24969,7 +25390,7 @@ c    or it can be read in the command list on the form of a Fourier series expan
 c   ............................................................................
        implicit real*8 (a-h,o-z)
 C      ****************************************************
-       parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
+       parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/TTFS/DYNT(MAXCELL),DYNTP(MAXCELL),DYNTPP(MAXCELL),
      *   DYNE0(MAXCELL),DYNPH(MAXCELL),DYNLG(MAXCELL),FHPAR,NC
        COMMON/POSI/IST
@@ -25012,6 +25433,24 @@ C      TRANSIT TIME COEFFICIENTS
        common/tofev/ttvols
        common/elec/jelec
        common/step/istep
+c  ****************************************************************
+c   SV 09/09/2015
+       common/xposi/xpost(10),xlce(2),xpax(2),iscx(2)
+       common/kcell/avrg(15)
+c ****************************************************************
+C*ET*2015*Jul*S
+c********************************************
+c reservation for TRACE3D related stuff
+       common/trace3d/trace3h(100),trace3t(maxcell1),tif,kt3h,kt3t,fid
+       common/t3dfld/fldctr(15),zend(15),T3D
+c       logical T3D,xiset
+       logical T3D
+c       character*128 trace3h,trace3t,tif,tifa,tifb
+       character*128 trace3h,trace3t,tif
+c********************************************
+       common/xitrd3/bcour1(15),bcour2(15),tr3dw(15),tr3ph(15),
+     *  t0tr3d(15)
+C*ET*2015*Jul*E
        logical iesp,ichaes,irstay,iavp,ispcel,ifield,iemgrw
        LOGICAL SHIFT,CHASIT,ITVOL,IMAMIN,DAVE,JELEC
        CHARACTER*1 cr
@@ -25042,6 +25481,18 @@ c      FFIELD : in percent;
 c                    (electric field)=(initial electric field)*(1.+FFIELD/100)
         jelec=.false.
         read (in,*) dielec,dphase,ffield,istep,ielec
+c *********************************************************
+c  SV  28/10/2015
+        if(ncavnm.eq.1) write(13,990)
+990     format(3x,'ncav',2x,'ncell',2x,'pos I(cm)',4x,'pos S(cm)',6x,
+     *'L cell(cm)',5x,'W(Mev)',7x,'dw(Mev)',6x,'TOF(dg)',7x,
+     * 'Ph RF(dg)',5x,'avrg pos(cm)')
+        if(ncavnm.eq.1) write(13,995)
+995     format(3x,'ncell',3x,'E0TL(Mev)',4x,'T(k) Mev/q',4x,
+     * 'S(k) Mev/q',5x,'dW(Mev)',6x,'PHASE(dg)',5x,
+     * 'Ph crest(dg)')
+        write(13,*)
+c ***************************************************************
         if(ielec.eq.0) jelec=.true.
         ffield=1.+ffield/100.
         if(ffield.eq.0.) ffield=1.E-12
@@ -25125,9 +25576,9 @@ c --- the reference particle and the cog are coinciding
          enref=cog(1)
          dav1(idav,3)=0.
        ENDIF
-         if(dav1(idav,3).eq.1.) write(16,*)
+       if(dav1(idav,3).eq.1.) write(16,*)
      *   ' ****reference and cog evolve independently'
-         if(dav1(idav,3).eq.0.) write(16,*)
+       if(dav1(idav,3).eq.0.) write(16,*)
      *   ' **** the reference is the cog '
        WRITE(16,178)
 178    FORMAT(/,' Dynamics at the input',/,
@@ -25163,9 +25614,39 @@ c   phase at the entrance of the cavity
        DPHASE=DPHASE*PI/180.
        phi0=pcrest+dphase+ttvol
 c --- compute energy and TOF of reference
-       call dwref(phi0,ylg,ncell,gams,ts)
+c ******************************************
+       call dwref(phi0,gams,ts)
+c ********************************************
        enrs=gams*xmat
        ddw=enrs-enref
+       if(t3d) then
+         do klm=1,ncel
+
+           trphase=tr3ph(klm)
+           tre0tl=t0tr3d(klm)/aqst
+cc split cell into drif-gap-drift
+cc debugging to be done: include q/m !!! protons assumed for now
+           kt3t=kt3t+1
+c drift
+           write(tif,6001) kt3t,kt3t,10.*fldctr(klm)
+6001       format('  nt(',i4,')= 1, a(1,',i4,')=',f12.6)
+           trace3t(kt3t)=tif
+c
+           kt3t=kt3t+1
+c gap
+           write(tif,6005) kt3t,kt3t,tre0tl,trphase,fid
+6005       format('  nt(',i4,')=10, a(1,',i4,')=',f9.5,' , ',f9.2,
+     &        ', 0., 1.,',f5.3,',')
+           trace3t(kt3t)=tif
+c
+           kt3t=kt3t+1
+c drift
+           write(tif,6001) kt3t,kt3t,10.*zend(klm)
+           trace3t(kt3t)=tif
+         enddo
+       endif
+c end trace3d drift-gap-drift
+c
        trefs=ts+tref
        bets=sqrt(gams*gams-1.)/gams
 cold       bets=b5
@@ -25184,12 +25665,15 @@ C -----  window control
 comment  twind=0.
          do i=1,ngood
            gpai=f(7,i)/xmat
+           if(gpai.lt.1.) gpai=1.
            bpai=sqrt(1.-1./(gpai*gpai))
            fd(i)=bpai/bcg * gpai/gcg
 comment    twind=twind+f(6,i)
          enddo
 comment  twind=twind/float(ngood)
 c ---- window control
+       tref=trefs
+       vref=bets*vl
        call reject(ilost)
 c  Reshuffles f(i,j) array after window (now done in 'reject')
 c         call shuffle
@@ -25514,7 +25998,7 @@ c     restore spline areas (partial save)
       enddo
       return
       end
-       SUBROUTINE dwref(phi0,ylg,ncell,gam5,t5)
+       SUBROUTINE dwref(phi0,gam5,t5)
 c ..........................................................
 c   compute the energy gain and the time of flight of the reference over the cavity(gap)
 c    at the exit of the cavity(gap): gam4 = relativistic gamma,  t4 = tof (cavity)
@@ -25528,13 +26012,21 @@ c ..............................................................................
        common/spl/xspl(4000),yspl(4000),s(5000),p(5000),q(5000)
        common/ttfc/tk,t1k,t2k,sk,s1k,s2k,fh
        COMMON/DYN/TREF,VREF
-c  TEST
+       common/cell/yf(10000),xf(10000),xlim(15),flength,fhc,att,
+     *             npoint(15),ncell
        common/step/istep
-c   ylg(cm) length of cavity, xpas(cm): step length
-       npas=ncell*istep
-       xpas=ylg/float(npas)
-       e0=xmat
-       xnh=0.
+       COMMON/COMPT/NRRES,NRTRE,NRBUNC,NRDBUN
+       common/kcell/avrg(15)
+       common/xitrd3/bcour1(15),bcour2(15),tr3dw(15),tr3ph(15),
+     *  t0tr3d(15)
+       common/sphi/tcour1(15),tcour2(15)
+       common/t3dfld/fldctr(15),zend(15),T3D
+c  save previous xpas
+       xpcel=xpas
+c
+       xlpos=0.
+       isce=20
+       xlcum=0.
        b0=vref/vl
        b1=b0
        b2=b0
@@ -25542,45 +26034,259 @@ c   ylg(cm) length of cavity, xpas(cm): step length
        b4=b0
        b5=b0
        t0=0.
-       gam0=1./sqrt(1.-b0*b0)
-       estop=xpas/10.
-20      continue
-        xpat=xnh*xpas
-        if(xpat.lt.(ylg-estop)) then
-        call fposb
-c ---  enegy gain over the step
-        b1=b0
-        b2=b0
-        b3=b0
-        b4=b0
-        b5=b0
+c   xlcel (cm): length of current cell
+c   xlim(inc) cm: limits of current cell
+c   isce: step number in cell (forced isce = 20)
+c   wdgam: energy gain over the cell
+c **************************************
+       do inc=1,ncell
+        bcour1(inc)=b0
+        tcour1(inc)=t0
+        wdgams=0.
+        xnh=0.
+        xlcel=xlim(inc+1)-xlim(inc)
+        xlpos=xlpos+xlcel
+        xpas=xlcel/float(isce)
+        e0=xmat
+        xnhc=0
+        gam0=1./sqrt(1.-b0*b0)
+        estop=xpas/10.
+        istop=0
+20     continue
+       xpat=xnhc*xpas
+        if(xpat.lt.(xlcel-estop)) then
+         call fposbb(xlcum)
+c ---  energy gain over the step
+         b1=b0
+         b2=b0
+         b3=b0
+         b4=b0
+         b5=b0
 c predictor
-        dgam=xi1(phi0,t0,t5)*qst/e0
-        gam5=gam0+dgam
+         dgam=xi1(phi0,t0,t5)*qst/e0
+         gam5=gam0+dgam
 c   corrector
-        xpas2=xpas*xpas
-        dgdz=qst/e0 * tspl0
-        d2gdz2=dgam/xpas2-dgdz/xpas
-        d2gdz2=2.*d2gdz2
-        gam1=gam0+dgdz*xpas/5.+d2gdz2*xpas2/50.
-        gam2=gam0+dgdz*xpas*2./5.+d2gdz2*xpas2*4./50.
-        gam3=gam0+dgdz*xpas*3./5.+d2gdz2*xpas2*9./50.
-        gam4=gam0+dgdz*xpas*4./5.+d2gdz2*xpas2*16./50.
-        b1=sqrt(gam1*gam1-1.)/gam1
-        b2=sqrt(gam2*gam2-1.)/gam2
-        b3=sqrt(gam3*gam3-1.)/gam3
-        b4=sqrt(gam4*gam4-1.)/gam4
-        b5=sqrt(gam5*gam5-1.)/gam5
-        dgam=xi1(phi0,t0,t5)*qst/e0
-        gam5=gam0+dgam
-        b5=sqrt(gam5*gam5-1.)/gam5
-        b0=b5
-        t0=t5
-        gam0=gam5
-        xnh=xnh+1.
-        go to 20
-        endif
-c*et*2013 10     continue
+         xpas2=xpas*xpas
+         dgdz=qst/e0 * tspl0
+         d2gdz2=dgam/xpas2-dgdz/xpas
+         d2gdz2=2.*d2gdz2
+         gam1=gam0+dgdz*xpas/5.+d2gdz2*xpas2/50.
+         gam2=gam0+dgdz*xpas*2./5.+d2gdz2*xpas2*4./50.
+         gam3=gam0+dgdz*xpas*3./5.+d2gdz2*xpas2*9./50.
+         gam4=gam0+dgdz*xpas*4./5.+d2gdz2*xpas2*16./50.
+         b1=sqrt(gam1*gam1-1.)/gam1
+         b2=sqrt(gam2*gam2-1.)/gam2
+         b3=sqrt(gam3*gam3-1.)/gam3
+         b4=sqrt(gam4*gam4-1.)/gam4
+         b5=sqrt(gam5*gam5-1.)/gam5
+         dgam=xi1(phi0,t0,t5)*qst/e0
+         gam5=gam0+dgam
+         eww=xmat*(gam5-1.)
+         wdgam=xmat*dgam
+         wdgams=wdgams+wdgam
+cccc        write(13,*) ' inc wdgam eww t5 ',inc,wdgam,eww,t5
+         b5=sqrt(gam5*gam5-1.)/gam5
+         b0=b5
+         t0=t5
+         gam0=gam5
+         xnh=xnh+1.
+         xnhc=xnhc+1.
+         go to 20
+       endif
+       tcour2(inc)=t5
+       xlcum=xlcum+xlcel
+       ttvol=t5*fh*180./pi
+       ttphi=ttvol+tref*fh*180/pi
+       bcour2(inc)=b5
+       tr3dw(inc)=wdgams
+c ************************************************
+       write(13,101) NRRES,inc,xlim(inc),xlim(inc+1),
+     *  xlcel,eww,wdgams,ttvol,ttphi,avrg(inc)
+101    format(2(2x,i4),8(2x,e12.5))
+         fldctr(inc)=avrg(inc)-xlim(inc)
+         zend(inc)=xlcel-fldctr(inc)
+       enddo
+       call itrd3
+c restore  xpas
+       xpas=xpcel
+       return
+       end
+c **************************************************************
+       SUBROUTINE itrd3
+       implicit real*8 (a-h,o-z)
+       common/cell/yf(10000),xf(10000),xlim(15),flength,fhc,att,
+     *             npoint(15),ncell
+       common/consta/vl,pi,xmat,rpel,qst
+       common/xitrd3/bcour1(15),bcour2(15),tr3dw(15),tr3ph(15),
+     *  t0tr3d(15)
+       common/cavnum1/xnh,xpas,ffield,npt
+       common/sphi/tcour1(15),tcour2(15)
+       common/kcell/avrg(15)
+       common/ttfc/tk,t1k,t2k,sk,s1k,s2k,fh
+       dimension ttr3d(15),str3d(15)
+       do nrc=1,ncell
+         bcour=(bcour1(nrc)+bcour2(nrc))/2.
+         ttr3d(nrc)=ta0(bcour,nrc)
+       enddo
+       do nrc=1,ncell
+         bcour=(bcour1(nrc)+bcour2(nrc))/2.
+         str3d(nrc)=sb0(bcour,nrc)
+       enddo
+       do nrc=1,ncell
+         t0tr3d(nrc)=qst*sqrt(ttr3d(nrc)**2+str3d(nrc)**2)*ffield/2.
+         atr3d=0.
+         tt=tr3dw(nrc)/t0tr3d(nrc)
+         tph=atan(-str3d(nrc)/ttr3d(nrc))
+         if(tt.lt.1.) atr3d=acos(tt)
+         ddw=ttr3d(nrc)*cos(tph)-str3d(nrc)*sin(tph)
+         if(ddw.lt.0.) then
+           tph=tph+pi
+         endif
+c         if(tph.ge.pcrest) atr3d=-atr3d
+         drift1=avrg(nrc)-xlim(nrc)
+         drift2=xlim(nrc+1)-avrg(nrc)
+         xsign1=tcour2(nrc)-tcour1(nrc)
+         xsing=xsign1-(drift1/bcour1(nrc)+drift2/bcour2(nrc))/vl
+         if(xsing.gt.0.) atr3d=-atr3d
+         tr3ph(nrc)=atr3d*180./pi
+         write(13,100)nrc,t0tr3d(nrc),ttr3d(nrc),str3d(nrc),tr3dw(nrc)
+     *              ,atr3d*180./pi,tph*180./pi
+100      format(2x,i4,6(2x,e12.5))
+       enddo
+       return
+       end
+c **************************************************************
+       SUBROUTINE fposbbb(xlcum,fposs,jx)
+c  SV 24/08/2015
+c -------------------------------------------------------
+c  electric field at the 6 Bode's positions in the step (see routine dwref)
+c -------------------------------------------------------
+       implicit real*8 (a-h,o-z)
+       common/cavnum1/xnh,xpas,fmult,npt
+       common/cavnum5/tspl0,tspl1,tspl2,tspl3,tspl4,tspl5
+       common/cavnum6/fpos0,fpos1,fpos2,fpos3,fpos4,fpos5
+       common/spl/xspl(4000),yspl(4000),s(5000),p(5000),q(5000)
+       common/rfield/ifield
+       common/xposi/xpost(10),xlce(2),xpax(2),iscx(2)
+       logical ifield
+c *******************************************
+       if(fposs.eq.0.) then
+        fpos0=xnh*xpas+xlcum+fposs
+        fpos1=(xnh+0.20)*xpas+xlcum+fposs
+        fpos2=(xnh+0.40)*xpas+xlcum+fposs
+        fpos3=(xnh+0.60)*xpas+xlcum+fposs
+        fpos4=(xnh+0.80)*xpas+xlcum+fposs
+        fpos5=(xnh+1.0)*xpas+xlcum+fposs
+       else
+        fpos0=xnh*xpas+fposs
+        fpos1=(xnh+0.20)*xpas+fposs
+        fpos2=(xnh+0.40)*xpas+fposs
+        fpos3=(xnh+0.60)*xpas+fposs
+        fpos4=(xnh+0.80)*xpas+fposs
+        fpos5=(xnh+1.0)*xpas+fposs
+       endif
+       if(jx.eq.1)then
+        xnh1=xnh+1
+        if(xnh1.eq.float(iscx(jx))) fposs=fpos5
+       endif
+       if(ifield) then
+c --- the field is read from disk in MV/cm
+         tspl0=spline(npt,fpos0)*fmult
+         tspl1=spline(npt,fpos1)*fmult
+         tspl2=spline(npt,fpos2)*fmult
+         tspl3=spline(npt,fpos3)*fmult
+         tspl4=spline(npt,fpos4)*fmult
+         tspl5=spline(npt,fpos5)*fmult
+c ****TEST
+ccc         write(13,*) 'xnh fpos tspl '
+c          write(13,700) xnh,fpos0,tspl0,xpas,fposs
+c         write(13,700) xnh,fpos1,tspl1
+c         write(13,700) xnh,fpos2,tspl2
+c         write(13,700) xnh,fpos3,tspl3
+c         write(13,700) xnh,fpos4,tspl4
+c         write(13,700) xnh,fpos5,tspl5,xpas,fposs
+c700      format(5(2x,e12.5))
+c ***********************************
+         go to 10
+      else
+c ++++ THIS OPTION IS NOT AVAILABLE IN THE CODE +++++++++++++
+c the field (MV/cm) is given in the form of a Fourier series
+         tspl0=fone(fpos0)*fmult
+         tspl1=fone(fpos1)*fmult
+         tspl2=fone(fpos2)*fmult
+         tspl3=fone(fpos3)*fmult
+         tspl4=fone(fpos4)*fmult
+         tspl5=fone(fpos5)*fmult
+c ****TEST
+cold         write(6,*) 'xnh fmult ',xnh,fmult
+cc         write(70,700) fpos0,tspl0
+cc         write(70,700) fpos1,tspl1
+cc         write(70,700) fpos2,tspl2
+cc         write(70,700) fpos3,tspl3
+cc         write(70,700) fpos4,tspl4
+cold         write(70,700) fpos5,tspl5
+c ***********************************
+       endif
+10     continue
+       return
+       end
+       SUBROUTINE fposbb(xlcum)
+c  SV 24/08/2015
+c -------------------------------------------------------
+c  electric field at the 6 Bode's positions in the step  (see routine dwref1)
+c -------------------------------------------------------
+       implicit real*8 (a-h,o-z)
+       common/cavnum1/xnh,xpas,fmult,npt
+       common/cavnum5/tspl0,tspl1,tspl2,tspl3,tspl4,tspl5
+       common/cavnum6/fpos0,fpos1,fpos2,fpos3,fpos4,fpos5
+       common/spl/xspl(4000),yspl(4000),s(5000),p(5000),q(5000)
+       common/rfield/ifield
+       logical ifield
+c *******************************************
+       fpos0=xnh*xpas+xlcum
+       fpos1=(xnh+0.20)*xpas+xlcum
+       fpos2=(xnh+0.40)*xpas+xlcum
+       fpos3=(xnh+0.60)*xpas+xlcum
+       fpos4=(xnh+0.80)*xpas+xlcum
+       fpos5=(xnh+1.0)*xpas+xlcum
+       if(ifield) then
+c --- the field is read from disk in MV/cm
+         tspl0=spline(npt,fpos0)*fmult
+         tspl1=spline(npt,fpos1)*fmult
+         tspl2=spline(npt,fpos2)*fmult
+         tspl3=spline(npt,fpos3)*fmult
+         tspl4=spline(npt,fpos4)*fmult
+         tspl5=spline(npt,fpos5)*fmult
+c ****TEST
+ccc         write(13,*) 'xnh fpos tspl '
+cc         write(13,700) xnh,fpos0,tspl0,xpas
+c         write(13,700) xnh,fpos1,tspl1
+c         write(13,700) xnh,fpos2,tspl2
+c         write(13,700) xnh,fpos3,tspl3
+c         write(13,700) xnh,fpos4,tspl4
+c         write(13,700) xnh,fpos5,tspl5,xpas
+c700      format(4(2x,e12.5))
+c ***********************************
+         go to 10
+      else
+c the field (MV/cm) is given in the form of a Fourier series
+         tspl0=fone(fpos0)*fmult
+         tspl1=fone(fpos1)*fmult
+         tspl2=fone(fpos2)*fmult
+         tspl3=fone(fpos3)*fmult
+         tspl4=fone(fpos4)*fmult
+         tspl5=fone(fpos5)*fmult
+c ****TEST
+cold         write(6,*) 'xnh fmult ',xnh,fmult
+cc         write(70,700) fpos0,tspl0
+cc         write(70,700) fpos1,tspl1
+cc         write(70,700) fpos2,tspl2
+cc         write(70,700) fpos3,tspl3
+cc         write(70,700) fpos4,tspl4
+cold         write(70,700) fpos5,tspl5
+c ***********************************
+       endif
+10     continue
        return
        end
        SUBROUTINE fposb
@@ -25912,7 +26618,7 @@ c .............................................
 c  dynamics of the bunch
 c ....................................................
        implicit real*8 (a-h,o-z)
-       parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
+       parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/DYN/TREF,VREF
        COMMON/SC3/BEAMC,SCDIST,SCE10,CPLM,ECT,APL,ICHAES,ISCSP
        common/dcspa/iesp
@@ -26117,7 +26823,7 @@ c   ............................................................................
 C          reject particles outside window set by REJECT card
 c   ............................................................................
        implicit real*8 (a-h,o-z)
-       parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
+       parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
        COMMON/TTFC/TK,T1K,T2K,SK,S1K,S2K,FH
        common/faisc/f(10,iptsz),imax,ngood
@@ -26125,8 +26831,7 @@ c   ............................................................................
        common/mcs/imcs,ncstat,cstat(20)
        common/etcom/cog(8),exten(17),fd(iptsz)
        COMMON/FENE/WDISP,WPHAS,WX,WY,RLIM,IFW
-c
-c       COMMON/DYN/TREF,VREF
+       COMMON/DYN/TREF,VREF
 c       common/tapes/in,ifile,meta
 c       COMMON/DAVCOM/dav1(maxcell1,40),davtot,iitem(maxcell1),idav
 c       COMMON/SC3/BEAMC,SCDIST,SCE10,CPLM,ECT,APL,ICHAES,ISCSP
@@ -26137,39 +26842,62 @@ c       common/posc/xpsc
 c       common/tofev/ttvols
 c       COMMON/ITVOLE/ITVOL,IMAMIN
 c       logical iesp,ichaes,shift,iemgrw,itvol,imamin
+c ---- ifw = 0  ===> wdisp = dW/W relative to cog
+c ---- ifw = 1  ===> wdisp = dW (MeV) relative to cog
+c ---- ifw = 10 ===> wdisp = dW/W relative to REF
+c ---- ifw = 11 ===> wdisp = dW (MeV) relative to REF
        ilost=0
        FH0=FH/VL
        fcpi=fh*180./pi
 c Test window
        write(16,*)'Check if the ',ngood,' particles are within window'
        write(16,*) 'Number of charge states: ',ncstat
-       if (ncstat.gt.1) call cogetc
-       bcour=0.
-       cgtv=0.
-       do i=1,ngood
-         gpai=f(7,i)/xmat
-         bcour=sqrt(1.-1./(gpai*gpai))+bcour
-         cgtv=cgtv+f(6,i)
-       enddo
-       cgtv=cgtv/float(ngood)
-       bcour=bcour/float(ngood)
-       bcg=bcour
-       gcour=1./sqrt(1.-bcour*bcour)
-       gcg=gcour
-       wcg=(gcour-1.)*xmat
-       do i=1,ngood
-         gpai=f(7,i)/xmat
-         bcour=sqrt(1.-1./(gpai*gpai))
-         fd(i)=bcour/bcg * gpai/gcg
-       enddo
-c         fd(i)=(gpai*bpai)/(gcog*bcog)
-c ---- select wdisp according to ifw
+       if(ifw.le.1) then
+C Relative to COG
+         write(16,3900)
 c ---- ifw = 0 ===> wdisp = dW/W
 c ---- ifw = 1 ===> wdisp = dW (MeV)
-       if(ifw.eq.0) then
-         dispr=gcour*gcour*wdisp/(gcour*(gcour+1.))
+         if (ncstat.gt.1) call cogetc
+         bcour=0.
+         cgtv=0.
+         do i=1,ngood
+           gpai=f(7,i)/xmat
+           bcour=sqrt(1.-1./(gpai*gpai))+bcour
+           cgtv=cgtv+f(6,i)
+         enddo
+         cgtv=cgtv/float(ngood)
+         bcour=bcour/float(ngood)
+         bcg=bcour
+         gcour=1./sqrt(1.-bcour*bcour)
+         gcg=gcour
+         wcg=(gcour-1.)*xmat
+         do i=1,ngood
+           gpai=f(7,i)/xmat
+           if(gpai.lt.1.) gpai=1.
+           bcour=sqrt(1.-1./(gpai*gpai))
+           fd(i)=bcour/bcg * gpai/gcg
+         enddo
+         if(ifw.eq.0) then
+           dispr=gcour*gcour*wdisp/(gcour*(gcour+1.))
+         else
+           dispr=gcour*gcour*wdisp/(gcour*(gcour+1.)*wcg)
+         endif
        else
-         dispr=gcour*gcour*wdisp/(gcour*(gcour+1.)*wcg)
+C Relative to REF
+         write(16,3901)
+         bref=VREF/VL
+         gref=1./sqrt(1.-bref*bref)
+         wref=(gref-1.)*xmat
+         do i=1,ngood
+            gpai=f(7,i)/xmat
+            bcour=sqrt(1.-1./(gpai*gpai))
+            fd(i)=bcour/bref * gpai/gref
+         enddo
+         if(ifw.eq.10) then
+           dispr=gref*gref*wdisp/(gref*(gref+1.))
+         else
+           dispr=gref*gref*wdisp/(gref*(gref+1.)*wref)
+         endif
        endif
        write(16,3927)   rlim,wx,wy,wphas,wdisp
 c     *         ,dispr,f6i*fh*180./pi,f(7,i)-xmat,int(f(9,i))
@@ -26177,26 +26905,32 @@ c     *         ,dispr,f6i*fh*180./pi,f(7,i)-xmat,int(f(9,i))
        do i=1,ngood
          ray=f(2,i)*f(2,i)+f(4,i)*f(4,i)
          ray=sqrt(ray)
-         if(ray.gt.rlim) f(8,i)=0
-         if(abs(f(2,i)).gt.wx) f(8,i)=0
-         if(abs(f(4,i)).gt.wy) f(8,i)=0
-         if (ncstat.gt.1) then
+         if(ray.gt.rlim) f(8,i)=0.
+         if(abs(f(2,i)).gt.wx) f(8,i)=0.
+         if(abs(f(4,i)).gt.wy) f(8,i)=0.
+         if(ifw.le.1) then
+C Relative to cog
+           if (ncstat.gt.1) then
 c---- each charge state has its own COG in phase
-           do istc=1,ncstat
-             if(f(9,i).eq.charm(istc))then
-               f6i=f(6,i)-cgtdv(istc)
+             do istc=1,ncstat
+               if(f(9,i).eq.charm(istc))then
+                 f6i=f(6,i)-cgtdv(istc)
 c             tmp=cgtdv(istc)
-             endif
-           enddo
+               endif
+             enddo
+           else
+             f6i=f(6,i)-cgtv
+           endif
          else
-           f6i=f(6,i)-cgtv
+C Relative to REF
+           f6i=f(6,i)-TREF
          endif
          if(fh*abs(f6i).ge.wphas) then
-           f(8,i)=0
+           f(8,i)=0.
 c           write(16,*) "Test1:",fh*abs(f6i),wphas,tmp,f(6,i)
          endif
          if(abs(fd(i)-1.).ge.dispr) then
-           f(8,i)=0
+           f(8,i)=0.
 c           write(16,*) "Test2:",abs(fd(i)-1.)
          endif
          if(f(8,i).eq.0.) then
@@ -26228,6 +26962,8 @@ ccccc       cstat=1
        write(16,4030) (cstat(j),j=1,ncstat)
        imcs=0
        if(ncstat.gt.1) imcs=1
+3900   FORMAT(' Window w.r.t. COG')
+3901   FORMAT(' Window w.r.t. reference particle')
 3927   FORMAT(' LIM R,X,Y ',3(f10.2,9x),'P,W ',e12.5,9x,e12.5)
 3928   FORMAT(' # ',i5,1x,i5,1x,6(f10.2,1x),1x,f5.2)
 4030   FORMAT('Charge state(s): ',20(f5.1,1x))
@@ -26266,7 +27002,7 @@ c   SK2  :     integral related to the extent of the fringing field
 C   AP(2) : CM   vertical half aperture
 c ****************************************************************************
        implicit real*8 (a-h,o-z)
-       parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
+       parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/TTFC/TK,T1K,T2K,SK,S1K,S2K,FH
        COMMON/SC3/BEAMC,SCDIST,SCE10,CPLM,ECT,APL,ICHAES,ISCSP
        COMMON/FENE/WDISP,WPHAS,WX,WY,RLIM,IFW
@@ -26700,17 +27436,15 @@ c --- Test window after the bending magnet
        gcog=gcog/float(ngood)
        bcog=sqrt(1.-1./(gcog*gcog))
        wcg=(gcog-1.)*xmat
-c    ----- window control
-       call reject(ilost)
-c  Reshuffles f(i,j) array after window (now done in 'reject')
-cold         call shuffle
-c ---------------------------------------------------
-       dav1(idav,37)=ngood
 c devtot: total angle of the bending magnet(computation of tref)
        devi=devtot
        ailong=devi*rmo
        IF(IRAYSH.and.xmat.eq.0.511) go to 2561
        TREF=TREF+AILONG/VREF
+c    ----- window control
+       call reject(ilost)
+c ---------------------------------------------------
+       dav1(idav,37)=ngood
        if(itvol) ttvols=tref
 2561   continue
        BEREF=VREF/VL
@@ -26877,7 +27611,7 @@ c  ky2 = 0
       end
        SUBROUTINE e_deflec
        implicit real*8 (a-h,o-z)
-       parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
+       parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/TTFC/TK,T1K,T2K,SK,S1K,S2K,FH
        COMMON/SC3/BEAMC,SCDIST,SCE10,CPLM,ECT,APL,ICHAES,ISCSP
        COMMON/FENE/WDISP,WPHAS,WX,WY,RLIM,IFW
@@ -27004,7 +27738,7 @@ c ---- nsector: number of sectors in the deflector
         xlsy=devi*rm0
         sdavtot=sdavtot+xlsy
 c ------------------------------------------------------------
-c --- nsctat: number of charges states in the beam
+c --- nsctat: number of charge states in the beam
         do ist=1,ncstat
           charge(ist)=cstat(ist)
           xmoy(ist)=0.
@@ -27036,7 +27770,6 @@ c      electric rigidity (kV)
           rig(ist)=rig(ist)/float(ncs(ist))
           rmoy(ist)=rig(ist)/efd0
           avbt(ist)=avbt(ist)/float(ncs(ist))
-c          write(16,*) 'Debug ED=',ist,cstat(ist),rmoy(ist),rig(ist)
 c   dispersion in dp/p relative to the cog of the bunch
           gcog=sqrt(1.-avbt(ist)*avbt(ist))
 C ALT 5/28
@@ -27061,7 +27794,6 @@ c       alp(ist): angle of the local deflector
 c        parametres kx2 and ky2
 c  eq.11
          oo1=rm0-rmoy(ist)+xmoy(ist)
-c         write(16,*) 'Debug ED2=',oo1,rm0,rmoy(ist),xmoy(ist)
 c  eq.10
 c*et*2015-May-13-s
 c         abet=oo1*sin(devi)/rmoy(ist)
@@ -27073,7 +27805,6 @@ c*et*2015-May-13-s
 c         alp(ist)=devi+abet
          alp(ist)=alp(ist)+abet
 c*et*2015-May-13-e
-c         write(16,*) 'Debug ED3=',abet,devi,alp(ist)
 c  eq.14 (field index)
          findex=1.+rmoy(ist)/radii
 c  eq.15 (parameters kx, ky)
@@ -27171,16 +27902,14 @@ c --- Test window after the bending magnet
        gcog=gcog/float(ngood)
        bcog=sqrt(1.-1./(gcog*gcog))
        wcg=(gcog-1.)*xmat
-c    ----- window control
-       call reject(ilost)
-c  Reshuffles f(i,j) array after window (now done in 'reject')
-cold         call shuffle
-c ---------------------------------------------------
-       dav1(idav,36)=ngood
 c devtot: total angle of the deflector (computation of tref)
        devi=devtot
        ailong=devi*rm0
        TREF=TREF+AILONG/VREF
+c    ----- window control
+       call reject(ilost)
+c ---------------------------------------------------
+       dav1(idav,36)=ngood
        if(itvol) ttvols=tref
        if(itvol) write(16,*) ' tof for adjustments: ',ttvols,' sec'
        if(iemgrw) call emiprt(0)
@@ -27195,7 +27924,7 @@ c   ....................................................................
 C       select the space charge method (optical lenses)
 c   ....................................................................
        implicit real*8 (a-h,o-z)
-       parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
+       parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/SC3/BEAMC,SCDIST,SCE10,CPLM,ECT,APL,ICHAES,ISCSP
        COMMON/CDEK/DWP(iptsz)
        COMMON/DCSPA/IESP
@@ -27247,7 +27976,7 @@ c   ........................................................................
 c   partial R.M.S. (called by SCHEFF_sep)
 c   ........................................................................
        implicit real*8 (a-h,o-z)
-       parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
+       parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/part/xc(iptsz),yc(iptsz),zc(iptsz)
        COMMON/CGRMS/xsum,ysum,zsum
        common/faisc/f(10,iptsz),imax,ngood
@@ -27289,7 +28018,7 @@ C   Divide by 100. to convert from cm to meters
 c    called by SCHEFF or SCHERM
 c   ..................................................................
        implicit real*8 (a-h,o-z)
-       parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
+       parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        common/faisc/f(10,iptsz),imax,ngood
        COMMON/QMOYEN/QMOY
        COMMON/PART/XC(iptsz),YC(iptsz),ZC(iptsz)
@@ -27385,7 +28114,7 @@ c   ........................................................................
 c     seek the bunches in the beam separated or not
 c   ........................................................................
        implicit real*8 (a-h,o-z)
-       parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
+       parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/part/xc(iptsz),yc(iptsz),zc(iptsz)
        COMMON/CGRMS/xsum,ysum,zsum
        common/faisc/f(10,iptsz),imax,ngood
@@ -27505,7 +28234,7 @@ c         sce(7)=0
 c         sce(9)=0
 c  ..............................................................................
        implicit real*8 (a-h,o-z)
-       parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
+       parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/DYN/TREF,VREF
        COMMON/TTFC/TK,T1K,T2K,SK,S1K,S2K,FH
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
@@ -27585,7 +28314,7 @@ c         sce(7)=0
 c         sce(9)=0
 c  ..............................................................................
        implicit real*8 (a-h,o-z)
-       parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
+       parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/DYN/TREF,VREF
        COMMON/CMPTE/IELL
        COMMON/part/xc(iptsz),yc(iptsz),zc(iptsz)
@@ -27610,22 +28339,22 @@ c  .............................................................................
      2 ,er(861),rss(20), ismax(40), iemax(41)
        common/rcshef/sce(20)
        common/conti/irfqp
-c §§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§
+c********************************************
 c v28/04/2015
        common/fcont/ifcont
        logical ifcont
-c §§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§
+c********************************************
        logical irfqp
        idm=idum
 c     set up field tables with int=0
 comment       beami=beamc/1000.0
-c §§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§
+c********************************************
 c v28/04/2015
        if(ifcont) then
          pib=180.
          call compress(pib)
        endif
-c §§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§
+c********************************************
        gmoy=0.
        do np=1,ngood
          gmoy=f(7,np)/xmat+gmoy
@@ -28049,7 +28778,7 @@ c         sce(7)=0
 c         sce(9)=0
 c  ..............................................................................
        implicit real*8 (a-h,o-z)
-       parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
+       parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/DYN/TREF,VREF
        COMMON/CMPTE/IELL
        COMMON/part/xc(iptsz),yc(iptsz),zc(iptsz)
@@ -28469,7 +29198,7 @@ c	NVF: Kicker axis: 0 = horziontal, 1= vertical (use negative
 c		voltage for negative deflection)
 c   ............................................................................
        implicit real*8 (a-h,o-z)
-       parameter (iptsz=100002,maxcell=3000,maxtnk=10,maxcell1=3000)
+       parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/RIGID/BORO
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
        COMMON/DYN/TREF,VREF
@@ -28501,8 +29230,8 @@ c print out on terminal of transport element # on one and the same line
        WRITE(6,8254) nrtre,cr
 8254   format('Transport element:',i5,a1,$)
        if (harm.le.0.) harm=1.
-c   test window
-       call reject(ilost)
+c   test window - unneccesary at START of element - Alt
+c       call reject(ilost)
 C   Calculate tof, beta, gamma, k.e. for c.o.g.
        tcog=0.
        bcog=0.
@@ -28602,4 +29331,3 @@ c dave start for kicker
        call emiprt(0)
        return
        end
-
