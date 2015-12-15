@@ -26,6 +26,25 @@
      3          .176562705,.168004102,.154045761,
      4          .135136368,.111883847,.085036148,
      5          .055459529,.024148303/
+       common/randu/ck(15),kmax
+c       randu(j):contains the Chebitcheff coefficients Ck in table 20.
+c       kmax is the total number of these coefficients(from 1)
+       data (ck(j),j=1,7)/.98933556,-.68838689,.28191718,
+     *       -.66389307E-01,.87406854E-02,-.59534602E-03,
+     *       .16300617E-04/
+cxx        data (ck(j),j=1,10)/.99927015,-.78398394,.44577741,
+cxx     *        -.18252873,.51928922e-01,-.99821428e-02,
+cxx     *        .1259644e-02,-.99460265e-04,.44427251e-05,
+cxx     *        -.85528336e-07/
+cxx        data (ck(j),j=1,12)/.99989097,-.79469098,.48376369,
+cxx     *        -.23183581,.85333907e-01,-.23354050e-01,
+cxx     *        .46284273e-02,-.64840101e-03,.62211306e-04,
+cxx     *        -.38752189e-05,.14087289e-06,-.22650639e-08/
+       common/const/pi2,sqpi,pwtpi,sqpi2,sq2pi
+c   pi2=pi*pi, sqpi=(pi/2)**3/2 , pwtpi=(2*pi)**3/2 ,sqpi2=sqrt(pi/2.)
+       data pi2,sqpi,pwtpi,sqpi2/9.86960440,1.96870124,
+     *                         15.74960995,1.25331414/
+       data kmax/7/
        END
 c *******************************************************************
 C      PROGRAM DYNAC
@@ -5110,20 +5129,6 @@ c   GAUSS n=12 de -1. a 1
        data (w12(j),j=1,12)/.0471753,.1069393,.1600783,.2031674,
      1   .2334925,.2491470,.2491470,.2334925,.2031674,.1600783,
      2   .1069393,.0471753/
-c       randu(j):contains the Chebitcheff coefficients Ck in table 20.
-c       kmax is the total number of these coefficients(from 1)
-       data (ck(j),j=1,7)/.98933556,-.68838689,.28191718,
-     *       -.66389307E-01,.87406854E-02,-.59534602E-03,
-     *       .16300617E-04/
-cxx        data (ck(j),j=1,10)/.99927015,-.78398394,.44577741,
-cxx     *        -.18252873,.51928922e-01,-.99821428e-02,
-cxx     *        .1259644e-02,-.99460265e-04,.44427251e-05,
-cxx     *        -.85528336e-07/
-cxx        data (ck(j),j=1,12)/.99989097,-.79469098,.48376369,
-cxx     *        -.23183581,.85333907e-01,-.23354050e-01,
-cxx     *        .46284273e-02,-.64840101e-03,.62211306e-04,
-cxx     *        -.38752189e-05,.14087289e-06,-.22650639e-08/
-       data kmax/7/
 c    built the abscissas from (-1,1) to (1,0)
        if(igaus.eq.9) then
          do i=1,igaus
@@ -9172,9 +9177,6 @@ c  ........................................................................
        common/locher/rx,ry,rz,nx,ny,nz
        logical ichaes,iesp
        dimension exk(15,15,30),eyk(15,15,30),ezk(15,15,30)
-c   pi2=pi*pi, sqpi=(pi/2)**3/2 , pwtpi=(2*pi)**3/2 ,sqpi2=sqrt(pi/2.)
-       data pi2,sqpi,pwtpi,sqpi2/9.86960440,1.96870124,
-     *                         15.74960995,1.25331414/
        data lbmax,mbmax,nbmax/23,23,23/
 c ini = 0 :initialisation of the routine
        if(ini.le.0) then
