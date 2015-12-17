@@ -1,2 +1,1 @@
-gfortran dynacv6_0.f -g -Wuninitialized -fno-automatic  -O -o ../bin/dynacv6_0
-
+gfortran dynac.F -g -Wuninitialized -fno-automatic  -O -o ../bin/dynacv6_0
