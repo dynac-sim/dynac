@@ -211,12 +211,12 @@ c describing the accelerator or transport line
               open(7,file=myarg(i),status='unknown')
               ffound=.true.
             else
-              if(myarg(i).eq.'-mingw') then
+#ifdef MINGW
 c if mg=.true., use MINGW on windows, which has a different result
 c for ctime function than standard gfortran
                 mg=.true.
                 write(6,*) 'Using MINGW gfortran format on MSWindows'
-              endif
+#endif
               if(myarg(i).eq.'-h') then
 c     print out of help message, starting with DYNAC version
                 WRITE(6,3101)
@@ -227,8 +227,6 @@ c     print out of help message, starting with DYNAC version
                 write(6,*) 'Optional arguments:'
                 write(6,*) '-h will list the argument options (this ',
      *                     'list)'
-                write(6,*) '-mingw will enable MINGW gfortran format',
-     *                     ' on MSWindows'
               stop
               endif
             endif
