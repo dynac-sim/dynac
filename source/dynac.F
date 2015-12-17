@@ -12678,9 +12678,15 @@ C*bugfix*2010_07_03 : next line was missing; caused # of accelerating elements t
        nrres=nrres+1
 c allow for print out on terminal of gap# on one and the same line
        cr=char(13)
+#if F77
+       WRITE(6,8254) NRTRE,NDTL,cr
+8254   format('Transport element:',i5,
+     *        '      Accelerating gap    :',i5,a1, $)
+#else
        WRITE(6,8254,advance='no') NRTRE,NDTL,cr
 8254   format('Transport element:',i5,
      *        '      Accelerating gap    :',i5,a1)
+#endif
        WRITE(16,*)'ACCELERATING GAP N :',NDTL
        read(IN,*) (etcell(iet),iet=1,16)
 c trace3d
@@ -14188,9 +14194,15 @@ cxx       ilost=0
 c print out on terminal of transport element # on one and the same line
        nrbunc=nrbunc+1
        cr=char(13)
+#ifdef F77
+       WRITE(6,8254) nrtre,nrbunc,cr
+8254   format('Transport element:',i5,
+     *        '      Buncher             :',i5,a1,$)
+#else
        WRITE(6,8254,advance='no') nrtre,nrbunc,cr
 8254   format('Transport element:',i5,
      *        '      Buncher             :',i5,a1)
+#endif
        if (harm.le.0.) harm=1.
        rhs=prlim*prlim
 c   test window
@@ -14538,9 +14550,15 @@ C-----ANGULAR DISPLACEMENTS DUE TO STEERING
 c print out on terminal of transport element # on one and the same line
        NRTRE=NRTRE+1
        cr=char(13)
+#if F77
+       WRITE(6,8254) NRTRE,NRRES,cr
+8254   format('Transport element:',i5,
+     *       '      Accelerating element:',i5,a1,$)
+#else
        WRITE(6,8254,advance='no') NRTRE,NRRES,cr
 8254   format('Transport element:',i5,
      *       '      Accelerating element:',i5,a1)
+#endif
        if (nvf.eq.0) then
 c horizontal magnetic steerer
          write(16,*) 'Horizontal magnetic steerer: ',fld,' Tm'
@@ -16187,9 +16205,15 @@ C    LENGTH (YLG-XESLN)
        ncavmc=ncavmc+1
 c allow for print out on terminal of gap# on one and the same line
        cr=char(13)
+#ifdef F77
+       WRITE(6,8254) NRTRE,NRRES,cr
+8254   format('Transport element:',i5,
+     *        '      Accelerating element:',i5,a1,$)
+#else
        WRITE(6,8254,advance='no') NRTRE,NRRES,cr
 8254   format('Transport element:',i5,
      *        '      Accelerating element:',i5,a1)
+#endif
        WRITE(16,*)' CAVITY N :',NRRES
        ilost=0
        aqst=abs(qst)
@@ -20053,9 +20077,15 @@ C      statistics
        NRTRE=NRTRE+1
        cr=char(13)
 c print out on terminal of transport element # on one and the same line
+#ifdef F77
+       WRITE(6,8254) NRTRE,NRRES,cr
+8254   format('Transport element:',i5,
+     *        '      Accelerating element:',i5,a1,$)
+#else
        WRITE(6,8254,advance='no') NRTRE,NRRES,cr
 8254   format('Transport element:',i5,
      *        '      Accelerating element:',i5,a1)
+#endif
        len=1
 c  if itwist=.true. skews the sextupole before misalignments
        sqtwist=0.
@@ -20248,9 +20278,15 @@ c
 c print out on terminal of transport element # on one and the same line
        NRTRE=NRTRE+1
        cr=char(13)
+#ifdef F77
+       WRITE(6,8254) NRTRE,NRRES,cr
+8254   format('Transport element:',i5,
+     *        '      Accelerating element:',i5,a1,$)
+#else
        WRITE(6,8254,ADVANCE='NO') NRTRE,NRRES,cr
 8254   format('Transport element:',i5,
      *        '      Accelerating element:',i5,a1)
+#endif
        ilost=0
 C   B : GRADIENT IN kG/cm
        b=bquad/rg
@@ -20455,9 +20491,15 @@ c   ............................................................................
 c print out on terminal of transport element # on one and the same line
        NRTRE=NRTRE+1
        cr=char(13)
+#ifdef F77
+       WRITE(6,8254) NRTRE,NRRES,cr
+8254   format('Transport element:',i5,
+     *        '      Accelerating element:',i5,a1,$)
+#else
        WRITE(6,8254,ADVANCE='NO') NRTRE,NRRES,cr
 8254   format('Transport element:',i5,
      *        '      Accelerating element:',i5,a1)
+#endif
        rgorge=rg
        ilost=0
 C      statistics
@@ -20874,9 +20916,15 @@ c   ....................................................................
 c    print out on terminal of transport element # on one and the same line
        NRTRE=NRTRE+1
        cr=char(13)
+#ifdef F77
+       WRITE(6,8254) NRTRE,NRRES,cr
+8254   format('Transport element:',i5,
+     *        '      Accelerating element:',i5,a1,$)
+#else
        WRITE(6,8254,ADVANCE='NO') NRTRE,NRRES,cr
 8254   format('Transport element:',i5,
      *        '      Accelerating element:',i5,a1)
+#endif
 c       read the magnetic field on the disk
        read(25,*) ncord
        if(ncord.eq.0) then
@@ -21102,9 +21150,15 @@ c print out on terminal of transport element # on one and the same line
        NRTRE=NRTRE+1
        cr=char(13)
 c print out on terminal of transport element # on one and the same line
+#ifdef F77
+       WRITE(6,8254) NRTRE,NRRES,cr
+8254   format('Transport element:',i5,
+     *        '      Accelerating element:',i5,a1,$)
+#else
        WRITE(6,8254,ADVANCE='NO') NRTRE,NRRES,cr
 8254   format('Transport element:',i5,
      *        '      Accelerating element:',i5,a1)
+#endif
        write(16,*) ' ****** SOLENOID *********'
 C      PLOT
        IF(IPRF.EQ.1) CALL STAPL(davtot*10.)
@@ -21380,9 +21434,15 @@ C --RG : APERTURE RADIUS OF THE LENS (cm)
 c print out on terminal of transport element # on one and the same line
        NRTRE=NRTRE+1
        cr=char(13)
+#ifdef F77
+       WRITE(6,8254) NRTRE,NRRES,cr
+8254   format('Transport element:',i5,
+     *        '      Accelerating element:',i5,a1,$)
+#else
        WRITE(6,8254,ADVANCE='NO') NRTRE,NRRES,cr
 8254   format('Transport element:',i5,
      *        '      Accelerating element:',i5,a1)
+#endif
        FH0=FH/VL
 C      PLOT
        IF(IPRF.EQ.1) CALL STAPL(davtot*10.)
@@ -22499,11 +22559,17 @@ c    reference ( c.o.g. of the bunch)
            vref=bets*vl
 comment    call emiprt(0)
            write(16,562) fpos5*1000,tref,bets,tspl5
-           write(6,1562,ADVANCE='NO') fpos5*1000,bets,cr
 562    format(' ref.(c.o.g.) at ',e12.5,' mm of the  cathode',/,
      * 5x,' tof: ',e12.5,' sec beta: ',e12.5,' field (MV/m) ',e12.5)
+#ifdef F77
+           write(6,1562) fpos5*1000,bets,cr
+1562   format(' EGUN: at ',e12.5,' mm from the cathode; beta: ',e12.5,
+     * a1,$)
+#else
+           write(6,1562,ADVANCE='NO') fpos5*1000,bets,cr
 1562   format(' EGUN: at ',e12.5,' mm from the cathode; beta: ',e12.5,
      * a1)
+#endif
          go to 501
         endif
 500     continue
@@ -23714,9 +23780,15 @@ c  ns = 18: number of steps in cells (apart for the fringe field region and RMS)
 c   the integer nn is only used if the RMS profile is required
        nn=0
        do ncell=1,nceltot
+#ifdef F77
+         write(6,8254) nrtre,ncell,cr
+8254     format('Transport element:',i5,'      RFQ cell :',
+     *     i5,'            ',a1,$)
+#else
          write(6,8254,ADVANCE='NO') nrtre,ncell,cr
 8254     format('Transport element:',i5,'      RFQ cell :',
      *     i5,'            ',a1)
+#endif
         ns=18
         if(itype(ncell).eq.5) ns=126
         if(itype(ncell).eq.6) ns=126
@@ -24666,9 +24738,15 @@ c allow for print out on terminal of stripper number on one and the same line
         cr=char(13)
         nstrp=1
         imcs=1
+#ifdef F77
+        write(6,8254) nrtre,nstrp,cr
+8254    format('Transport element:',i5,
+     *        '      Charge Stripper     :',i5,a1,$)
+#else
         write(6,8254,ADVANCE='NO') nrtre,nstrp,cr
 8254    format('Transport element:',i5,
      *        '      Charge Stripper     :',i5,a1)
+#endif
         write(16,101)anp,atm
 101     format('***** Projectile ',/,4x,
      *  'atomic number: ',f4.0,' atomic mass : ',f4.0)
@@ -24958,9 +25036,15 @@ C      statistics
 c print out on terminal of transport element # on one and the same line
        NRTRE=NRTRE+1
        cr=char(13)
+#ifdef F77
+       WRITE(6,8254) NRTRE,NRRES,cr
+8254   format('Transport element:',i5,
+     *        '      Accelerating element:',i5,a1,$)
+#else
        WRITE(6,8254,advance='no') NRTRE,NRRES,cr
 8254   format('Transport element:',i5,
      *        '      Accelerating element:',i5,a1)
+#endif
 c  if itwist=.true. skews the quadrupole before misalignments (only if abs(volt) gt 1.e-13)
 c     len = 1 level 1 in rlux routine
        len=1
@@ -25174,9 +25258,15 @@ C      statistics
 c print out on terminal of transport element # on one and the same line
        NRTRE=NRTRE+1
        cr=char(13)
+#ifdef F77
+       WRITE(6,8254) NRTRE,NRRES,cr
+8254   format('Transport element:',i5,
+     *        '      Accelerating element:',i5,a1,$)
+#else
        WRITE(6,8254,ADVANCE='NO') NRTRE,NRRES,cr
 8254   format('Transport element:',i5,
      *        '      Accelerating element:',i5,a1)
+#endif
 c  if itwist=.true. skews the quadrupole before misalignments (only if abs(arg) gt 1.e-13)
 c     len = 1 level 1 in rlux routine
        len=1
@@ -25464,9 +25554,15 @@ C    LENGTH (YLG-XESLN)
        ncavnm=ncavnm+1
 c allow for print out on terminal of gap# on one and the same line
        cr=char(13)
+#ifdef F77
+       WRITE(6,8254) NRTRE,NRRES,cr
+8254   format('Transport element:',i5,
+     *        '      Accelerating element:',i5,a1,$)
+#else
        WRITE(6,8254,ADVANCE='NO') NRTRE,NRRES,cr
 8254   format('Transport element:',i5,
      *        '      Accelerating element:',i5,a1)
+#endif
        WRITE(16,*)' CAVITY N :',NRRES
        ilost=0
        aqst=abs(qst)
@@ -27069,9 +27165,15 @@ c --- RI momentum kG.cm
 c print out on terminal of transport element # on one and the same line
        NRTRE=NRTRE+1
        cr=char(13)
+#ifdef F77
+       WRITE(6,8254) NRTRE,NRRES,cr
+8254   format('Transport element:',i5,
+     *        '      Accelerating element:',i5,a1,$)
+#else
        WRITE(6,8254,ADVANCE='NO') NRTRE,NRRES,cr
 8254   format('Transport element:',i5,
      *        '      Accelerating element:',i5,a1)
+#endif
 cold       IF(IROT1) WRITE(16,1010) PENT1,RAB1,EK1,EK2,APB(1)
        if(ichaes) then
         write(16,*)'***** beam current: ',beamc,' mA'
@@ -27649,9 +27751,15 @@ c -----------------------------------------------------------------
 c print out on terminal of transport element # on one and the same line
        NRTRE=NRTRE+1
        cr=char(13)
+#ifdef F77
+       WRITE(6,8254) NRTRE,NRRES,cr
+8254   format('Transport element:',i5,
+     *        '      Accelerating element:',i5,a1,$)
+#else
        WRITE(6,8254,ADVANCE='NO') NRTRE,NRRES,cr
 8254   format('Transport element:',i5,
      *        '      Accelerating element:',i5,a1)
+#endif
 c ------------------------------------------------------------------
 c   characteristics of the deflector (central trajectory)
 c   input parameters
@@ -29229,8 +29337,13 @@ cxx       ilost=0
        fcpi=fh*180./pi
 c print out on terminal of transport element # on one and the same line
        cr=char(13)
+#if F77
+       WRITE(6,8254) nrtre,cr
+8254   format('Transport element:',i5,a1,$)
+#else
        WRITE(6,8254,ADVANCE='NO') nrtre,cr
 8254   format('Transport element:',i5,a1)
+#endif
        if (harm.le.0.) harm=1.
 c   test window - unneccesary at START of element - Alt
 c       call reject(ilost)
