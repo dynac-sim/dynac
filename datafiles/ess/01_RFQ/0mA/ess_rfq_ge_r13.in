@@ -1,0 +1,75 @@
+ESS RFQ
+;352.21E06 5000
+GEBEAM
+5 1
+352.21E06 5000
+0. 0.0 0.  0.0 0. 0.
+1.0203 0.1087 79.089
+1.0429 0.1098 79.088
+0.589e-06 0.  0.
+;1.0203 0.1087 79.089
+;1.0429 0.1098 79.088
+;0.589e-06 0.  0.
+;input -6 100000 1.0203 10.87 0.0118631 1.0429 10.98 0.0118631 180. 0.
+INPUT
+938.2796 1. 1.
+0.075  0.
+REFCOG
+1
+;EMITGR
+;PROTON BEAM AT ESS RFQ INPUT
+;0 5
+;5 60. .5 60. .5 .5 225. 0.00001
+; -> Scheff: 4.RRms,  4.ZRms, 4 adjacent bunches
+; -> distance between adjacent pulses in (beta.lambda/2.)
+SCDYNAC
+3
+70.  3.
+1
+4. 4.  20.  40. 5.  0.  0.
+;4. 4.  20.  40. 5.  0.  0. -> example with 5 adjacent bunches
+EMIT
+; -> reject: abs(disp W) > (+-) 0.3
+;REJECT
+;0 0.3 1000.  100.  100.  140.
+;ess_rfq_r13_prf.txt
+;ess_rfq_r13.txt
+RFQPTQ
+ess_rfq_r13_prf.txt
+416
+0.  0.  2.3  1.
+; *********************************************************************************************************
+; correction phase RF avec 2.3 --> ph(effectif) = ph(ini)*(1+2.3/100) uniquement pour cellules standards
+; dans fichier ess_rfq_r10: phase RF pour cellule T a été modifiée. Phase RF celllule F = phase sortie de T
+; *********************************************************************************************************
+EMIT
+;EMITGR
+;ESS RFQ OUTPUT DYNAC (70 mA)(before reject)
+;0 5
+;.4 40. .4 40. .5 .5 40. 0.1
+;;0.4 150. 0.4 150. 0.5 0.5 200. 0.001
+;GapFFS 0.008
+; next drift needed with FF type 7
+DRIFT
+0.79
+EMIT
+EMITGR
+PROTON BEAM AT ESS RFQ OUTPUT
+0 5
+0.6 40. 0.6 40. 0.6 0.6 100. 1.
+;ACCEPT
+;ESS RFQ ACCEPTANCE (KEPT)
+;0 5
+;0.5 25. 0.5 25. 0.5 0.5 360. 0.00001
+;ESS RFQ ACCEPTANCE (LOST)
+;0 5
+;0.5 25. 0.5 25. 0.5 0.5 360. 0.00001
+ENVEL
+BEAM THROUGH ESS RFQ
+2
+0. 5.
+0.5 0.5 500. 250.
+STOP
+
+
+

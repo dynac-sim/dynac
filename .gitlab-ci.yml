@@ -1,0 +1,15 @@
+variables:
+    GIT_SSL_NO_VERIFY: "true"
+
+before_script:
+    - yum install cmake make gcc-gfortran subversion -y
+    - svn co http://svn.cern.ch/guest/madx/trunk/madX/tools/numdiff
+    - mkdir numdiff/build && cd numdiff/build && cmake ../ && make install && cd ../..
+
+test:
+    script:
+        - mkdir build
+        - cd build
+        - cmake ../
+        - make
+        - ctest

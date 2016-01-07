@@ -1,0 +1,94 @@
+ESS RFQ 70 mA
+RDBEAM
+ESS_RFQ_in_70mA.dst
+0
+352.21 0.
+938.2796 1.
+0.075 1.
+REFCOG
+1
+NREF
+2.4 0. 0 1
+;EMITGR
+;PROTON BEAM AT ESS RFQ INPUT
+;0 5
+;.5 80. .5 80. .5 .5 225. 0.0001
+EMIT
+DRIFT
+0.0000001
+EMIT 
+;REJECT
+;0 0.4 35.  100.  100.  140.
+; IN THE FOLLOWING EXAMPLE (scheff) THE BEAM IS ASSUMED BE CONTINOUS
+SCDYNAC
+3
+70.  3.
+1
+4. 4.  20.  40. 5.  0.  0. 
+;4. 4.  20.  40. 5.  0.  0. -> exple with 5 adjacent bunches
+;was 421, now 416
+;ess_rfq_tout.dat
+;ess_rfq_tracewin.dat
+;ess_rfq_tracewin6.dat
+RFQPTQ
+ess_rfq_r13_prf.txt
+416
+0.  0.  2.3  1.
+;0. 0. 1.79  1. <-- phase change corrects for energy
+EMIT
+EMITGR
+ESS RFQ OUTPUT DYNAC (70 mA)
+0 5
+.4 40. .4 40. .4 .4 40. 1.
+;0.4 150. 0.4 150. 0.5 0.5 200. 0.001
+;1. 100. 1. 100. 2. 2. 225. 0.5
+;0.6 100. 0.6 100. 0.6 0.6 225. 0.1
+;0.5 80. 0.5 80. 0.5 0.5 225. 0.01
+;0.6 40. 0.6 40. 0.6 0.6 100. 1.
+; -> reject: abs(disp W) > (+-) 0.3
+;REJECT
+;0 0.3 1000.  100.  100.  140.
+; next drift needed with FF type 7
+DRIFT
+0.79
+;ZROT
+;90.
+EMIT
+;EMITGR
+;ESS RFQ OUTPUT DYNAC (70 mA)(after reject)
+;0 5
+;0.5 25. 0.5 25. 0.5 0.5 50. 0.1
+;.4 40. .4 40. .4 .4 40. 1.
+;0.5 25. 0.5 25. 0.5 0.5 50. 0.1
+;ACCEPT
+;ESS RFQ ACCEPTANCE (KEPT)
+;0 5
+;0.6 40. 0.6 40. 0.6 0.6 360. 0.00001
+;ESS RFQ ACCEPTANCE (LOST)
+;0 5
+;0.6 40. 0.6 40. 0.6 0.6 360. 0.00001
+ENVEL
+BEAM THROUGH ESS RFQ
+2
+0. 5.
+0.5 0.5 500. 250.
+STOP
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
