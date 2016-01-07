@@ -41,5 +41,6 @@ macro(run_test test_name input)
 endmacro()
 
 add_subdirectory(egun)
+add_subdirectory(electrostatic)
 add_subdirectory(sns)
 add_subdirectory(ess)
