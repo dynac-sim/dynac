@@ -44,21 +44,21 @@ cxx     *        -.38752189e-05,.14087289e-06,-.22650639e-08/
 c   pi2=pi*pi, sqpi=(pi/2)**3/2 , pwtpi=(2*pi)**3/2 ,sqpi2=sqrt(pi/2.)
        data kmax/7/
        END
-! *******************************************************************
-! PROGRAM DYNAC
-! THIS SOFTWARE WAS ORIGINALLY PRODUCED BY CERN/PS, CEN/SACLAY
+!> *******************************************************************
+!! PROGRAM DYNAC
+!! THIS SOFTWARE WAS ORIGINALLY PRODUCED BY CERN/PS, CEN/SACLAY
 
-! @version 6.0R15
-! @date 30-Dec-2015
+!! @version 6.0R15
+!! @date 08-Jan-2016
 
-! @author P. LAPOSTOLLE  CONSULTANT (Paris, France)
-! @author E. TANKE       ESS (Lund, Sweden)
-! @author S. VALERO      CONSULTANT (Paris, France)
+!! @author P. LAPOSTOLLE  CONSULTANT (Paris, France)
+!! @author E. TANKE       ESS (Lund, Sweden)
+!! @author S. VALERO      CONSULTANT (Paris, France)
 
-! Modified and maintained by :
-! - TANKE Eugene
-! - VALERO Saby
-! *******************************************************************
+!! Modified and maintained by :
+!! - TANKE Eugene
+!! - VALERO Saby
+!< *******************************************************************
        PROGRAM dynac
        implicit real*8 (a-h,o-z)
        parameter(ncards=64,iptsz=100002,maxcell=3000,maxcell1=3000)
@@ -181,7 +181,7 @@ c dynac file1 [-h]
 c where: -file1 is the input file, describing the beamline
 c        -h  print help info
         gfortran=.true.
-c g77 in case of g77, set g77=.true. ; in case of gfortran,
+c g77 in case of g77, set g77=.true. ; in case of gfortran, 
 c set g77=.false.
         g77=.false.
         if(g77) gfortran=.false.
@@ -209,17 +209,17 @@ c the input argument is the name of the input file
               write(6,2917)myarg(i)
 2917          format('Input file: ',A)
               infiln=myarg(i)
-C 7 or 'in' is the unit corresponding to the dynac input file
+C 7 or 'in' is the unit corresponding to the dynac input file 
 c describing the accelerator or transport line
               open(7,file=myarg(i),status='unknown')
               ffound=.true.
             else
-#ifdef MINGW
-c if mg=.true., use MINGW on windows, which has a different result
+              if(myarg(i).eq.'-mingw') then
+c if mg=.true., use MINGW on windows, which has a different result 
 c for ctime function than standard gfortran
                 mg=.true.
                 write(6,*) 'Using MINGW gfortran format on MSWindows'
-#endif
+              endif
               if(myarg(i).eq.'-h') then
 c     print out of help message, starting with DYNAC version
                 WRITE(6,3101)
@@ -230,6 +230,8 @@ c     print out of help message, starting with DYNAC version
                 write(6,*) 'Optional arguments:'
                 write(6,*) '-h will list the argument options (this ',
      *                     'list)'
+                write(6,*) '-mingw will enable MINGW gfortran format',
+     *                     ' on MSWindows'
               stop
               endif
             endif
@@ -245,29 +247,29 @@ c     print out of help message, starting with DYNAC version
 c *******************************************************************
 c  OUTPUT FILES:
 c
-c 'dynac.long'  : print extensive computations information
+c 'dynac.long'  : print extensive computations information 
 c
 c 'dynac.short' : print essentials of beam dynamics information
 c
-c 'dynac.print' : printout of the envelope and the emittance of the
+c 'dynac.print' : printout of the envelope and the emittance of the 
 c                 beam in the directions  x, y and z at each position
 c                 of the optical and accelerating elements, as well as
 c                 the number of good particles
 c
 c 'dynac.dmp'   : printout of cavity cell related data:
-c                 cell number,synchronous phase (deg),relativistic
+c                 cell number,synchronous phase (deg),relativistic 
 c                 beta (output), output energy (MeV),
-c                 hor. emittance (mm.mrad, normalized),
+c                 hor. emittance (mm.mrad, normalized), 
 c                 ver. emittance (mm.mrad, normalized),
 c                 longitudinal emittance (ns.kev)
 c
 c 'beam_core.dst': print the coordinates of the particles kept by
 c                  CHASE
 c
-c 'beam_remove.dst': print the coordinates of the particles
+c 'beam_remove.dst': print the coordinates of the particles 
 c                    removed by CHASE
 c
-c 'dynac_in_pr.dst': print of the coordinates of the particles at the
+c 'dynac_in_pr.dst': print of the coordinates of the particles at the 
 c                    input of the machine
 c
 c 'emit.plot'      : datafile used for the plots
@@ -333,9 +335,9 @@ c*******************************************************************************
 c    initialize constants
 C    in corresponds to dynac input file
        in=7
-C    itout corresponds to TRACE3D input file
+C    itout corresponds to TRACE3D input file 
        itout=48
-c
+c       
 c   pi2=pi*pi, sqpi=(pi/2)**3/2 , pwtpi=(2*pi)**3/2 ,sqpi2=sqrt(pi/2.)
        PI=4.*ATAN(1.)
        pi2=pi*pi
@@ -355,9 +357,9 @@ c frequency indicator
        T3D=.false.
        xiset=.false.
        kt3h=1
-       trace3h(kt3h)=' $DATA'
+       trace3h(kt3h)=' $DATA'       
        kt3t=0
-c DONE:
+c DONE:       
 c      DATA KLE/'GEBEAM','INPUT','RDBEAM','ETAC','DRIFT',
 c     1*       'QUADRUPO',        ,         ,'SOLENO',         ,
 c     2*        'BMAGNET',        ,'CAVSC'  ,'FIELD' ,         ,
@@ -375,7 +377,7 @@ c     8*        'MMODE','RFQPTQ',        ,'STEER',
 c     9*                ,        ,       ,'FDRIFT','FSOLE',
 c    10*                         'REFCOG','FPART',       ,
 c    11*        'QUAFK',         ,       ,       ,'RFKICK'
-C
+C 
 c IGNORE: 'ZONES','STOP','T3D','DCBEAM','FIRORD','COMMENT'
 C         'EMIT','EMITGR','WRBEAM','ENVEL','REJECT','CHASE'
 C         'ACCEPT','EMITL','EGUN','COMPRES','RASYN','SECORD'
@@ -446,13 +448,13 @@ C         'STRIPPER','EDFLEC','PROFGR','QUAELEC','CAVMC'
        ISCSP=0
        IFILE=11
        IMAX=0
-c default for beams is to be bunched (not continuous)
+c default for beams is to be bunched (not continuous)       
        ifcont=.FALSE.
 c   *******************************************************
        WRITE(6,3101)
        WRITE(16,3101)
        WRITE(12,3101)
-3101   FORMAT('****** DYNAC V6.0R15 (Beta test), 30-Dec-2015 *******')
+3101   FORMAT('****** DYNAC V6.0R15 (Beta test), 08-Jan-2015 *******')
        if (gfortran) then
          write(16,*) 'Input file: ',infiln
          write(12,*) 'Input file: ',infiln
@@ -526,9 +528,9 @@ c  EMIT      31 | EMITGR   32 | COMMENT  33 | WRBEAM  34 | ENVEL    35
 c  CHASE     36 | RWFIELD  37 | RANDALI  38 | TWQA    39 | EMIPRT   40
 c  MMODE     41 | RFQPTQ   42 | STRIPPER 43 | STEER   44 | ZONES    45
 c  PROFGR    46 | SECORD   47 | RASYN    48 | FDRIFT  49 | FSOLE    50
-c  EGUN      51 | COMPRES  52 | STOP     53 | REFCOG  54 | FPART    55
+c  EGUN      51 | COMPRES  52 | STOP     53 | REFCOG  54 | FPART    55  
 c  QUAELEC   56 | QUAFK    57 | CAVNUM   58 | EDFLEC  59 | EMITL    60
-c  RFKICK    61 | FIRORD   62 | DCBEAM   63 | T3D     64 |
+c  RFKICK    61 | FIRORD   62 | DCBEAM   63 | T3D     64 |  
 c*********************************************************************
            IF(I.eq.1) then
 C AFTER GEBEAM:Generates randomly the input beam
@@ -570,7 +572,7 @@ c ---     iflag = 2 particle coordinates x,xp,y,yp,z,zp,q with z in rad
 c ---     iflag = 10 particle coordinates x,xp,y,yp,z,zp with z in ns
 c ---     iflag = 11 particle coordinates x,xp,y,yp,z,zp,q,m0 with z in ns
 c ---     iflag = 12 particle coordinates x,xp,y,yp,z,zp,q with z in ns
-c ---     add 100 to the above iflg values to read a file that has Wref as
+c ---     add 100 to the above iflg values to read a file that has Wref as 
 c ---     4th parameter on line 1
 c ---- 3) freq, tof
 c ---     freq: RF frquency (MHz)
@@ -655,7 +657,7 @@ c     If IKSQ = 0 then ARGS = K (cm-1), otherwise ARGS = B(kG)
 c --ARGQ: STRENGTH or FIELD of QUADRUPOLE
 c     If IKSQ = 0 then ARGQ = K2 (cm-2), otherwise ARGQ = B(kG)
 c    SIGN CONVENTIONS:
-c     SOLENOID: K positive => rotate the transverse coordinates about the
+c     SOLENOID: K positive => rotate the transverse coordinates about the 
 c                             z-axis in the clockwise direction.
 c     QUADRUPOLE: K2 positive => focusing in the H plane (x,z)
 C --XLSOL : EFFECTIVE LENGHT OF THE LENS(cm)
@@ -705,7 +707,7 @@ c if apb(1) ne 0 and if ek1 = 0 the program inserts a default value of ek1 = 0.5
 c if apb(2) ne 0 and  sk1 = 0 the program inserts a default value of sk1 = 0.5
              if(apb(2).ne.0..and.sk1.lt.0.) sk1=0.5
 c trace3d
-c edge
+c edge             
              kt3t=kt3t+1
              write(tif,6005) kt3t,kt3t,PENT1,10.*abs(RMO),
      *                       20.*APB(1),EK1,EK2
@@ -718,13 +720,13 @@ c bend
 6006         format('  nt(',i4,')= 8, a(1,',i4,')=',f9.5,' , ',f9.2,
      *              ' , 0 , 0 ')
              trace3t(kt3t)=tif
-c edge
+c edge       
              kt3t=kt3t+1
              write(tif,6005) kt3t,kt3t,PENT2,10.*abs(RMO),
      *                       20.*APB(2),SK1,SK2
              trace3t(kt3t)=tif
 c
-c
+c        
              CALL aimalv(ANGL,RMO,BAIM,XN,XB,EK1,EK2,PENT1,RAB1,
      *                   SK1,SK2,PENT2,RAB2)
              write(16,*) '********************************'
@@ -852,7 +854,7 @@ C  AFTER NEWF:define a new frequency (Hertz)
              READ (IN,*) FH1
 c record frequency change in view of trace3d file
              FH1=2.*PI*FH1
-             fid=fh1/fh
+             fid=fh1/fh      
 c adjust beam current
              beamc=beamc*fh1/fh
              rflvl=rflvl*fh1/fh
@@ -890,7 +892,7 @@ C      BEAM CURRENT IN ma
 7001           format(' XI= ',f9.4)
                trace3h(kt3h)=tif
                xiset=.true.
-             endif
+             endif  
              if(iscsp.le.1) write(16,*) 'HERSC method  '
              if(iscsp.eq.2) write(16,*) 'SCHERM method  '
              if(iscsp.eq.3) write(16,*) 'SCHEFF method  '
@@ -965,7 +967,7 @@ c ----  WDISP: in half dispersion
 C ------  IF IFW=0  ==> WDISP in (+-) dW/W
 C ------  IF IFW=1  ==> WDISP in (+-) dW (MeV)
 c ------  IF IFW=10 ==> wdisp = dW/W relative to REF
-c ------  IF IFW=11 ==> wdisp = dW relative to REF
+c ------  IF IFW=11 ==> wdisp = dW relative to REF            
 c ----  WPHAS: in half phase (+-) deg
 c ----  WX   : in x-direction (+-) cm
 c ----  WY   : in y-direction (+-) cm
@@ -974,9 +976,9 @@ c ----  RLIM : in radius (cm)
              READ(IN,*) IFW,WDISP,WPHAS,WX,WY,RLIM
              if(ifw.eq.0) then
                WRITE(16,1050)WDISP,WPHAS,WX,WY,RLIM
-             else
+             else  
                WRITE(16,1051)WDISP,WPHAS,WX,WY,RLIM
-             endif
+             endif  
 1050         FORMAT(5X,' *** BEAM SIZE LIMITS ',/,
      X       4X,' 1/2 dW/W :',E12.5,'  1/2 PHASE(DEG) :'
      X       ,E12.5,/,4X,' 1/2 x (cm) :',E12.5,
@@ -1062,7 +1064,7 @@ c     ilier = 0 stop the effects of the random misalignment
              if(ilier.eq.0) then
                ialin=.false.
                write(16,*) '****************************'
-!       go to 200
+!!       go to 200
              else
                ialin=.true.
                read(in,*) XL,YL,XPL,YPL
@@ -1504,13 +1506,13 @@ c AFTER STOP: mandatory, stop the computations
              exit
            ENDIF
          ELSE
-! key not found, go to STOP
+!! key not found, go to STOP
            indic=999
            WRITE(66,*) indic
            WRITE(16,111)KLEY
            WRITE(6,111) KLEY
            EXIT
-         ENDIF
+         ENDIF 
        ENDDO
 c write trace file (if requested)
        if(T3D) then
@@ -1519,10 +1521,10 @@ c write trace file (header part)
          write(itout,'(A)') trace3h(1)
          write(itout,1990) kt3t,kt3t,kt3t
 1990     format(' N1= 1, N2= ',I4,', NEL1= 1, NEL2= ',I4,
-     *        ', NP1= 1, NP2= ',I4)
+     *        ', NP1= 1, NP2= ',I4)                    
          do i=2,kt3h
            write(itout,'(A)') trace3h(i)
-         enddo
+         enddo               
          write(itout,1992)
 1992     format(' PQEXT= 2.5, ICHROM= 0, IBS= 0, SMAX= 2.0')
          write(itout,1993)
@@ -1538,7 +1540,7 @@ c
 c deal with negative drifts (typical within DTLs)
 c if the current drift is negative, then see if there is a drift before or
 c after it. If so, add the 2 drifts, devide by 2 and put this result in both
-c drifts
+c drifts    
          do k=2,kt3t-1
            trdrifa=0.
            trdrifb=0.
@@ -1555,14 +1557,14 @@ c drifts
                  trdrift=aver
 c                 write(6,*) k,'beforeb',tif(12:13),trdrift,trdrifb
                  write(fdrft,555) trdrift
-555              format(f12.6)
+555              format(f12.6)                 
                  tif(28:40)=fdrft
                  write(fdrft,555) trdrifb
                  tifb(28:40)=fdrft
                  trace3t(k)=tif
-                 trace3t(k-1)=tifb
-               endif
-             endif
+                 trace3t(k-1)=tifb                   
+               endif            
+             endif            
            elseif(tif(12:13).eq.' 1' .and. tifa(12:13).eq.' 1') then
              read(tif(28:50),*) trdrift
              if(trdrift.lt.0.) then
@@ -1577,16 +1579,16 @@ c                 write(6,*) k,'aftera',tif(12:13),trdrift,trdrifa
                  write(fdrft,555) trdrifa
                  tifa(28:40)=fdrft
                  trace3t(k)=tif
-                 trace3t(k+1)=tifa
-               endif
-             endif
-           endif
+                 trace3t(k+1)=tifa                   
+               endif            
+             endif            
+           endif            
          enddo
          do k=1,kt3t
            write(itout,'(A)') trace3t(k)
          enddo
          write(itout,'(A)') ' $END'
-       endif
+       endif              
        call daves
        call eugwrt
        call cpu_time(exfin)
@@ -1661,10 +1663,10 @@ comment       close(49)
 101    FORMAT('*******************************************************',
      1 '*****************')
        END
-! *******************************************************************
-! SUBROUTINE mytime
-! get system time and convert it to an ascii string
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE mytime
+!! get system time and convert it to an ascii string
+!< *******************************************************************
        SUBROUTINE mytime(iitime)
        implicit real*8 (a-h,o-z)
        character iitime*30
@@ -1673,24 +1675,24 @@ comment       close(49)
        iitime=ctime(inttim)
        return
        end
-! *******************************************************************
-! SUBROUTINE rmami
-! activate the time of flight for bunchers, cavities and accelerating
-! gaps
-! - indic and icor:integer flags
-! - itvol and imamin: logical flags
-! - itvol = true =>   the time of flight is activated, otherwise
-! - itvol = false =>  the time of flight is passive
-! - imamin = true =>  adjustments are automatically made on the phase
-! of bunchers, cavities and acc. gaps
-! - imamin = false => no adjustments on the phase of accelerating
-! elements
-! - indic = 0 => itvol = true, in this case the time of flight is
-! activited for accelerating elements
-! - indic (<>) 0 => itvol = false and imamin = false
-! - icor = 0 => imamin = false
-! - icor (<>) 0 => imamin = true
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE rmami
+!! activate the time of flight for bunchers, cavities and accelerating
+!! gaps
+!! - indic and icor:integer flags
+!! - itvol and imamin: logical flags
+!! - itvol = true =>   the time of flight is activated, otherwise
+!! - itvol = false =>  the time of flight is passive
+!! - imamin = true =>  adjustments are automatically made on the phase
+!! of bunchers, cavities and acc. gaps
+!! - imamin = false => no adjustments on the phase of accelerating
+!! elements
+!! - indic = 0 => itvol = true, in this case the time of flight is
+!! activited for accelerating elements
+!! - indic (<>) 0 => itvol = false and imamin = false
+!! - icor = 0 => imamin = false
+!! - icor (<>) 0 => imamin = true
+!< *******************************************************************
        SUBROUTINE rmami
        implicit real*8 (a-h,o-z)
        parameter (maxcell1=3000)
@@ -1724,10 +1726,10 @@ comment       close(49)
      *  write(16,*) ' No adjustments on phase offset'
        RETURN
        END
-! *******************************************************************
-! SUBROUTINE kick
-! 2015 now obsolete (?) see subroutine aliner
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE kick
+!! 2015 now obsolete (?) see subroutine aliner
+!< *******************************************************************
 C       SUBROUTINE kick
 C       implicit real*8 (a-h,o-z)
 CC     ..................................
@@ -1752,11 +1754,11 @@ C         endif
 C       enddo
 C       RETURN
 C       END
-! *******************************************************************
-! SUBROUTINE shuffle
-! Reshuffles f(i,j) array so that the "good" particles are on top of
-! the stack.  The number of "good" particles (ngood) is passed back.
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE shuffle
+!! Reshuffles f(i,j) array so that the "good" particles are on top of 
+!! the stack.  The number of "good" particles (ngood) is passed back.
+!< *******************************************************************
        SUBROUTINE shuffle
        implicit real*8 (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
@@ -1765,18 +1767,19 @@ C       END
        common/macro/ratei
        k=ngood
        ngood1=0
-  1    if(ngood1.ge.k)  goto 5
-       if(f(8,ngood1+1).eq.1.) goto 4
-       do j=1,10
-         c=f(j,ngood1+1)
-         f(j,ngood1+1)=f(j,k)
-         f(j,k)=c
-       enddo
-       k=k-1
-       goto 1
-  4    ngood1=ngood1+1
-       goto 1
-  5    continue
+1      continue       
+       if(ngood1.lt.k) then
+         if(f(8,ngood1+1).eq.1.) goto 4
+         do j=1,10
+           c=f(j,ngood1+1)
+           f(j,ngood1+1)=f(j,k)
+           f(j,k)=c
+         enddo
+         k=k-1
+         goto 1
+  4      ngood1=ngood1+1
+         goto 1
+       endif 
        ngood=ngood1
        if(ngood.eq.0) then
          ratei=0.
@@ -1812,10 +1815,10 @@ comment       write(16,*) '***reshuffle: ',ngood,' good particles'
        endif
        return
        end
-! *******************************************************************
-! FUNCTION xitl0(GAMI,GAMS,BETR,SAPHI,QQC)
-! called by RESTAY and ETGAP  dynamics computations
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION xitl0(GAMI,GAMS,BETR,SAPHI,QQC)
+!! called by RESTAY and ETGAP  dynamics computations
+!< *******************************************************************
        FUNCTION xitl0(GAMI,GAMS,BETR,SAPHI,QQC)
        implicit real*8 (a-h,o-z)
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
@@ -1870,12 +1873,12 @@ comment       write(16,*) '***reshuffle: ',ngood,' good particles'
        XITL0=GAMI+GIT
        RETURN
        END
-! *******************************************************************
-! FUNCTION xitl2(GAMI,GAMS,BETR,SAPHI,QQC)
-! called by RESTAY and ETGAP
-! INTEGRAL of S ( EZG * Z/(BETA*GAMA)**3  *DZ)
-! PHASE JUMP
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION xitl2(GAMI,GAMS,BETR,SAPHI,QQC)
+!! called by RESTAY and ETGAP
+!! INTEGRAL of S ( EZG * Z/(BETA*GAMA)**3  *DZ)
+!! PHASE JUMP
+!< *******************************************************************
        FUNCTION xitl2(GAMI,GAMS,BETR,SAPHI,QQC)
        implicit real*8 (a-h,o-z)
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
@@ -1918,12 +1921,12 @@ comment       write(16,*) '***reshuffle: ',ngood,' good particles'
        XITL2=XITL2/2. *EQVL
        RETURN
        END
-! *******************************************************************
-! FUNCTION xitl3(GAMI,GAMS,BETR,NIT,SAPHI,QQC)
-! called by RESTAY and ETGAP
-! INTEGRAL  S ( EZG * Z/(BETA*GAMA)**3  *DZ)
-! PHASE AND ENERGY AT THE MIDDLE OF THE GAP
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION xitl3(GAMI,GAMS,BETR,NIT,SAPHI,QQC)
+!! called by RESTAY and ETGAP
+!! INTEGRAL  S ( EZG * Z/(BETA*GAMA)**3  *DZ)
+!! PHASE AND ENERGY AT THE MIDDLE OF THE GAP
+!< *******************************************************************
        FUNCTION xitl3(GAMI,GAMS,BETR,NIT,SAPHI,QQC)
        implicit real*8 (a-h,o-z)
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
@@ -1969,12 +1972,12 @@ c          ENMIL=XMAT*(GI-GAMI)
        XITL3=XITL3/2. *EQVL
        RETURN
        END
-! *******************************************************************
-! SUBROUTINE xtypl2(GAMI,SAPHI,QSC,DCG)
-! called by RESTAY and ETGAP
-! integrals of the second derivative of the functions HA0(z) and HB0(z)
-! ZB = Z+ASDL
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE xtypl2(GAMI,SAPHI,QSC,DCG)
+!! called by RESTAY and ETGAP
+!! integrals of the second derivative of the functions HA0(z) and HB0(z)
+!! ZB = Z+ASDL
+!< *******************************************************************
        SUBROUTINE xtypl2(GAMI,SAPHI,QSC,DCG)
        implicit real*8 (a-h,o-z)
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
@@ -2157,14 +2160,14 @@ C    integrals in sin
        H1BKM=H1BKM/2. *EQVL
        RETURN
        END
-! *******************************************************************
-! SUBROUTINE xtyplp1(GAMI,SAPHI,QSC,DCG)
-! called by RESTAY and ETGAP
-! Integrals of functions  HA0(Z) and HB0(Z)
-! Integrals of the first and second derivative of HA0(Z) et HB0(Z)(with PH01)
-! Integrals of the third derivative of HA0(Z) et HB0(Z)(with PH01)
-! zb = z+ASDL
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE xtyplp1(GAMI,SAPHI,QSC,DCG)
+!! called by RESTAY and ETGAP
+!! Integrals of functions  HA0(Z) and HB0(Z)
+!! Integrals of the first and second derivative of HA0(Z) et HB0(Z)(with PH01)
+!! Integrals of the third derivative of HA0(Z) et HB0(Z)(with PH01)
+!! zb = z+ASDL
+!< *******************************************************************
        SUBROUTINE xtyplp1(GAMI,SAPHI,QSC,DCG)
        implicit real*8 (a-h,o-z)
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
@@ -2306,13 +2309,13 @@ C    INTEGRALS to be multiplied by sin
        HBPPI=HBPPI/2. *EQVL
        RETURN
        END
-! *******************************************************************
-! SUBROUTINE xtylpk(GAMI,SAPHI,QSC,DCG)
-! called by RESTAY and ETGAP
-! INTEGRALS of HA0(Z) and HB0(Z)
-! INTEGRALS of the second derivative of HA0(Z) and HB0(Z)
-! zb = z+ASDL
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE xtylpk(GAMI,SAPHI,QSC,DCG)
+!! called by RESTAY and ETGAP
+!! INTEGRALS of HA0(Z) and HB0(Z)
+!! INTEGRALS of the second derivative of HA0(Z) and HB0(Z)
+!! zb = z+ASDL
+!< *******************************************************************
        SUBROUTINE xtylpk(GAMI,SAPHI,QSC,DCG)
        implicit real*8 (a-h,o-z)
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
@@ -2420,11 +2423,11 @@ C    Sinus integrals
        YH21PK=YH21PK/2. *EQVL
        RETURN
        END
-! *******************************************************************
-! SUBROUTINE xtypj(GAMI,SAPHI,QSC,DCG)
-! called by RESTAY and ETGAP
-! INTEGRALS of g(G)*Ez(**2) *z**n   n=0,1,2
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE xtypj(GAMI,SAPHI,QSC,DCG)
+!! called by RESTAY and ETGAP
+!! INTEGRALS of g(G)*Ez(**2) *z**n   n=0,1,2
+!< *******************************************************************
        SUBROUTINE xtypj(GAMI,SAPHI,QSC,DCG)
        implicit real*8 (a-h,o-z)
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
@@ -2553,11 +2556,11 @@ c       IST=IAST
        YFSP2=YFSP2/2. *EQVL
        RETURN
        END
-! *******************************************************************
-! SUBROUTINE xtypm(GAMI,SAPHI,QSC,DCG)
-! called by RESTAY and ETGAP
-! INTEGRALS of g(G)*z**n  with n=0,1,2
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE xtypm(GAMI,SAPHI,QSC,DCG)
+!! called by RESTAY and ETGAP
+!! INTEGRALS of g(G)*z**n  with n=0,1,2
+!< *******************************************************************
        SUBROUTINE xtypm(GAMI,SAPHI,QSC,DCG)
        implicit real*8 (a-h,o-z)
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
@@ -2658,11 +2661,11 @@ C      DERIVE G0(Z) RELATIF A PH01
        YNSP2=YNSP2/2. *EQVL
        RETURN
        END
-! *******************************************************************
-! FUNCTION gamci(PHI,PCRESI,GAMI,IST,QSC)
-! called by RESTAY and ETGAP
-! CURRENT GAMMA VALUE (the POSITION IS GIVEN BY IST)
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION gamci(PHI,PCRESI,GAMI,IST,QSC)
+!! called by RESTAY and ETGAP
+!! CURRENT GAMMA VALUE (the POSITION IS GIVEN BY IST)
+!< *******************************************************************
        FUNCTION gamci(PHI,PCRESI,GAMI,IST,QSC)
        implicit real*8 (a-h,o-z)
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
@@ -2688,11 +2691,11 @@ C      Function GAMMA (Z)
        GAMCI=GAMI+GIT * GIS
        RETURN
        END
-! *******************************************************************
-! SUBROUTINE intga(npt,ireca)
-! Calculate the beam self fields acting on each particle (called by
-! SCHERM) Gauss quadrature
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE intga(npt,ireca)
+!! Calculate the beam self fields acting on each particle (called by 
+!! SCHERM) Gauss quadrature
+!< *******************************************************************
        SUBROUTINE intga(npt,ireca)
        implicit real*8 (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
@@ -2799,11 +2802,11 @@ c Field components are in Newton/Coulomb
        ez=ez*const*(zc(npt)-zgc)
        RETURN
        END
-! *******************************************************************
-! SUBROUTINE sizcor(ect,xrms,yrms,zrms,imaxd)
-! Computes the R.M.S. of the bunch at positions of space charge
-! computation
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE sizcor(ect,xrms,yrms,zrms,imaxd)
+!! Computes the R.M.S. of the bunch at positions of space charge 
+!! computation
+!< *******************************************************************
        SUBROUTINE sizcor(ect,xrms,yrms,zrms,imaxd)
        implicit real*8 (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
@@ -2847,10 +2850,10 @@ c Field components are in Newton/Coulomb
        zrms=SQRT(zsqsum-zsum*zsum)
        RETURN
        END
-! *******************************************************************
-! SUBROUTINE sizrms(imaxd,xrms,yrms,zrms,zmin)
-! partial R.M.S. (called by SCHERM)
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE sizrms(imaxd,xrms,yrms,zrms,zmin)
+!! partial R.M.S. (called by SCHERM)
+!< *******************************************************************
        SUBROUTINE sizrms(imaxd,xrms,yrms,zrms,zmin)
        implicit real*8 (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
@@ -2889,10 +2892,10 @@ c Field components are in Newton/Coulomb
        zrms=SQRT(zsqsum-zsum*zsum)
        RETURN
        END
-! *******************************************************************
-! FUNCTION snzt(CC,DD)
-! specific function called by SCHERM
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION snzt(CC,DD)
+!! specific function called by SCHERM
+!< *******************************************************************
        FUNCTION snzt(CC,DD)
        implicit real*8 (a-h,o-z)
        COMMON/DEGHERM/NMAZ,NMAZR,NMAXY
@@ -2909,10 +2912,10 @@ c Field components are in Newton/Coulomb
        SNZT=SNZT*(DD-CC)/2.
        RETURN
        END
-! *******************************************************************
-! FUNCTION snzd(cc,dd)
-! specific function called by SCHERM
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION snzd(cc,dd)
+!! specific function called by SCHERM
+!< *******************************************************************
        FUNCTION snzd(cc,dd)
        implicit real*8 (a-h,o-z)
        COMMON/DEGHERM/NMAZ,NMAZR,NMAXY
@@ -2923,18 +2926,17 @@ c Field components are in Newton/Coulomb
        DO I=1,17
          Z= (CC+DD)/2.+(DD-CC)*H1(I)/2.
          DENZ=DENSZ(NMAZ,Z,0)
-         IF(DENZ.LT.0.) GO TO 13
+         IF(DENZ.LT.0.) EXIT
          ZZ=(Z-CC)
          SNZD=SNZD+T1(I)*DENZ
        ENDDO
-13     CONTINUE
        SNZD=SNZD*(DD-CC)
        RETURN
        END
-! *******************************************************************
-! FUNCTION vaprz(CC,DD)
-! specific function called by SCHERM
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION vaprz(CC,DD)
+!! specific function called by SCHERM
+!< *******************************************************************
        FUNCTION vaprz(CC,DD)
        implicit real*8 (a-h,o-z)
        COMMON/DEGHERM/NMAZ,NMAZR,NMAXY
@@ -2947,19 +2949,18 @@ c Field components are in Newton/Coulomb
        DO I=1,17
          Z= (CC+DD)/2.+(DD-CC)*H1(I)/2.
          DENZ=DENSZ(NMAZ,Z,0)
-         IF(DENZ.LT.0.) GO TO 13
+         IF(DENZ.LT.0.) EXIT
          ZZ=(Z-CC)
          VAR1=VAR1+T1(I)*ZZ*ZZ*DENZ
          VAR2=VAR2+T1(I)*DENZ
        ENDDO
-13     CONTINUE
        VAPRZ=VAR1/VAR2
        RETURN
        END
-! *******************************************************************
-! FUNCTION prinz(CC,DD,KAP,ZRMSS1)
-! specific function called by SCHERM
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION prinz(CC,DD,KAP,ZRMSS1)
+!! specific function called by SCHERM
+!< *******************************************************************
        FUNCTION prinz(CC,DD,KAP,ZRMSS1)
        implicit real*8 (a-h,o-z)
        COMMON/DEGHERM/NMAZ,NMAZR,NMAXY
@@ -2972,19 +2973,18 @@ c Field components are in Newton/Coulomb
          DENZ=0.
          Z= (CC+DD)/2.+(DD-CC)*H1(I)/2.
          DENZ=DENSZ(NMAZ,Z,0)
-         IF(DENZ.LT.0.) GO TO 13
+         IF(DENZ.LT.0.) EXIT
          ZZ=(Z-CC)/ZRMSS1
          PRINZ=PRINZ+T1(I)*HERM(2*K,ZZ)*DENZ
        ENDDO
-13     CONTINUE
        PRINZ=PRINZ*(DD-CC)/2.
        RETURN
        END
-! *******************************************************************
-! SUBROUTINE rchsom(ZI,ZF,NMAZ)
-! specific function called by SCHERM
-! Look for the top of the partial distributions
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE rchsom(ZI,ZF,NMAZ)
+!! specific function called by SCHERM
+!! Look for the top of the partial distributions
+!< *******************************************************************
        SUBROUTINE rchsom(ZI,ZF,NMAZ)
        implicit real*8 (a-h,o-z)
        XPZ=ABS((ZF-ZI))/400.
@@ -3001,11 +3001,11 @@ C    new interval  : ZI,Z1
        IF(T1.LT.T2) ZF=Z1
        GO TO 1
        END
-! *******************************************************************
-! SUBROUTINE rchsor(AA,BB,CC,DD,ZS)
-! specific function called by SCHERM
-! Look for the top of the partial distributions
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE rchsor(AA,BB,CC,DD,ZS)
+!! specific function called by SCHERM
+!! Look for the top of the partial distributions
+!< *******************************************************************
        SUBROUTINE rchsor(AA,BB,CC,DD,ZS)
        implicit real*8 (a-h,o-z)
        ZI=AA
@@ -3027,10 +3027,10 @@ C    NEW INTERVAL : ZI,Z1
        IF(T1.LT.T2) ZF=Z1
        GO TO 1
        END
-! *******************************************************************
-! FUNCTION herm(M,X)
-! Hermite polynomials
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION herm(M,X)
+!! Hermite polynomials
+!< *******************************************************************
        FUNCTION herm(M,X)
        implicit real*8 (a-h,o-z)
        DIMENSION HE(30)
@@ -3051,11 +3051,11 @@ C    NEW INTERVAL : ZI,Z1
        HERM=HE(M+1)
        RETURN
        END
-! *******************************************************************
-! FUNCTION densz(M,Z,IRECA)
-! called by SCHERM
-! Look for the distribution in z position
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION densz(M,Z,IRECA)
+!! called by SCHERM
+!! Look for the distribution in z position
+!< *******************************************************************
        FUNCTION densz(M,Z,IRECA)
        implicit real*8 (a-h,o-z)
        COMMON/HERMT/AFXT(22),AFYT(22),AFZT(22)
@@ -3073,10 +3073,10 @@ C    NEW INTERVAL : ZI,Z1
        ENDDO
        RETURN
        END
-! *******************************************************************
-! FUNCTION codsy(BB,CC,DD,EE,KAP)
-! specific function called by SCHERM
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION codsy(BB,CC,DD,EE,KAP)
+!! specific function called by SCHERM
+!< *******************************************************************
        FUNCTION codsy(BB,CC,DD,EE,KAP)
        implicit real*8 (a-h,o-z)
        COMMON/DEGHERM/NMAZ,NMAZR,NMAXY
@@ -3111,10 +3111,10 @@ C        ZRMS2(EFFECTIF)=ZRMS2(CALCULE)*ZRMS
        CODSY=CODSY*(CC-FF)/2.
        RETURN
        END
-! *******************************************************************
-! FUNCTION codif(BB,CC,DD,EE,EE1,KAP)
-! specific function called by SCHERM
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION codif(BB,CC,DD,EE,EE1,KAP)
+!! specific function called by SCHERM
+!< *******************************************************************
        FUNCTION codif(BB,CC,DD,EE,EE1,KAP)
        implicit real*8 (a-h,o-z)
        COMMON/DEGHERM/NMAZ,NMAZR,NMAXY
@@ -3148,10 +3148,10 @@ C        ZRMS2(EFFECTIF)=ZRMS2(CALCULE)*ZRMS
        CODIF=-CODIF*FF/2.
        RETURN
        END
-! *******************************************************************
-! FUNCTION varia(BB,CC,DD,EE)
-! specific function called by SCHERM
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION varia(BB,CC,DD,EE)
+!! specific function called by SCHERM
+!< *******************************************************************
        FUNCTION varia(BB,CC,DD,EE)
        implicit real*8 (a-h,o-z)
        COMMON/DEGHERM/NMAZ,NMAZR,NMAXY
@@ -3186,10 +3186,10 @@ C        ZRMS2(EFFECTIF)=ZRMS2(CALCULE)*ZRMS
        VARIA=CODI1/CODI2
        RETURN
        END
-! *******************************************************************
-! FUNCTION variz(BB,CC,DD,EE,EE1)
-! specific function called by SCHERM
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION variz(BB,CC,DD,EE,EE1)
+!! specific function called by SCHERM
+!< *******************************************************************
        FUNCTION variz(BB,CC,DD,EE,EE1)
        implicit real*8 (a-h,o-z)
        COMMON/DEGHERM/NMAZ,NMAZR,NMAXY
@@ -3222,10 +3222,10 @@ C        ZRMS2(EFFECTIF)=ZRMS2(CALCULE)*ZRMS
        VARIZ=CODI1/CODI2
        RETURN
        END
-! *******************************************************************
-! FUNCTION grz(AA,BB,CC,DD,EE)
-! specific function called by SCHERM
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION grz(AA,BB,CC,DD,EE)
+!! specific function called by SCHERM
+!< *******************************************************************
        FUNCTION grz(AA,BB,CC,DD,EE)
        implicit real*8 (a-h,o-z)
        COMMON/DEGHERM/NMAZ,NMAZR,NMAXY
@@ -3246,11 +3246,11 @@ C        ZRMS2(EFFECTIF)=ZRMS2(CALCULE)*ZRMS
        IF(GS.GT.0.) GRZ=GZ/GS
        RETURN
        END
-! *******************************************************************
-! FUNCTION dendir(Z,AA,BB,CC,DD,EE)
-! Specific function called by SCHERM
-! Calculate the value (nt(z)-nm(z))
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION dendir(Z,AA,BB,CC,DD,EE)
+!! Specific function called by SCHERM
+!! Calculate the value (nt(z)-nm(z))
+!< *******************************************************************
        FUNCTION dendir(Z,AA,BB,CC,DD,EE)
        implicit real*8 (a-h,o-z)
        COMMON/DEGHERM/NMAZ,NMAZR,NMAXY
@@ -3270,11 +3270,11 @@ C        ZRMS2(EFFECTIF)=ZRMS2(CALCULE)*ZRMS
        IF(Z.GE.EE) DENDIR=0.
        RETURN
        END
-! *******************************************************************
-! FUNCTION dendif(Z,AA,BB,CC,DD)
-! Specific function called by SCHERM
-! Calculate the value (nt(z)-nm(z))
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION dendif(Z,AA,BB,CC,DD)
+!! Specific function called by SCHERM
+!! Calculate the value (nt(z)-nm(z))
+!< *******************************************************************
        FUNCTION dendif(Z,AA,BB,CC,DD)
        implicit real*8 (a-h,o-z)
        COMMON/DEGHERM/NMAZ,NMAZR,NMAXY
@@ -3288,25 +3288,25 @@ C        ZRMS2(EFFECTIF)=ZRMS2(CALCULE)*ZRMS
        IF(Z.GE.CC) DENDIF=0.
        RETURN
        END
-! *******************************************************************
-! FUNCTION denpd(XYZ,NMAXY,NMAZ)
-! Specific function called by SCHERM
-! Represents the distribution:(n(x)+n(y)+n(z))/3
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION denpd(XYZ,NMAXY,NMAZ)
+!! Specific function called by SCHERM
+!! Represents the distribution:(n(x)+n(y)+n(z))/3
+!< *******************************************************************
        FUNCTION denpd(XYZ,NMAXY,NMAZ)
        implicit real*8 (a-h,o-z)
        DENPD=(DENSX(NMAXY,XYZ,1)+DENSY(NMAXY,XYZ,1)+
      X        DENSZ(NMAZ,XYZ,2))/3.
        RETURN
        END
-! *******************************************************************
-! FUNCTION drxyz(M,XYZ,IRECA)
-! Specific function called by SCHERM
-! Calculate the derivatives of:(n(x)+n(y)+n(z))/3
-!      IRECA=0 : for the first ellipse
-!      IRECA=1 : for the second ellipse
-!      IRECA=2 : for the third ellipse
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION drxyz(M,XYZ,IRECA)
+!! Specific function called by SCHERM
+!! Calculate the derivatives of:(n(x)+n(y)+n(z))/3
+!!      IRECA=0 : for the first ellipse
+!!      IRECA=1 : for the second ellipse
+!!      IRECA=2 : for the third ellipse
+!< *******************************************************************
        FUNCTION drxyz(M,XYZ,IRECA)
        implicit real*8 (a-h,o-z)
        COMMON/HERMT/AFXT(22),AFYT(22),AFZT(22)
@@ -3369,10 +3369,10 @@ C        ZRMS2(EFFECTIF)=ZRMS2(CALCULE)*ZRMS
        M=MSTO
        RETURN
        END
-! *******************************************************************
-! FUNCTION hers(M,X)
-! Specific Hermite polynomials called by the function DRXYZ
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION hers(M,X)
+!! Specific Hermite polynomials called by the function DRXYZ
+!< *******************************************************************
        FUNCTION hers(M,X)
        implicit real*8 (a-h,o-z)
        DIMENSION HE(30)
@@ -3394,11 +3394,11 @@ C        ZRMS2(EFFECTIF)=ZRMS2(CALCULE)*ZRMS
        HERS=HE(M1+2)
        RETURN
        END
-! *******************************************************************
-! FUNCTION copdr(XI,XF,KAP)
-! Specific function called by SCHERM
-! Calculate the Hermite coefficients for :(n(x)+n(y)+n(z))/3.
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION copdr(XI,XF,KAP)
+!! Specific function called by SCHERM
+!! Calculate the Hermite coefficients for :(n(x)+n(y)+n(z))/3.
+!< *******************************************************************
        FUNCTION copdr(XI,XF,KAP)
        implicit real*8 (a-h,o-z)
        COMMON/DEGHERM/NMAZ,NMAZR,NMAXY
@@ -3413,11 +3413,11 @@ C        ZRMS2(EFFECTIF)=ZRMS2(CALCULE)*ZRMS
        COPDR=COPDR*(XF-XI)/2.
        RETURN
        END
-! *******************************************************************
-! FUNCTION densx(M,X,IRECA)
-! Specific function called by SCHERM
-! Calculate the distribution :(n(x)+n(y)+n(z))/3. at the x position
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION densx(M,X,IRECA)
+!! Specific function called by SCHERM
+!! Calculate the distribution :(n(x)+n(y)+n(z))/3. at the x position
+!< *******************************************************************
        FUNCTION densx(M,X,IRECA)
        implicit real*8 (a-h,o-z)
        COMMON/HERMT/AFXT(22),AFYT(22),AFZT(22)
@@ -3433,11 +3433,11 @@ C        ZRMS2(EFFECTIF)=ZRMS2(CALCULE)*ZRMS
        ENDDO
        RETURN
        END
-! *******************************************************************
-! FUNCTION densy(M,Y,IRECA)
-! Specific function called by SCHERM
-! Calculate the distribution :(n(x)+n(y)+n(z))/3. at the y position
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION densy(M,Y,IRECA)
+!! Specific function called by SCHERM
+!! Calculate the distribution :(n(x)+n(y)+n(z))/3. at the y position
+!< *******************************************************************
        FUNCTION densy(M,Y,IRECA)
        implicit real*8 (a-h,o-z)
        COMMON/HERMT/AFXT(22),AFYT(22),AFZT(22)
@@ -3453,12 +3453,12 @@ C        ZRMS2(EFFECTIF)=ZRMS2(CALCULE)*ZRMS
        ENDDO
        RETURN
        END
-! *******************************************************************
-! FUNCTION denrs(XYZ)
-! Specific function called by SCHERM
-! Calculate the distribution :(n(x)+n(y)+n(z))/3. for the third
-! ellipse
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION denrs(XYZ)
+!! Specific function called by SCHERM
+!! Calculate the distribution :(n(x)+n(y)+n(z))/3. for the third 
+!! ellipse
+!< *******************************************************************
        FUNCTION denrs(XYZ)
        implicit real*8 (a-h,o-z)
        COMMON/DEGHERM/NMAZ,NMAZR,NMAXY
@@ -3467,11 +3467,11 @@ C        ZRMS2(EFFECTIF)=ZRMS2(CALCULE)*ZRMS
        DENRS=SP1-SP2+DENSZ(NMAZR,XYZ,3)/3.
        RETURN
        END
-! *******************************************************************
-! FUNCTION scgx(XI,XF)
-! Specific function called by SCHERM
-! Calculate the c.o.g in the x-direction for the third ellipse
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION scgx(XI,XF)
+!! Specific function called by SCHERM
+!! Calculate the c.o.g in the x-direction for the third ellipse
+!< *******************************************************************
        FUNCTION scgx(XI,XF)
        implicit real*8 (a-h,o-z)
        COMMON/DEGHERM/NMAZ,NMAZR,NMAXY
@@ -3489,11 +3489,11 @@ C        ZRMS2(EFFECTIF)=ZRMS2(CALCULE)*ZRMS
        SCGX=CGXX/CGX
        RETURN
        END
-! *******************************************************************
-! FUNCTION scgy(XI,XF)
-! Specific function called by SCHERM
-! Calculate the c.o.g in the y-direction for the third ellipse
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION scgy(XI,XF)
+!! Specific function called by SCHERM
+!! Calculate the c.o.g in the y-direction for the third ellipse
+!< *******************************************************************
        FUNCTION scgy(XI,XF)
        implicit real*8 (a-h,o-z)
        COMMON/DEGHERM/NMAZ,NMAZR,NMAXY
@@ -3511,11 +3511,11 @@ C        ZRMS2(EFFECTIF)=ZRMS2(CALCULE)*ZRMS
        SCGY=CGYY/CGY
        RETURN
        END
-! *******************************************************************
-! FUNCTION corxy(XI,XF,KAP,IK,XYRMS)
-! Specific function called by SCHERM
-! Calculate the Hermite coefficients for the third ellipse
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION corxy(XI,XF,KAP,IK,XYRMS)
+!! Specific function called by SCHERM
+!! Calculate the Hermite coefficients for the third ellipse
+!< *******************************************************************
        FUNCTION corxy(XI,XF,KAP,IK,XYRMS)
        implicit real*8 (a-h,o-z)
        COMMON/DEGHERM/NMAZ,NMAZR,NMAXY
@@ -3535,12 +3535,12 @@ C        ZRMS2(EFFECTIF)=ZRMS2(CALCULE)*ZRMS
        CORXY=CORXY*(XF-XI)/2.
        RETURN
        END
-! *******************************************************************
-! FUNCTION varxy(XI,XF,IK)
-! Specific function called by SCHERM
-! Calculate the Hermite coefficients for the residual part of the
-! bunch
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION varxy(XI,XF,IK)
+!! Specific function called by SCHERM
+!! Calculate the Hermite coefficients for the residual part of the 
+!! bunch
+!< *******************************************************************
        FUNCTION varxy(XI,XF,IK)
        implicit real*8 (a-h,o-z)
        COMMON/gaus13/H(13),T(13)
@@ -3560,11 +3560,11 @@ C        ZRMS2(EFFECTIF)=ZRMS2(CALCULE)*ZRMS
        VARXY=CORXY1/CORXY2
        RETURN
        END
-! *******************************************************************
-! FUNCTION varzr(EE,CC,NMAZR)
-! Specific function called by SCHERM
-! Calculate the rms sizes of th residual part of the bunch
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION varzr(EE,CC,NMAZR)
+!! Specific function called by SCHERM
+!! Calculate the rms sizes of th residual part of the bunch
+!< *******************************************************************
        FUNCTION varzr(EE,CC,NMAZR)
        implicit real*8 (a-h,o-z)
        VARZR=0.
@@ -3575,34 +3575,34 @@ C        ZRMS2(EFFECTIF)=ZRMS2(CALCULE)*ZRMS
          V2=CC-EE
 20       Z1=(V1+V2)/2.
          SPL=DENSZ(NMAZR,Z1,3)
-         IF(ABS(SPL-SMT).LE.SMTE) GO TO 10
-         IF(SPL.GT.SMT) THEN
-           V1=Z1
-           GO TO 20
+         IF(ABS(SPL-SMT).GT.SMTE) THEN
+           IF(SPL.GT.SMT) THEN
+             V1=Z1
+             GO TO 20
+           ENDIF
+           IF(SPL.LT.SMT) THEN
+             V2=Z1
+             GO TO 20
+           ENDIF
          ENDIF
-         IF(SPL.LT.SMT) THEN
-           V2=Z1
-           GO TO 20
-         ENDIF
-10       CONTINUE
          VARZR=2.*Z1/2.36
        else
          VARZR=0.
        endif
        RETURN
        END
-! *******************************************************************
-! SUBROUTINE cdg(IDCH)
-! Calculate the c.o.g. of the bunch
-!      IDCH EQ 1: WITH  CHASE
-!      IDCH NE 1: OTHERWISE
-!      cog(1) : Energy(MeV)
-!      cog(3) : t.o.f. (sec)
-!      cog(4) : x-direction (cm)
-!      cog(5) : xp(mrd)
-!      cog(6) : y-direction (cm)
-!      cog(7) : yp(mrd)
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE cdg(IDCH)
+!! Calculate the c.o.g. of the bunch
+!!      IDCH EQ 1: WITH  CHASE
+!!      IDCH NE 1: OTHERWISE
+!!      cog(1) : Energy(MeV)
+!!      cog(3) : t.o.f. (sec)
+!!      cog(4) : x-direction (cm)
+!!      cog(5) : xp(mrd)
+!!      cog(6) : y-direction (cm)
+!!      cog(7) : yp(mrd)
+!< *******************************************************************
        SUBROUTINE cdg(IDCH)
        implicit real*8 (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
@@ -3649,37 +3649,37 @@ C        ZRMS2(EFFECTIF)=ZRMS2(CALCULE)*ZRMS
        cog(7)=cog(7)/imaxf
        return
        end
-! *******************************************************************
-! SUBROUTINE ext2d(IDCH)
-! Look for average extensions squared and return them in array exten
-! Used in the routines: EMIPRT ETGAP RESTAY STATIS
+!> *******************************************************************
+!! SUBROUTINE ext2d(IDCH)
+!! Look for average extensions squared and return them in array exten
+!! Used in the routines: EMIPRT ETGAP RESTAY STATIS
 !
-!      IDCH EQ 1: WITH  CHASE TEST
-!      IDCH NE 1: OTHERWISE
+!!      IDCH EQ 1: WITH  CHASE TEST
+!!      IDCH NE 1: OTHERWISE
 !
-!        cog(1) : Energy(MeV)
-!        cog(3) : t.o.f. (sec)
-!        cog(4) : x-direction (cm)
-!        cog(5) : xp(mrd)
-!        cog(6) : y-direction (cm)
-!        cog(7) : yp(mrd)
+!!        cog(1) : Energy(MeV)
+!!        cog(3) : t.o.f. (sec)
+!!        cog(4) : x-direction (cm)
+!!        cog(5) : xp(mrd)
+!!        cog(6) : y-direction (cm)
+!!        cog(7) : yp(mrd)
 !
-!      exten(1) : Sum( dE*dE )  MeV*MeV
-!      exten(2) : Sum( dE*dPHase ) MeV*rad
-!      exten(3) : Sum( dPHase*dPHase ) rad*rad
-!      exten(4) : Sum( x*x )   cm*cm
-!      exten(5) : Sum( xp*xp )   mrad*mrad
-!      exten(6) : Sum( y*y )   cm*cm
-!      exten(7) : Sum( yp*yp )  mrad*mrad
-!      exten(8) : Sum( x*xp )   cm*mrad
-!      exten(9) : Sum( y*yp )   cm*mrad
-!      exten(12): Sum( (dp/p)*x(i) )  (cm), with p of REF
-!      exten(13): Sum( (dp/p)*y(i) )  (cm), with p of REF
-!      exten(14): Sum( (dp/p)*(dp/p) )  compared to p of REF
-!      exten(15): Sum( (dp/p)*x(i) )  (cm), with p of COG
-!      exten(16): Sum( (dp/p)*y(i) )  (cm), with p of COG
-!      exten(17): Sum( (dp/p)*(dp/p) )  compared to p of COG
-! *******************************************************************
+!!      exten(1) : Sum( dE*dE )  MeV*MeV
+!!      exten(2) : Sum( dE*dPHase ) MeV*rad
+!!      exten(3) : Sum( dPHase*dPHase ) rad*rad
+!!      exten(4) : Sum( x*x )   cm*cm
+!!      exten(5) : Sum( xp*xp )   mrad*mrad
+!!      exten(6) : Sum( y*y )   cm*cm
+!!      exten(7) : Sum( yp*yp )  mrad*mrad
+!!      exten(8) : Sum( x*xp )   cm*mrad
+!!      exten(9) : Sum( y*yp )   cm*mrad
+!!      exten(12): Sum( (dp/p)*x(i) )  (cm), with p of REF
+!!      exten(13): Sum( (dp/p)*y(i) )  (cm), with p of REF
+!!      exten(14): Sum( (dp/p)*(dp/p) )  compared to p of REF
+!!      exten(15): Sum( (dp/p)*x(i) )  (cm), with p of COG
+!!      exten(16): Sum( (dp/p)*y(i) )  (cm), with p of COG
+!!      exten(17): Sum( (dp/p)*(dp/p) )  compared to p of COG
+!< *******************************************************************
        SUBROUTINE ext2d(IDCH)
        implicit real*8 (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
@@ -3726,7 +3726,7 @@ c --- imaxf: particles keep in the bunch. With CHASE imaxf may be different from
          else
            bpai=0.
            gpai=1.
-         endif
+         endif    
          fd(i)=(gpai*bpai)/(gref*bref)
          ffd(i)=(gpai*bpai)/(gcog*bcog)
        enddo
@@ -3789,39 +3789,39 @@ c --- without CHASE
        qmoy=qmoy/float(imaxf)
        return
        end
-! *******************************************************************
-! SUBROUTINE ext2(IDCH)
-! Looks for average extensions squared and return them in array exten
-! Used in the routines: stapl  tiltbm  ytzp
+!> *******************************************************************
+!! SUBROUTINE ext2(IDCH)
+!! Looks for average extensions squared and return them in array exten
+!! Used in the routines: stapl  tiltbm  ytzp
 !
-!      IDCH EQ 1: WITH  CHASE TEST
-!      IDCH NE 1: OTHERWISE
+!!      IDCH EQ 1: WITH  CHASE TEST
+!!      IDCH NE 1: OTHERWISE
 !
-!        cog(1) : Energy(MeV)
-!        cog(3) : t.o.f. (sec)
-!        cog(4) : x-direction (cm)
-!        cog(5) : xp(mrd)
-!        cog(6) : y-direction (cm)
-!        cog(7) : yp(mrd)
+!!        cog(1) : Energy(MeV)
+!!        cog(3) : t.o.f. (sec)
+!!        cog(4) : x-direction (cm)
+!!        cog(5) : xp(mrd)
+!!        cog(6) : y-direction (cm)
+!!        cog(7) : yp(mrd)
 !
-!      exten(1) : Sum( (dp/p)*(dp/p) ) compared to p of COG
-!      exten(2) : Sum( (dp/p)*phase )  (rad)
-!      exten(3) : Sum( phase*phase) ) (rad*rad)
-!      exten(4) : Sum( x(i)*x(i) )   cm*cm
-!      exten(5) : Sum( xp(i)*xp(i) )   mrad*mrad
-!      exten(6) : Sum( y(i)*y(i) )   cm*cm
-!      exten(7) : Sum( yp(i)*yp(i) )  mrad*mrad
-!      exten(8) : Sum( x(i)*xp(i) )   cm*mrad
-!      exten(9) : Sum( y(i)*yp(i) )   cm*mrad
-!      exten(10): Sum( dE*dE )        (MeV*MeV)
-!      exten(11): Sum( dE*phase )     (MeV*rad)
-!      exten(12): Sum( (dp/p)*x(i) )  (cm), with p of REF
-!      exten(13): Sum( (dp/p)*y(i) )  (cm), with p of REF
-!      exten(14): Sum( (dp/p)*(dp/p) ) compared to p of REF
-!      exten(15): Sum( (dp/p)*x(i) )  (cm), with p of COG
-!      exten(16): Sum( (dp/p)*y(i) )  (cm), with p of COG
-!      exten(17): Sum( (dp/p)*(dp/p) )  compared to p of COG
-! *******************************************************************
+!!      exten(1) : Sum( (dp/p)*(dp/p) ) compared to p of COG
+!!      exten(2) : Sum( (dp/p)*phase )  (rad)
+!!      exten(3) : Sum( phase*phase) ) (rad*rad)
+!!      exten(4) : Sum( x(i)*x(i) )   cm*cm
+!!      exten(5) : Sum( xp(i)*xp(i) )   mrad*mrad
+!!      exten(6) : Sum( y(i)*y(i) )   cm*cm
+!!      exten(7) : Sum( yp(i)*yp(i) )  mrad*mrad
+!!      exten(8) : Sum( x(i)*xp(i) )   cm*mrad
+!!      exten(9) : Sum( y(i)*yp(i) )   cm*mrad
+!!      exten(10): Sum( dE*dE )        (MeV*MeV)
+!!      exten(11): Sum( dE*phase )     (MeV*rad)
+!!      exten(12): Sum( (dp/p)*x(i) )  (cm), with p of REF
+!!      exten(13): Sum( (dp/p)*y(i) )  (cm), with p of REF
+!!      exten(14): Sum( (dp/p)*(dp/p) ) compared to p of REF
+!!      exten(15): Sum( (dp/p)*x(i) )  (cm), with p of COG
+!!      exten(16): Sum( (dp/p)*y(i) )  (cm), with p of COG
+!!      exten(17): Sum( (dp/p)*(dp/p) )  compared to p of COG
+!< *******************************************************************
        SUBROUTINE ext2(IDCH)
        implicit real*8 (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
@@ -3870,7 +3870,7 @@ c EXT2 looks for average extensions squared and returns them in exten(14)
          else
            bpai=0.
            gpai=1.
-         endif
+         endif    
          fd(i)=(gpai*bpai)/(gcog*bcog)
          fdd(i)=(gpai*bpai)/(gref*bref)
        enddo
@@ -3932,14 +3932,14 @@ c EXT2 looks for average extensions squared and returns them in exten(14)
        qmoy=qmoy/float(imaxf)
        return
        end
-! *******************************************************************
-! SUBROUTINE chrefe
-! change of reference frame
-!   ENTRY : XC YC A
-!    XC   : DISPLACEMENT IN THE HORIZONTAL DIRECTION (CM)
-!    YC   : DISPLACEMENT IN THE VERTICAL DIRECTION   (CM)
-!    A    : ROTATION ABOUT THE vertical AXIS         (DEG)
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE chrefe
+!! change of reference frame
+!!   ENTRY : XC YC A
+!!    XC   : DISPLACEMENT IN THE HORIZONTAL DIRECTION (CM)
+!!    YC   : DISPLACEMENT IN THE VERTICAL DIRECTION   (CM)
+!!    A    : ROTATION ABOUT THE vertical AXIS         (DEG)
+!< *******************************************************************
        SUBROUTINE chrefe
        implicit real*8 (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
@@ -3972,17 +3972,17 @@ c EXT2 looks for average extensions squared and returns them in exten(14)
      *         F6.2,' CM , A =',F6.4,' RADIAN',///)
        return
        end
-! *******************************************************************
-! SUBROUTINE etac
-! Several charge states in the  bunch, generated randomly
-!   ENTRY :
-!     N       : Number of charge states (maximum 6 different charge states)
-!     CHARGE(I)  PCENT(I)  EOFF (I = 1 to N )
-!     CHARGE(I)    : charge state
-!     PCENT(I)     : percentage of charge state
-!     EOFF(I)      : absolute energy offset of charge state w.r.t. COG (MeV)
-!     ix           : RANDOM NUMBER GENERATOR
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE etac
+!! Several charge states in the  bunch, generated randomly
+!!   ENTRY :
+!!     N       : Number of charge states (maximum 6 different charge states)
+!!     CHARGE(I)  PCENT(I)  EOFF (I = 1 to N )
+!!     CHARGE(I)    : charge state
+!!     PCENT(I)     : percentage of charge state
+!!     EOFF(I)      : absolute energy offset of charge state w.r.t. COG (MeV)
+!!     ix           : RANDOM NUMBER GENERATOR
+!< *******************************************************************
        SUBROUTINE etac
        implicit real*8 (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
@@ -4126,12 +4126,12 @@ c   magnetic rigidity
 140    FORMAT(3X,' NUMBER OF CHARGE STATES : ',I3,' GREATER THAN 20')
        RETURN
        END
-! *******************************************************************
-! SUBROUTINE crest(betr,eqvl,xpos,bkcr,ffield)
-! called by RESTAY
-! Look for the beta giving the maximun energy gain
-! iterative method
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE crest(betr,eqvl,xpos,bkcr,ffield)
+!! called by RESTAY
+!! Look for the beta giving the maximun energy gain
+!! iterative method
+!< *******************************************************************
        SUBROUTINE crest(betr,eqvl,xpos,bkcr,ffield)
        implicit real*8 (a-h,o-z)
        COMMON/TTFC/TK,T1K,T2K,SK,S1K,S2K,FH
@@ -4188,19 +4188,19 @@ C    calculates the equivalent length
        BE2=BECRT-BECRT/120.
        GO TO 456
        END
-! *******************************************************************
-! SUBROUTINE gaus(r1,r2,z1,z2,opt,er,ez)
-! called by SCHEFF
-! calculate er and ez at the r and z location given in fldcom
-! by gauss quadrature integration over the double
-! interval from r1 to r2 and from z1 to z2.
-! if opt.gt.0, determine number of integration points as follows.
-! let rat = max(cr/cz,cz/cr), where cr=r2-r1, and cz=z2-z1
-!     if rat.le.2, use 2 x 2 point array
-!     if rat.gt.2, use 2 x 4 point array
-!     if rat.gt.4, use 2 x 6 point array
-! if opt.lt.0, use 2 x 2 point array regardless of rat
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE gaus(r1,r2,z1,z2,opt,er,ez)
+!! called by SCHEFF
+!! calculate er and ez at the r and z location given in fldcom
+!! by gauss quadrature integration over the double
+!! interval from r1 to r2 and from z1 to z2.
+!! if opt.gt.0, determine number of integration points as follows.
+!! let rat = max(cr/cz,cz/cr), where cr=r2-r1, and cz=z2-z1
+!!     if rat.le.2, use 2 x 2 point array
+!!     if rat.gt.2, use 2 x 4 point array
+!!     if rat.gt.4, use 2 x 6 point array
+!! if opt.lt.0, use 2 x 2 point array regardless of rat
+!< *******************************************************************
        SUBROUTINE gaus(r1,r2,z1,z2,opt,er,ez)
        implicit real*8 (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
@@ -4216,18 +4216,20 @@ C    calculates the equivalent length
        ir=1
        jz=1
        m=1
-       if (opt.lt.0.) go to 20
+       if (opt.ge.0.) then
 c---determine number of integration points
-       rat=abs(cz/cr)
-       l=0
-       if (rat.ge.1.)go to 10
-       rat=1./rat
-       l=1
-   10  if (rat.gt.2.)m=2
-       if (rat.gt.4.)m=3
-       if (l.eq.0) jz=m
-       if (l.eq.1) ir=m
-   20  do i=1,ir
+         rat=abs(cz/cr)
+         l=0
+         if (rat.lt.1.) then
+           rat=1./rat
+           l=1
+         endif
+         if (rat.gt.2.)m=2
+         if (rat.gt.4.)m=3
+         if (l.eq.0) jz=m
+         if (l.eq.1) ir=m
+       endif
+       do i=1,ir
          k=2*i-1
          r(k)=r1+cr*xx(i,ir)
          r(k+1)=r2-cr*xx(i,ir)
@@ -4256,12 +4258,12 @@ c---determine number of integration points
        ez=cr*cz*sez
        return
        end
-! *******************************************************************
-! SUBROUTINE flds(r,z,er,ez)
-! called by SCHEFF
-! evaluate fields at r1,z1 due to ring of charge at r,z.
-! er=(pi/2)*r/d**3.     ez=(pi/2)*z/d**3.
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE flds(r,z,er,ez)
+!! called by SCHEFF
+!! evaluate fields at r1,z1 due to ring of charge at r,z.
+!! er=(pi/2)*r/d**3.     ez=(pi/2)*z/d**3.
+!< *******************************************************************
        SUBROUTINE flds(r,z,er,ez)
        implicit real*8 (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
@@ -4276,31 +4278,34 @@ c **********************************
        call eint (a,ee,ek)
        er1=0.0
        a=sqrt(b+d**2)
-       if (r1.eq.0.) go to 10
-       er1=(ek-(r**2-r1**2+d**2)*ee/(c+d**2))/(2.0*r1*a)
-   10  ez1=d*ee/(a*(c+d**2))
-       if (nip.eq.0) go to 50
-       do i=1,nip
-         xi=i
-         do j=1,2
-           d=z1-(z+xi*pl)
-           a=4.0*r*r1/(b+d**2)
-           call eint (a,ee,ek)
-           a=sqrt(b+d**2)
-           if (r1.eq.0.) go to 20
-           er1=er1+(ek-(r**2-r1**2+d**2)*ee/(c+d**2))/(2.0*r1*a)
-20         ez1=ez1+d*ee/(a*(c+d**2))
-           xi=-xi
+       if (r1.ne.0.) then
+         er1=(ek-(r**2-r1**2+d**2)*ee/(c+d**2))/(2.0*r1*a)
+       endif
+       ez1=d*ee/(a*(c+d**2))
+       if (nip.ne.0) then
+         do i=1,nip
+           xi=i
+           do j=1,2
+             d=z1-(z+xi*pl)
+             a=4.0*r*r1/(b+d**2)
+             call eint (a,ee,ek)
+             a=sqrt(b+d**2)
+             if (r1.ne.0.) then
+               er1=er1+(ek-(r**2-r1**2+d**2)*ee/(c+d**2))/(2.0*r1*a)
+             endif  
+             ez1=ez1+d*ee/(a*(c+d**2))
+             xi=-xi
            enddo
-       enddo
-   50  er=er1
+         enddo
+       endif
+       er=er1
        ez=ez1
        return
        end
-! *******************************************************************
-! SUBROUTINE eint(a,ee,ek)
-! evaluate elliptic integrals  ( called by SCHEFF)
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE eint(a,ee,ek)
+!! evaluate elliptic integrals  ( called by SCHEFF)
+!< *******************************************************************
        SUBROUTINE eint(a,ee,ek)
        implicit real*8 (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
@@ -4311,10 +4316,10 @@ c **********************************
      *    b*(.07253230-.028874721*c))
        return
        end
-! *******************************************************************
-! SUBROUTINE tiltz(tilta)
-! Skew the right ellipse generated by GEBEAM in the phase plane (x,z)
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE tiltz(tilta)
+!! Skew the right ellipse generated by GEBEAM in the phase plane (x,z)
+!< *******************************************************************
        SUBROUTINE tiltz(tilta)
        implicit real*8 (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
@@ -4354,21 +4359,21 @@ c **********************************
        vref=vref1/float(imax)
        RETURN
        END
-! *******************************************************************
-! SUBROUTINE rfq_o3
-! Dynamics through a single cell of a RFQ with multipolar expansion
-! units: MeV , m , sec
-!   p(1): V/(r0*r0)  (MV/m2)
-!   p(2): AV (MV)
-!   p(3): cell length CL (m)
-!   p(4): phase of RF  at the entrance of the cell (deg)
-!   p(5): TYPE
-!     TYPE IS 0, 1., 2., OR 3., INDICATING AS FOLLOWS
-!     0, STANDARD CELL, NO ACCELERATION
-!     1, STANDARD CELL, ACCELERATION
-!     2, FRINGE-FIELD, NO ACCELERATION
-!     3, FRINGE FIELD, ACCELERATION
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE rfq_o3
+!! Dynamics through a single cell of a RFQ with multipolar expansion
+!! units: MeV , m , sec
+!!   p(1): V/(r0*r0)  (MV/m2)
+!!   p(2): AV (MV)
+!!   p(3): cell length CL (m)
+!!   p(4): phase of RF  at the entrance of the cell (deg)
+!!   p(5): TYPE
+!!     TYPE IS 0, 1., 2., OR 3., INDICATING AS FOLLOWS
+!!     0, STANDARD CELL, NO ACCELERATION
+!!     1, STANDARD CELL, ACCELERATION
+!!     2, FRINGE-FIELD, NO ACCELERATION
+!!     3, FRINGE FIELD, ACCELERATION
+!< *******************************************************************
        SUBROUTINE rfq_o3
        implicit real*8 (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
@@ -4551,7 +4556,7 @@ c     convert in m and rad
 c ---- the particle is lost if rm>rlim (rlim is the limit of REJECT)
 c        rlim is converted in m
 c         rlimm=rlim*1.e-02
-          if(rm.gt.rlimm) then
+         if(rm.gt.rlimm) then
            f(8,ip)=0.
            iflag=.true.
            ilost=ilost+1
@@ -4559,7 +4564,7 @@ c         rlimm=rlim*1.e-02
 5556       format(' particle lost: ',i5,' radius (m): ',e12.5,
      *           ' barrier (m):',e12.5)
            go to 6525
-          endif
+         endif
          theta=0.
          xml=xm
          yml=ym
@@ -4785,14 +4790,14 @@ C   plots
         ncell=ncell+1
       RETURN
       END
-! *******************************************************************
-! SUBROUTINE tdens(m,ireca,iacc)
-! called by SCHERM
-! Look for the shape of the distribution n(t)
-!   ireca=0 : for the first ellipse
-!   ireca=1 : for the second ellipse
-! *******************************************************************
-      SUBROUTINE tdens(m,ireca,iacc)
+!> *******************************************************************
+!! SUBROUTINE tdens(m,ireca,iacc)
+!! called by SCHERM
+!! Look for the shape of the distribution n(t)
+!!   ireca=0 : for the first ellipse
+!!   ireca=1 : for the second ellipse
+!< *******************************************************************
+       SUBROUTINE tdens(m,ireca,iacc)
        implicit real*8 (a-h,o-z)
        COMMON/HERMT/AFXT(22),AFYT(22),AFZT(22)
        COMMON/HERMD/AFXM(20),AFYM(20),AFZM(20)
@@ -4817,24 +4822,24 @@ C   plots
        IF(ABS(FC/F1).GT.1.2) IACC=1
        RETURN
        END
-! *******************************************************************
-! SUBROUTINE schfdyn
-! Input datas for SCHEFF
-!   SCE(2)=r extension in rms multiples
-!   SCE(3)=z half extension in rms multiples
-!   SCE(4)=no. of radial mesh intervals (le 20)
-!   SCE(5)=no. of longitudinal mesh intervals (le 40)
-!   sce(6)=no. of adjacent bunches, applicable for buncher studies
-!          and should be 0 for linac dynamics
-!   sce(7)=pulse length, if not beta lambda.(transport studies)
-!          distance bewteen beam pulses
-!          input zero to get default "beta lambda"
-!          units are cm
-!   sce(8)=dummy
-!   sce(9)=option to integrate space charge forces over box
-!          if.eq.0. no integration.  see sub gaus for further
-!          explanation.
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE schfdyn
+!! Input datas for SCHEFF
+!!   SCE(2)=r extension in rms multiples
+!!   SCE(3)=z half extension in rms multiples
+!!   SCE(4)=no. of radial mesh intervals (le 20)
+!!   SCE(5)=no. of longitudinal mesh intervals (le 40)
+!!   sce(6)=no. of adjacent bunches, applicable for buncher studies
+!!          and should be 0 for linac dynamics
+!!   sce(7)=pulse length, if not beta lambda.(transport studies)
+!!          distance bewteen beam pulses
+!!          input zero to get default "beta lambda"
+!!          units are cm
+!!   sce(8)=dummy
+!!   sce(9)=option to integrate space charge forces over box
+!!          if.eq.0. no integration.  see sub gaus for further
+!!          explanation.
+!< *******************************************************************
        SUBROUTINE schfdyn
        implicit real*8 (a-h,o-z)
        common/tapes/in,ifile,meta
@@ -4858,12 +4863,12 @@ c    read  SCHEFF parameters
        call schefini
        RETURN
        END
-! *******************************************************************
-! SUBROUTINE intg3(npt)
-! called by SCHERM
-! Calculate the electric field components acting on each particle
-! Gauss method
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE intg3(npt)
+!! called by SCHERM
+!! Calculate the electric field components acting on each particle
+!! Gauss method
+!< *******************************************************************
        SUBROUTINE intg3(npt)
        implicit real*8 (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
@@ -4939,10 +4944,10 @@ c Field components are in Newton/Coulomb
        ez=ez*const*(zc(npt)-zgc)
        RETURN
        END
-! *******************************************************************
-! SUBROUTINE compress(pib)
-! PRINT OF PARTICLE COORDINATES
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE compress(pib)
+!! PRINT OF PARTICLE COORDINATES
+!< *******************************************************************
        SUBROUTINE compress(pib)
        implicit real*8 (a-h,o-z)
        parameter(iptsz=100002,maxcell=3000,maxcell1=3000)
@@ -4989,10 +4994,10 @@ c Find cog of bunch in time after shifting particles
 59     format(' cog phase after shifting particles : ',e13.7,' deg')
        return
        end
-! *******************************************************************
-! SUBROUTINE prbeam(iflg,wfile)
-! PRINT OF PARTICLE COORDINATES
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE prbeam(iflg,wfile)
+!! PRINT OF PARTICLE COORDINATES
+!< *******************************************************************
        SUBROUTINE prbeam(iflg,wfile)
        implicit real*8 (a-h,o-z)
        parameter(iptsz=100002,maxcell=3000,maxcell1=3000)
@@ -5043,7 +5048,7 @@ C write particle coordinates to files,  phase in radian
            write(60,*) ngood,beamc, fh/(2000000.*pi)
            write(61,*) ngood,beamc, fh/(2000000.*pi)
          endif
-       else
+       else  
          write(58,*) ngood,beamc, fh/(2000000.*pi),enref-xmat
          if (chasit) then
            write(60,*) ngood,beamc, fh/(2000000.*pi),enref-xmat
@@ -5140,11 +5145,11 @@ c  ************** only with CHASE, write to file particles kept
 103    format(8(e13.6,1x))
        return
        end
-! *******************************************************************
-! SUBROUTINE gausse
-! called by HERSC
-! GAUSS method
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE gausse
+!! called by HERSC
+!! GAUSS method
+!< *******************************************************************
        SUBROUTINE gausse
        implicit real*8 (a-h,o-z)
        common/gauss1/absg(40),wg(40),igaus
@@ -5194,13 +5199,13 @@ c   following options in case one wishes to use 10 or 12 steps
        enddo
        return
        end
-! *******************************************************************
-! SUBROUTINE table(lbmax,mbmax,nbmax)
-! called by HERSC
-! arrays of variables independent of the coordinates of particles
-! lbmax,mbmax,nbmax are the maximum degrees of the
-! coefficients A(l,m,n)
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE table(lbmax,mbmax,nbmax)
+!! called by HERSC
+!! arrays of variables independent of the coordinates of particles
+!! lbmax,mbmax,nbmax are the maximum degrees of the 
+!! coefficients A(l,m,n)
+!< *******************************************************************
        SUBROUTINE table(lbmax,mbmax,nbmax)
        implicit real*8 (a-h,o-z)
        common/gauss1/absg(40),wg(40),igaus
@@ -5270,10 +5275,10 @@ c   store the factorials
        enddo
        return
        end
-! *******************************************************************
-! FUNCTION fpar(i,j)
-! Factorial function called by HERSC
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION fpar(i,j)
+!! Factorial function called by HERSC
+!< *******************************************************************
        FUNCTION fpar(i,j)
        implicit real*8 (a-h,o-z)
        common/factor/fpir(40,40),fect(30)
@@ -5282,11 +5287,11 @@ c   store the factorials
        fpar=fpir(ii,jj)
        return
        end
-! *******************************************************************
-! FUNCTION fper(i,j)
-! called by HERSC
-! i*(i-1)*(i-2)*...(i-j+1)/(1.2....j)
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION fper(i,j)
+!! called by HERSC
+!! i*(i-1)*(i-2)*...(i-j+1)/(1.2....j)
+!< *******************************************************************
        FUNCTION fper(i,j)
        implicit real*8 (a-h,o-z)
        faci=1.
@@ -5305,10 +5310,10 @@ c   store the factorials
        fper=faci/facj
        return
        end
-! *******************************************************************
-! FUNCTION hermint(s,ihd)
-! called by HERSC
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION hermint(s,ihd)
+!! called by HERSC
+!< *******************************************************************
        FUNCTION hermint(s,ihd)
        implicit real*8 (a-h,o-z)
        dimension he(100)
@@ -5330,10 +5335,10 @@ c   store the factorials
        hermint=he(ihd+1)*exp(-s*s/2.)
        return
        end
-! *******************************************************************
-! FUNCTION fact(m)
-! FACTORIAL of M
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION fact(m)
+!! FACTORIAL of M
+!< *******************************************************************
        FUNCTION fact(m)
        implicit real*8 (a-h,o-z)
        FACT=1.
@@ -5343,10 +5348,10 @@ c   store the factorials
        ENDDO
        RETURN
        END
-! *******************************************************************
-! FUNCTION factd(m)
-! Calculate of (-1)**m *(2m-1)!!
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION factd(m)
+!! Calculate of (-1)**m *(2m-1)!! 
+!< *******************************************************************
        FUNCTION factd(m)
        implicit real*8 (a-h,o-z)
        dimension he(100)
@@ -5354,25 +5359,24 @@ c   store the factorials
        if(m.eq.0) factd=1.
        if(m.eq.1) then
          factd=-1.
-         return
-       endif
-       he(1)=1.
-       do k=1,2*m-1,2
-         he(k+2)=-float(k)*he(k)
-       enddo
-       factd=he(2*m+1)
-       continue
+       else
+         he(1)=1.
+         do k=1,2*m-1,2
+           he(k+2)=-float(k)*he(k)
+         enddo
+         factd=he(2*m+1)
+       endif  
        return
        end
-! *******************************************************************
-! SUBROUTINE bhdist
-! called by HERSC
-! computes: the coefficients A(l,m,n)
-!           the rms sizes in x, y and z-direction
-! selects:  the significants terms in the Hermite series expansion
-! lmax, mmax and nmax are the maximum values of l, m, n for these
-! coefficients
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE bhdist
+!! called by HERSC
+!! computes: the coefficients A(l,m,n) 
+!!           the rms sizes in x, y and z-direction
+!! selects:  the significants terms in the Hermite series expansion
+!! lmax, mmax and nmax are the maximum values of l, m, n for these 
+!! coefficients
+!< *******************************************************************
        SUBROUTINE bhdist
        implicit real*8 (a-h,o-z)
        common/coef/a(30,30,30),xa,xb,xc
@@ -5395,17 +5399,17 @@ c       call mytime(iitime)
 c       write(16,*) 'HCOEF ended at ',iitime
        return
        end
-! *******************************************************************
-! SUBROUTINE trms(isucc)
-! called by HERSC
-! storage  of the variables depending only of the rms sizes
-! lmax,mmax,nmax : maximum of the subscripts: l,m,n
-!                  for the significants Almn
-! isucc:order of succession of the integrals in table 1-b
-!     isucc=1: order of succesion x-->y-->z
-!     isucc=2: order of succesion y-->z-->x
-!     isucc=3: order of succesion z-->x-->y
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE trms(isucc)
+!! called by HERSC
+!! storage  of the variables depending only of the rms sizes
+!! lmax,mmax,nmax : maximum of the subscripts: l,m,n
+!!                  for the significants Almn
+!! isucc:order of succession of the integrals in table 1-b
+!!     isucc=1: order of succesion x-->y-->z
+!!     isucc=2: order of succesion y-->z-->x
+!!     isucc=3: order of succesion z-->x-->y
+!< *******************************************************************
        SUBROUTINE trms(isucc)
        implicit real*8 (a-h,o-z)
        common/consta/vl,pi,xmat,rpel,qst
@@ -5476,11 +5480,11 @@ c   array rms(j,i) Powers of the rms sizes  j=1,2,3, the value i is the power
        enddo
        return
        end
-! *******************************************************************
-! SUBROUTINE uvrms
-! called by HERSC
-! storage of the variables depending only of the coordinate s3
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE uvrms
+!! called by HERSC
+!! storage of the variables depending only of the coordinate s3
+!< *******************************************************************
        SUBROUTINE uvrms
        implicit real*8 (a-h,o-z)
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
@@ -5574,19 +5578,19 @@ c    Hermite functions
        enddo
        return
        end
-! *******************************************************************
-! SUBROUTINE fielde(lc,mc,nc,isucc)
-! beam self-fields computation called by HERSC
-! look for the parity of the currents lc,mc and nc
-! compute the corresponding field components
-!     isucc=1: a<b,c
-!     isucc=2: b<a,c
-!     isucc=3: c<a,b
-! x,y,z are the scaling coordinates: x/a,y/b,z/c
-! The corresponding analytical equations are in the number of the
-! tables. The table number in 'comments' refers to the corresponding
-! analytical equations
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE fielde(lc,mc,nc,isucc)
+!! beam self-fields computation called by HERSC
+!! look for the parity of the currents lc,mc and nc
+!! compute the corresponding field components
+!!     isucc=1: a<b,c
+!!     isucc=2: b<a,c
+!!     isucc=3: c<a,b
+!! x,y,z are the scaling coordinates: x/a,y/b,z/c
+!! The corresponding analytical equations are in the number of the 
+!! tables. The table number in 'comments' refers to the corresponding
+!! analytical equations
+!< *******************************************************************
        SUBROUTINE fielde(lc,mc,nc,isucc)
        implicit real*8 (a-h,o-z)
        common/rms/rms(3,50),s1,s2,s3
@@ -6352,10 +6356,10 @@ c        it=2*(it1+it2+it3)+1
 c    endif of isucc=3----> c<a,b
        endif
        end
-! *******************************************************************
-! FUNCTION eppp(it1,it2,it3)
-! E(2it3,2it2,2it1)   table 77-a-1
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION eppp(it1,it2,it3)
+!! E(2it3,2it2,2it1)   table 77-a-1
+!< *******************************************************************
        FUNCTION eppp(it1,it2,it3)
        implicit real*8 (a-h,o-z)
        common/rms/rms(3,50),s1,s2,s3
@@ -6401,10 +6405,10 @@ c         pwas3=as3**(2(it1+it2+it3)+1)
        endif
        return
        end
-! *******************************************************************
-! FUNCTION epip(it1,it2,it3)
-! E(2it3,2it2+1,2it1)  table 77-a-2
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION epip(it1,it2,it3)
+!! E(2it3,2it2+1,2it1)  table 77-a-2
+!< *******************************************************************
        FUNCTION epip(it1,it2,it3)
        implicit real*8 (a-h,o-z)
        common/rms/rms(3,50),s1,s2,s3
@@ -6451,10 +6455,10 @@ c         pwas3=as3**(2(it1+it2+it3)+1)
        endif
        return
        end
-! *******************************************************************
-! FUNCTION eppi(it1,it2,it3)
-! E(2it3,2it2,2it1+1) table 77-a-2
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION eppi(it1,it2,it3)
+!! E(2it3,2it2,2it1+1) table 77-a-2
+!< *******************************************************************
        FUNCTION eppi(it1,it2,it3)
        implicit real*8 (a-h,o-z)
        common/rms/rms(3,50),s1,s2,s3
@@ -6501,10 +6505,10 @@ c         pwas3=as3**(2(it1+it2+it3)+1),pw3as3=as3**(2*it3)
        endif
        return
        end
-! *******************************************************************
-! FUNCTION epii(it1,it2,it3)
-! E(2*it3,2*it2+1,2*it1+1) table 77-a-1
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION epii(it1,it2,it3)
+!! E(2*it3,2*it2+1,2*it1+1) table 77-a-1
+!< *******************************************************************
        FUNCTION epii(it1,it2,it3)
        implicit real*8 (a-h,o-z)
        common/rms/rms(3,50),s1,s2,s3
@@ -6551,10 +6555,10 @@ c         pwas3=as3**(2(it1+it2+it3)+1),pw3as3=as3**(2*it3)
        endif
        return
        end
-! *******************************************************************
-! FUNCTION eipp(it1,it2,it3)
-! E(2it3+1,2it2,2it1) table 77-b-2
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION eipp(it1,it2,it3)
+!! E(2it3+1,2it2,2it1) table 77-b-2
+!< *******************************************************************
        FUNCTION eipp(it1,it2,it3)
        implicit real*8 (a-h,o-z)
        common/rms/rms(3,50),s1,s2,s3
@@ -6601,10 +6605,10 @@ c         pwas3=as3**(2(it1+it2+it3)+1),pw3as3=as3**(2*it3)
        endif
        return
        end
-! *******************************************************************
-! FUNCTION eiip(it1,it2,it3)
-! E(2it3+1,2it2+1,2it1)  table 77-b-1
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION eiip(it1,it2,it3)
+!! E(2it3+1,2it2+1,2it1)  table 77-b-1
+!< *******************************************************************
        FUNCTION eiip(it1,it2,it3)
        implicit real*8 (a-h,o-z)
        common/rms/rms(3,50),s1,s2,s3
@@ -6651,10 +6655,10 @@ c         pwas3=as3**(2(it1+it2+it3)+1)
        endif
        return
        end
-! *******************************************************************
-! FUNCTION eipi(it1,it2,it3)
-! E(2*it3+1,2*it2,2*it1+1)  table 77-b-1
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION eipi(it1,it2,it3)
+!! E(2*it3+1,2*it2,2*it1+1)  table 77-b-1
+!< *******************************************************************
        FUNCTION eipi(it1,it2,it3)
        implicit real*8 (a-h,o-z)
        common/rms/rms(3,50),s1,s2,s3
@@ -6701,10 +6705,10 @@ c         pwas3=as3**(2(it1+it2+it3)+1)
        endif
        return
        end
-! *******************************************************************
-! FUNCTION eiii(it1,it2,it3)
-! E(2*it3+1,2*it2+1,2*it1+1) table 77-b-2
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION eiii(it1,it2,it3)
+!! E(2*it3+1,2*it2+1,2*it1+1) table 77-b-2
+!< *******************************************************************
        FUNCTION eiii(it1,it2,it3)
        implicit real*8 (a-h,o-z)
        common/rms/rms(3,50),s1,s2,s3
@@ -6751,11 +6755,11 @@ c         pwas3=as3**(2(it1+it2+it3)+1),pw3as3=as3**(2*it3)
        endif
        return
        end
-! *******************************************************************
-! FUNCTION tipp(it1,it2,it3)
-! Part of W**(2t3+1,2t2,2t1)  table 61-b
-! with T(2t3+1,2t2,2t1,j1)    table 41
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION tipp(it1,it2,it3)
+!! Part of W**(2t3+1,2t2,2t1)  table 61-b
+!! with T(2t3+1,2t2,2t1,j1)    table 41
+!< *******************************************************************
        FUNCTION tipp(it1,it2,it3)
        implicit real*8 (a-h,o-z)
        common/randu/ck(15),kmax
@@ -6836,11 +6840,11 @@ c   term T(2t3+1,2t2,2t1,j1) in table 41
          return
        endif
        end
-! *******************************************************************
-! FUNCTION tiip(it1,it2,it3)
-! part of W**(2t3+1,2t2+1,2t1)  table 61-b
-! with  T(2t3+1,2t2+1,2t1,j1)   table 41
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION tiip(it1,it2,it3)
+!! part of W**(2t3+1,2t2+1,2t1)  table 61-b
+!! with  T(2t3+1,2t2+1,2t1,j1)   table 41
+!< *******************************************************************
        FUNCTION tiip(it1,it2,it3)
        implicit real*8 (a-h,o-z)
        common/randu/ck(15),kmax
@@ -6920,11 +6924,11 @@ c   term T(2t3+1,2t2,2t1,j1) in table 41
          return
        endif
        end
-! *******************************************************************
-! FUNCTION tipi(it1,it2,it3)
-! part of W**(2t3+1,2t2,2t1+1) in table 61-b
-! with T(2t3+1,2t2,2t1+1,j1)   in table 41
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION tipi(it1,it2,it3)
+!! part of W**(2t3+1,2t2,2t1+1) in table 61-b
+!! with T(2t3+1,2t2,2t1+1,j1)   in table 41
+!< *******************************************************************
        FUNCTION tipi(it1,it2,it3)
        implicit real*8 (a-h,o-z)
        common/randu/ck(15),kmax
@@ -7005,11 +7009,11 @@ c   term T(2t3+1,2t2,2t1,j1) in table 41
          return
        endif
        end
-! *******************************************************************
-! FUNCTION tiii(it1,it2,it3)
-! part of W**(2t3+1,2t2+1,2t1+1) in table 61-b
-! with T(2t3+1,2t2+1,2t1+1,j1)   in table 41
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION tiii(it1,it2,it3)
+!! part of W**(2t3+1,2t2+1,2t1+1) in table 61-b
+!! with T(2t3+1,2t2+1,2t1+1,j1)   in table 41
+!< *******************************************************************
        FUNCTION tiii(it1,it2,it3)
        implicit real*8 (a-h,o-z)
        common/randu/ck(15),kmax
@@ -7090,11 +7094,11 @@ c   term T(2t3+1,2t2+1,2t1+1,j1) in table 41
          return
        endif
        end
-! *******************************************************************
-! FUNCTION tppp(it1,it2,it3)
-! part of W**(2t3,2t2,2t1) in table 61-a
-! with  T(2t3,2t2,2t1,j1)  in table 41
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION tppp(it1,it2,it3)
+!! part of W**(2t3,2t2,2t1) in table 61-a
+!! with  T(2t3,2t2,2t1,j1)  in table 41
+!< *******************************************************************
        FUNCTION tppp(it1,it2,it3)
        implicit real*8 (a-h,o-z)
        common/randu/ck(15),kmax
@@ -7121,7 +7125,7 @@ c   term T(2t3+1,2t2+1,2t1+1,j1) in table 41
            do j1=1,km1,2
              j1km=km1-2*jm1-1
 c     j1km must be always greather or equal to zero
-             if(j1km.lt.0) go to 100
+             if(j1km.ge.0) go to 100
 c    T(2t3,2t2,2t1,j1) in table 41
              it3j1=it3+jm1
              tt=0.
@@ -7181,11 +7185,11 @@ c    T(2t3,2t2,2t1,j1) in table 41
          return
        endif
        end
-! *******************************************************************
-! FUNCTION tpip(it1,it2,it3)
-! the part of W**(2t3,2t2,2t1+1) in table 61-a
-! with T(2t3,2t2,2t1+1,j1)       in table 41
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION tpip(it1,it2,it3)
+!! the part of W**(2t3,2t2,2t1+1) in table 61-a
+!! with T(2t3,2t2,2t1+1,j1)       in table 41
+!< *******************************************************************
        FUNCTION tpip(it1,it2,it3)
        implicit real*8 (a-h,o-z)
        common/randu/ck(15),kmax
@@ -7272,11 +7276,11 @@ c    T(2t3,2t2,2t1,j1) in table 41
          return
        endif
        end
-! *******************************************************************
-! FUNCTION tppi(it1,it2,it3)
-! part of W**(2t3,2t2,2t1+1) in table 61-a
-! with T(2t3,2t2,2t1+1,j1)   in table 41
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION tppi(it1,it2,it3)
+!! part of W**(2t3,2t2,2t1+1) in table 61-a
+!! with T(2t3,2t2,2t1+1,j1)   in table 41
+!< *******************************************************************
        FUNCTION tppi(it1,it2,it3)
        implicit real*8 (a-h,o-z)
        common/randu/ck(15),kmax
@@ -7363,11 +7367,11 @@ c    T(2t3,2t2,2t1,j1) in table 41
          return
        endif
        end
-! *******************************************************************
-! FUNCTION tpii(it1,it2,it3)
-! part of W**(2t3,2t2+1,2t1+1) in table 61-a
-! with T(2t3,2t2+1,2t1+1,j1)   in table 41
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION tpii(it1,it2,it3)
+!! part of W**(2t3,2t2+1,2t1+1) in table 61-a
+!! with T(2t3,2t2+1,2t1+1,j1)   in table 41
+!< *******************************************************************
        FUNCTION tpii(it1,it2,it3)
        implicit real*8 (a-h,o-z)
        common/randu/ck(15),kmax
@@ -7454,11 +7458,11 @@ c    T(2t3,2t2,2t1,j1) in table 41
          return
        endif
        end
-! *******************************************************************
-! FUNCTION sipp(it1,it2,it3)
-! second part of W**(2t3+1,2t2,2t1) in table 61-b
-! with S(2t3+1,2t2,2t1,j1)  in table 70-b
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION sipp(it1,it2,it3)
+!! second part of W**(2t3+1,2t2,2t1) in table 61-b
+!! with S(2t3+1,2t2,2t1,j1)  in table 70-b
+!< *******************************************************************
        FUNCTION sipp(it1,it2,it3)
        implicit real*8 (a-h,o-z)
        common/consta/vl,pi,xmat,rpel,qst
@@ -7496,7 +7500,7 @@ c      Gauss quadrature in table 70-b
            tt=0.
            do ig=1,igaus
 c Hermite functions are in the table hsint(ig,,ind )
-c   caution!!! in the table hsint the indice ind is starting from 1
+c   caution!! !! in the table hsint the indice ind is starting from 1
 c              i2123j1 is starting from zero
              base=co(ig,it1p)*sn(ig,it2p)/blam(ig,i1123j1)
              htm0=hsint(ig,2,i2123j1+1)
@@ -7522,11 +7526,11 @@ c  enddo from k (k=1,kmax+1)
        maksi=.true.
        return
        end
-! *******************************************************************
-! FUNCTION siip(it1,it2,it3)
-! W**(2t3+1,2t2+1,2t1)       in table 61-b
-! with S(2t3+1,2t2+1,2t1,j1) in table 70-b
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION siip(it1,it2,it3)
+!! W**(2t3+1,2t2+1,2t1)       in table 61-b
+!! with S(2t3+1,2t2+1,2t1,j1) in table 70-b
+!< *******************************************************************
        FUNCTION siip(it1,it2,it3)
        implicit real*8 (a-h,o-z)
        common/consta/vl,pi,xmat,rpel,qst
@@ -7587,11 +7591,11 @@ c  enddo from k (k=1,kmax+1)
        maksi=.true.
        return
        end
-! *******************************************************************
-! FUNCTION sipi(it1,it2,it3)
-! part of W**(2t3+1,2t2,2t1+1)     in table 61-b
-! with S(2t3+1,2t2,2t1+1,j1) given in table 70-b
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION sipi(it1,it2,it3)
+!! part of W**(2t3+1,2t2,2t1+1)     in table 61-b
+!! with S(2t3+1,2t2,2t1+1,j1) given in table 70-b
+!< *******************************************************************
        FUNCTION sipi(it1,it2,it3)
        implicit real*8 (a-h,o-z)
        common/consta/vl,pi,xmat,rpel,qst
@@ -7652,11 +7656,11 @@ c  enddo from k (k=1,kmax+1)
        maksi=.true.
        return
        end
-! *******************************************************************
-! FUNCTION siii(it1,it2,it3)
-! part of W**(2t3+1,2t2+1,2t1+1) in table 61-b
-! with S(2t3+1,2t2+1,2t1+1,j1)   in table 70-b
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION siii(it1,it2,it3)
+!! part of W**(2t3+1,2t2+1,2t1+1) in table 61-b
+!! with S(2t3+1,2t2+1,2t1+1,j1)   in table 70-b
+!< *******************************************************************
        FUNCTION siii(it1,it2,it3)
        implicit real*8 (a-h,o-z)
        common/consta/vl,pi,xmat,rpel,qst
@@ -7717,11 +7721,11 @@ c  enddo from k (k=1,kmax+1)
        maksi=.true.
        return
        end
-! *******************************************************************
-! FUNCTION sppp(it1,it2,it3)
-! part of W**(2t3,2t2,2t1)     in table 61-a
-! with S(2t3,2t2,2t1,j1) given in table 70-a
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION sppp(it1,it2,it3)
+!! part of W**(2t3,2t2,2t1)     in table 61-a
+!! with S(2t3,2t2,2t1,j1) given in table 70-a
+!< *******************************************************************
        FUNCTION sppp(it1,it2,it3)
        implicit real*8 (a-h,o-z)
        common/consta/vl,pi,xmat,rpel,qst
@@ -7749,7 +7753,7 @@ c  enddo from k (k=1,kmax+1)
          do j1=1,k
            jm1=j1-1
            j1km=km1-2*jm1
-           if(j1km.lt.0) go to 100
+           if(j1km.lt.0) exit
 c     j1km must be always greather or equal to zero
 c      Gauss quadrature in table 70-a
            i1123j1=it1+it2+it3+jm1
@@ -7772,7 +7776,6 @@ c   s3pw(j1km+1)=as3**j1km
 c  enddo from  j1
            jj1=jj1+1
          enddo
-100      continue
          sppp=sppp+tt1*ck(k)
 c  enddo from k (k=1,kmax+1)
           kk=kk+1
@@ -7781,11 +7784,11 @@ c  enddo from k (k=1,kmax+1)
        maksp=.true.
        return
        end
-! *******************************************************************
-! FUNCTION spip(it1,it2,it3)
-! part of W**(2t3,2t2,2t1+1)     in table 61-a
-! with S(2t3,2t2,2t1+1,j1) given in table 70-a
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION spip(it1,it2,it3)
+!! part of W**(2t3,2t2,2t1+1)     in table 61-a
+!! with S(2t3,2t2,2t1+1,j1) given in table 70-a
+!< *******************************************************************
        FUNCTION spip(it1,it2,it3)
        implicit real*8 (a-h,o-z)
        common/consta/vl,pi,xmat,rpel,qst
@@ -7813,7 +7816,7 @@ c  enddo from k (k=1,kmax+1)
          do j1=1,k
            jm1=j1-1
            j1km=km1-2*jm1
-           if(j1km.lt.0) go to 100
+           if(j1km.lt.0) exit
 c     j1km must be always greather or equal to zero
 c      Gauss quadrature in table 70-a
            i1123j1=it1+it2+it3+jm1
@@ -7836,7 +7839,6 @@ c   s3pw(j1km+1)=as3**j1km
 c  enddo from  j1
            jj1=jj1+1
          enddo
-100      continue
          spip=spip+tt1*ck(k)
          kk=kk+1
 c  enddo from k (k=1,kmax+1)
@@ -7845,11 +7847,11 @@ c  enddo from k (k=1,kmax+1)
        maksp=.true.
        return
        end
-! *******************************************************************
-! FUNCTION sppi(it1,it2,it3)
-! part of W**(2t3,2t2,2t1+1)     in table 61-a
-! with S(2t3,2t2,2t1+1,j1) given in table 70-a
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION sppi(it1,it2,it3)
+!! part of W**(2t3,2t2,2t1+1)     in table 61-a
+!! with S(2t3,2t2,2t1+1,j1) given in table 70-a
+!< *******************************************************************
        FUNCTION sppi(it1,it2,it3)
        implicit real*8 (a-h,o-z)
        common/consta/vl,pi,xmat,rpel,qst
@@ -7878,7 +7880,7 @@ c  enddo from k (k=1,kmax+1)
            jm1=j1-1
            j1km=km1-2*jm1
 c     j1km must be always greather or equal to zero
-           if(j1km.lt.0) go to 100
+           if(j1km.lt.0) exit
 c      Gauss quadrature in table 70-a
            i1123j1=it1+it2+it3+jm1
            i2123j1=2*i1123j1+1
@@ -7900,7 +7902,6 @@ c   s3pw(j1km+1)=as3**j1km
 c  enddo from  j1
            jj1=jj1+1
          enddo
-100      continue
          sppi=sppi+tt1*ck(k)
 c  enddo from k (k=1,kmax+1)
          kk=kk+1
@@ -7909,11 +7910,11 @@ c  enddo from k (k=1,kmax+1)
        maksp=.true.
        return
        end
-! *******************************************************************
-! FUNCTION spii(it1,it2,it3)
-! part of W**(2t3,2t2,2t1+1)       in table 61-a
-! with S(2t3,2t2+1,2t1+1,j1) given in table 70-a
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION spii(it1,it2,it3)
+!! part of W**(2t3,2t2,2t1+1)       in table 61-a
+!! with S(2t3,2t2+1,2t1+1,j1) given in table 70-a
+!< *******************************************************************
        FUNCTION spii(it1,it2,it3)
        implicit real*8 (a-h,o-z)
        common/consta/vl,pi,xmat,rpel,qst
@@ -7941,7 +7942,7 @@ c  enddo from k (k=1,kmax+1)
          do j1=1,k
            jm1=j1-1
            j1km=km1-2*jm1
-           if(j1km.lt.0) go to 100
+           if(j1km.lt.0) exit
 c     j1km must be always greather or equal to zero
 c      Gauss quadrature in table 70-a
            i1123j1=it1+it2+it3+jm1
@@ -7964,7 +7965,6 @@ c   s3pw(j1km+1)=as3**j1km
 c  enddo from  j1
            jj1=jj1+1
          enddo
-100      continue
          spii=spii+tt1*ck(k)
          kk=kk+1
 c  enddo from k (k=1,kmax+1)
@@ -7980,11 +7980,11 @@ c   sgppp -->l,m and n even
 c   sgpip --> l even, m odd, n even
 c   .................................
 c*****************************************************************
-! *******************************************************************
-! FUNCTION sgppp(it1,it2,it3)
-! FUNCTION sigma(2t3,2t2,2t1) in table 14
-! in E(2t3,2t2,2t1)           in table 77-a-1
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION sgppp(it1,it2,it3)
+!! FUNCTION sigma(2t3,2t2,2t1) in table 14
+!! in E(2t3,2t2,2t1)           in table 77-a-1
+!< *******************************************************************
        FUNCTION sgppp(it1,it2,it3)
        implicit real*8 (a-h,o-z)
        common/rms/rms(3,50),s1,s2,s3
@@ -8032,11 +8032,11 @@ c*****************************************************************
          return
        endif
        end
-! *******************************************************************
-! FUNCTION sgpip(it1,it2,it3)
-! FUNCTION sigma(2t3,2t+1,2t1) in table 14
-! is in E(2t3,2t2+1,2t1) given in table 77-a-2
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION sgpip(it1,it2,it3)
+!! FUNCTION sigma(2t3,2t+1,2t1) in table 14
+!! is in E(2t3,2t2+1,2t1) given in table 77-a-2
+!< *******************************************************************
        FUNCTION sgpip(it1,it2,it3)
        implicit real*8 (a-h,o-z)
        common/rms/rms(3,50),s1,s2,s3
@@ -8085,11 +8085,11 @@ comment             hs30=hs3(km2+1)*rms(3,it3k+1)
          return
        endif
        end
-! *******************************************************************
-! FUNCTION sgppi(it1,it2,it3)
-! FUNCTION sigma(2t3,2t2,2t1+1) in table 14
-! is in E(2t3,2t2,2t1+1)        in table 77-a-2
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION sgppi(it1,it2,it3)
+!! FUNCTION sigma(2t3,2t2,2t1+1) in table 14
+!! is in E(2t3,2t2,2t1+1)        in table 77-a-2
+!< *******************************************************************
        FUNCTION sgppi(it1,it2,it3)
        implicit real*8 (a-h,o-z)
        common/rms/rms(3,50),s1,s2,s3
@@ -8137,11 +8137,11 @@ comment             hs30=hs3(km2+1)*rms(3,it3k+1)
          return
        endif
        end
-! *******************************************************************
-! FUNCTION sgpii(it1,it2,it3)
-! FUNCTION sigma(2t3,2t2+1,2t1+1)  in table 14
-! correspond to E(2t3,2t2+1,2t1+1) in table 77-a-1
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION sgpii(it1,it2,it3)
+!! FUNCTION sigma(2t3,2t2+1,2t1+1)  in table 14
+!! correspond to E(2t3,2t2+1,2t1+1) in table 77-a-1
+!< *******************************************************************
        FUNCTION sgpii(it1,it2,it3)
        implicit real*8 (a-h,o-z)
        common/rms/rms(3,50),s1,s2,s3
@@ -8189,11 +8189,11 @@ comment             hs30=hs3(km2+1)*rms(3,it3k+1)
          return
        endif
        end
-! *******************************************************************
-! FUNCTION sgipp(it1,it2,it3)
-! FUNCTION sigma(2t3+1,2t2,2t1) in table 14
-! E(2t3+1,2t2,2t1)     is given in table 77-b-2
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION sgipp(it1,it2,it3)
+!! FUNCTION sigma(2t3+1,2t2,2t1) in table 14
+!! E(2t3+1,2t2,2t1)     is given in table 77-b-2
+!< *******************************************************************
        FUNCTION sgipp(it1,it2,it3)
        implicit real*8 (a-h,o-z)
        common/rms/rms(3,50),s1,s2,s3
@@ -8241,11 +8241,11 @@ comment             hs30=hs3(km2+1)*rms(3,it3k+1)
          return
        endif
        end
-! *******************************************************************
-! FUNCTION sgiip(it1,it2,it3)
-! FUNCTION sigma(2t3+1,2t2+1,2t1) in table 14
-! inside E(2t3+1,2t2+1,2t1) given in table 77-b-1
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION sgiip(it1,it2,it3)
+!! FUNCTION sigma(2t3+1,2t2+1,2t1) in table 14
+!! inside E(2t3+1,2t2+1,2t1) given in table 77-b-1
+!< *******************************************************************
        FUNCTION sgiip(it1,it2,it3)
        implicit real*8 (a-h,o-z)
        common/rms/rms(3,50),s1,s2,s3
@@ -8293,11 +8293,11 @@ comment             hs30=hs3(km2+1)*rms(3,it3k+1)
          return
        endif
        end
-! *******************************************************************
-! FUNCTION sgipi(it1,it2,it3)
-! FUNCTION sigma(2t3+1,2t2,2t1+1)  in table 14
-! in E(2t3+1,2t2,2t1+1)            in table 77-b-1
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION sgipi(it1,it2,it3)
+!! FUNCTION sigma(2t3+1,2t2,2t1+1)  in table 14
+!! in E(2t3+1,2t2,2t1+1)            in table 77-b-1
+!< *******************************************************************
        FUNCTION sgipi(it1,it2,it3)
        implicit real*8 (a-h,o-z)
        common/rms/rms(3,50),s1,s2,s3
@@ -8345,11 +8345,11 @@ comment             hs30=hs3(km2+1)*rms(3,it3k+1)
          return
        endif
        end
-! *******************************************************************
-! FUNCTION sgiii(it1,it2,it3)
-! FUNCTION sigma(2t3+1,2t2+1,2t1+1) in table 14
-! in E(2t3+1,2t2+1,2t1+1)           in table 77-b-2
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION sgiii(it1,it2,it3)
+!! FUNCTION sigma(2t3+1,2t2+1,2t1+1) in table 14
+!! in E(2t3+1,2t2+1,2t1+1)           in table 77-b-2
+!< *******************************************************************
        FUNCTION sgiii(it1,it2,it3)
        implicit real*8 (a-h,o-z)
        common/rms/rms(3,50),s1,s2,s3
@@ -8403,12 +8403,12 @@ c   uppp ---> l,m,n  even
 c   upip ---> l even, m odd, n even
 c   .................................
 c*****************************************************************************
-! *******************************************************************
-! FUNCTION uppp(it1,it2,it3)
-! the integral U(2t3,2t2,2t1,thet) is given in table 75
-! the summation with cos(thet)**2*t1,cos(thet)**2*t2 is found in
-! table 77-a-1
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION uppp(it1,it2,it3)
+!! the integral U(2t3,2t2,2t1,thet) is given in table 75
+!! the summation with cos(thet)**2*t1,cos(thet)**2*t2 is found in
+!! table 77-a-1
+!< *******************************************************************
        FUNCTION uppp(it1,it2,it3)
        implicit real*8 (a-h,o-z)
        common/rms/rms(3,50),s1,s2,s3
@@ -8434,12 +8434,12 @@ c*****************************************************************************
        enddo
        return
        end
-! *******************************************************************
-! FUNCTION upip(it1,it2,it3)
-! the integral U(2t3,2t2+1,2t1,thet) is given in table 75
-! the summation with cos(thet)**2t1,cos(thet)**(2t2+1) is in
-! table 77-a-2
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION upip(it1,it2,it3)
+!! the integral U(2t3,2t2+1,2t1,thet) is given in table 75
+!! the summation with cos(thet)**2t1,cos(thet)**(2t2+1) is in 
+!! table 77-a-2
+!< *******************************************************************
        FUNCTION upip(it1,it2,it3)
        implicit real*8 (a-h,o-z)
        common/rms/rms(3,50),s1,s2,s3
@@ -8465,12 +8465,12 @@ c*****************************************************************************
        enddo
        return
        end
-! *******************************************************************
-! FUNCTION uppi(it1,it2,it3)
-! the integral U(2t3,2t2,2t1+1,thet)  in table 75
-! the summation with cos(thet)**(2*t1+1),cos(thet)**2*t2  in
-! table 77-a-2
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION uppi(it1,it2,it3)
+!! the integral U(2t3,2t2,2t1+1,thet)  in table 75
+!! the summation with cos(thet)**(2*t1+1),cos(thet)**2*t2  in 
+!! table 77-a-2
+!< *******************************************************************
        FUNCTION uppi(it1,it2,it3)
        implicit real*8 (a-h,o-z)
        common/rms/rms(3,50),s1,s2,s3
@@ -8496,12 +8496,12 @@ c*****************************************************************************
        enddo
        return
        end
-! *******************************************************************
-! FUNCTION upii(it1,it2,it3)
-! the integral U(2*t3,2*t2+1,2*t1+1,thet)  table 75
-! the summation with cos(thet)**(2*t1+1),cos(thet)**(2*t2+1)
-! table 77-a-1
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION upii(it1,it2,it3)
+!! the integral U(2*t3,2*t2+1,2*t1+1,thet)  table 75
+!! the summation with cos(thet)**(2*t1+1),cos(thet)**(2*t2+1) 
+!! table 77-a-1
+!< *******************************************************************
       FUNCTION upii(it1,it2,it3)
       implicit real*8 (a-h,o-z)
        common/rms/rms(3,50),s1,s2,s3
@@ -8527,12 +8527,12 @@ c*****************************************************************************
        enddo
        return
        end
-! *******************************************************************
-! FUNCTION uipp(it1,it2,it3)
-! the integral U(2*t3+1,2*t2,2*t1,thet)  table 75
-! for the summation with cos(thet)**2*t1,cos(thet)**2*t2 see
-! table 77-b-2
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION uipp(it1,it2,it3)
+!! the integral U(2*t3+1,2*t2,2*t1,thet)  table 75
+!! for the summation with cos(thet)**2*t1,cos(thet)**2*t2 see
+!! table 77-b-2
+!< *******************************************************************
        FUNCTION uipp(it1,it2,it3)
        implicit real*8 (a-h,o-z)
        common/rms/rms(3,50),s1,s2,s3
@@ -8558,11 +8558,11 @@ c*****************************************************************************
        enddo
        return
        end
-! *******************************************************************
-! FUNCTION uiip(it1,it2,it3)
-! the integral U(2*t3+1,2*t2+1,2*t1,thet) table 75
-! summation over cos(thet)**2*t1,cos(thet)**(2*t2+1) table 77-b-1
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION uiip(it1,it2,it3)
+!! the integral U(2*t3+1,2*t2+1,2*t1,thet) table 75
+!! summation over cos(thet)**2*t1,cos(thet)**(2*t2+1) table 77-b-1
+!< *******************************************************************
        FUNCTION uiip(it1,it2,it3)
        implicit real*8 (a-h,o-z)
        common/rms/rms(3,50),s1,s2,s3
@@ -8588,11 +8588,11 @@ c*****************************************************************************
        enddo
        return
        end
-! *******************************************************************
-! FUNCTION uipi(it1,it2,it3)
-! the integral U(2t3+1,2t2,2t1+1,thet)  table 75
-! summation over cos(thet)**(2*t1+1),cos(thet)**2*t2  table 77-b-1
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION uipi(it1,it2,it3)
+!! the integral U(2t3+1,2t2,2t1+1,thet)  table 75
+!! summation over cos(thet)**(2*t1+1),cos(thet)**2*t2  table 77-b-1
+!< *******************************************************************
        FUNCTION uipi(it1,it2,it3)
        implicit real*8 (a-h,o-z)
        common/rms/rms(3,50),s1,s2,s3
@@ -8618,12 +8618,12 @@ c*****************************************************************************
        enddo
        return
        end
-! *******************************************************************
-! FUNCTION uiii(it1,it2,it3)
-! the integral U(2*t3+1,2*t2+1,2*t1+1,thet)  table 75
-! summation with cos(thet)**(2*t1+1),cos(thet)**(2*t2+1)
-! (see table 77-b-2)
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION uiii(it1,it2,it3)
+!! the integral U(2*t3+1,2*t2+1,2*t1+1,thet)  table 75
+!! summation with cos(thet)**(2*t1+1),cos(thet)**(2*t2+1)
+!! (see table 77-b-2)
+!< *******************************************************************
        FUNCTION uiii(it1,it2,it3)
        implicit real*8 (a-h,o-z)
        common/rms/rms(3,50),s1,s2,s3
@@ -8649,11 +8649,11 @@ c*****************************************************************************
        enddo
        return
        end
-! *******************************************************************
-! FUNCTION vppp(k)
-! the integral V(2t3,2t2,2t1,k,thet)  table 76
-! sum with cos(thet)**2*t1,cos(thet)**2*t2 (see table 77-a-1)
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION vppp(k)
+!! the integral V(2t3,2t2,2t1,k,thet)  table 76
+!! sum with cos(thet)**2*t1,cos(thet)**2*t2 (see table 77-a-1)
+!< *******************************************************************
        FUNCTION vppp(k)
        implicit real*8 (a-h,o-z)
        common/rms/rms(3,50),s1,s2,s3
@@ -8674,11 +8674,11 @@ c*****************************************************************************
        enddo
        return
        end
-! *******************************************************************
-! FUNCTION vpip(k)
-! the integral V(2t3,2t2+1,2t1,k,thet)  table 76
-! sum with cos(thet)**2*t1,cos(thet)**(2*t2+1) (table 77-a-2)
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION vpip(k)
+!! the integral V(2t3,2t2+1,2t1,k,thet)  table 76
+!! sum with cos(thet)**2*t1,cos(thet)**(2*t2+1) (table 77-a-2)
+!< *******************************************************************
        FUNCTION vpip(k)
        implicit real*8 (a-h,o-z)
        common/rms/rms(3,50),s1,s2,s3
@@ -8699,11 +8699,11 @@ c*****************************************************************************
        enddo
        return
        end
-! *******************************************************************
-! FUNCTION vppi(k)
-! the integral V(2t3,2t2,2t1+1,k,thet)  table 76
-! sum wih cos(thet)**2*t1,cos(thet)**(2*t2+1) (table 77-a-2)
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION vppi(k)
+!! the integral V(2t3,2t2,2t1+1,k,thet)  table 76
+!! sum wih cos(thet)**2*t1,cos(thet)**(2*t2+1) (table 77-a-2)
+!< *******************************************************************
        FUNCTION vppi(k)
        implicit real*8 (a-h,o-z)
        common/rms/rms(3,50),s1,s2,s3
@@ -8724,11 +8724,11 @@ c*****************************************************************************
        enddo
        return
        end
-! *******************************************************************
-! FUNCTION vpii(k)
-! the integral V(2*t3,2*t2+1,2*t1+1,k,thet)   table 76
-! sum with cos(thet)**(2*t1+1),cos(thet)**(2*t2+1) (table 77-a-1)
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION vpii(k)
+!! the integral V(2*t3,2*t2+1,2*t1+1,k,thet)   table 76
+!! sum with cos(thet)**(2*t1+1),cos(thet)**(2*t2+1) (table 77-a-1)
+!< *******************************************************************
        FUNCTION vpii(k)
        implicit real*8 (a-h,o-z)
        common/rms/rms(3,50),s1,s2,s3
@@ -8749,11 +8749,11 @@ c*****************************************************************************
        enddo
        return
        end
-! *******************************************************************
-! FUNCTION vipp(k)
-! the integral V(2*t3+1,2*t2,2*t1,thet)  table 76
-! sum with cos(thet)**2*t1,cos(thet)**2*t2 ( table 77-b-2)
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION vipp(k)
+!! the integral V(2*t3+1,2*t2,2*t1,thet)  table 76
+!! sum with cos(thet)**2*t1,cos(thet)**2*t2 ( table 77-b-2)
+!< *******************************************************************
        FUNCTION vipp(k)
        implicit real*8 (a-h,o-z)
        common/rms/rms(3,50),s1,s2,s3
@@ -8774,11 +8774,11 @@ c*****************************************************************************
        enddo
        return
        end
-! *******************************************************************
-! FUNCTION viip(k)
-! the integral V(2*t3+1,2*t2+1,2*t1,thet)       table 76
-! sum with cos(thet)**2*t1,cos(thet)**(2*t2+1) (table 77-b-1)
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION viip(k)
+!! the integral V(2*t3+1,2*t2+1,2*t1,thet)       table 76
+!! sum with cos(thet)**2*t1,cos(thet)**(2*t2+1) (table 77-b-1)
+!< *******************************************************************
        FUNCTION viip(k)
        implicit real*8 (a-h,o-z)
        common/rms/rms(3,50),s1,s2,s3
@@ -8799,11 +8799,11 @@ c*****************************************************************************
        enddo
        return
        end
-! *******************************************************************
-! FUNCTION vipi(k)
-! the integral V(2*t3+1,2*t2,2*t1+1,k,thet)     table 76
-! sum with cos(thet)**(2*t1+1),cos(thet)**2*t2 (table 77-b-1)
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION vipi(k)
+!! the integral V(2*t3+1,2*t2,2*t1+1,k,thet)     table 76
+!! sum with cos(thet)**(2*t1+1),cos(thet)**2*t2 (table 77-b-1)
+!< *******************************************************************
        FUNCTION vipi(k)
        implicit real*8 (a-h,o-z)
        common/rms/rms(3,50),s1,s2,s3
@@ -8824,11 +8824,11 @@ c*****************************************************************************
        enddo
        return
        end
-! *******************************************************************
-! FUNCTION viii(k)
-! the integral V(2*t3+1,2*t2+1,2*t1+1,thet)      in table 76
-! sum with cos(thet)**(2*t1+1),cos(thet)**(2*t2+1) (table 77-b-2)
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION viii(k)
+!! the integral V(2*t3+1,2*t2+1,2*t1+1,thet)      in table 76
+!! sum with cos(thet)**(2*t1+1),cos(thet)**(2*t2+1) (table 77-b-2)
+!< *******************************************************************
        FUNCTION viii(k)
        implicit real*8 (a-h,o-z)
        common/rms/rms(3,50),s1,s2,s3
@@ -8849,11 +8849,11 @@ c*****************************************************************************
        enddo
        return
        end
-! *******************************************************************
-! SUBROUTINE pintfast
-! Particles too far from the C. of G. of the bunch are eliminated
-! for the Almn computations with HERSC
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE pintfast
+!! Particles too far from the C. of G. of the bunch are eliminated
+!! for the Almn computations with HERSC
+!< *******************************************************************
        SUBROUTINE pintfast
        implicit real*8 (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
@@ -8958,10 +8958,10 @@ c evaluate xbar , ybar , zbar
        enddo
        return
        end
-! *******************************************************************
-! SUBROUTINE hcoef
-! the significant Hermite coefficients (called by HERSC)
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE hcoef
+!! the significant Hermite coefficients (called by HERSC)
+!< *******************************************************************
        SUBROUTINE hcoef
        implicit real*8 (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
@@ -9247,10 +9247,10 @@ ccc         enddo
 c    *
        return
        end
-! *******************************************************************
-! SUBROUTINE hersc(ini)
-! space charge method: HERSC
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE hersc(ini)
+!! space charge method: HERSC
+!< *******************************************************************
        SUBROUTINE hersc(ini)
        implicit real*8 (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
@@ -9779,14 +9779,14 @@ c end of if when ini=2
 c1000   format(4(2x,e12.5))
        return
        end
-! *******************************************************************
-! SUBROUTINE xtypl1(GAMI,SAPHI,QSC,DCG)
-! called by ETGAP and RESTAY
-! INTEGRALS  E(z)*(BG)**-3 *z**n   n=0,1
-! INTEGRALS  dE(z)/dT*(BG)**-3 *z**n   n=0,1,2
-! INTEGRALS FONCTIONS HA0(Z) et HB0(Z)
-! INTEGRALS OF THE FIRST DERIVATIVES OF HA0(Z) et HB0(Z)
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE xtypl1(GAMI,SAPHI,QSC,DCG)
+!! called by ETGAP and RESTAY
+!! INTEGRALS  E(z)*(BG)**-3 *z**n   n=0,1
+!! INTEGRALS  dE(z)/dT*(BG)**-3 *z**n   n=0,1,2
+!! INTEGRALS FONCTIONS HA0(Z) et HB0(Z)
+!! INTEGRALS OF THE FIRST DERIVATIVES OF HA0(Z) et HB0(Z)
+!< *******************************************************************
        SUBROUTINE xtypl1(GAMI,SAPHI,QSC,DCG)
        implicit real*8 (a-h,o-z)
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
@@ -10073,11 +10073,11 @@ C     TRANSVERSE INTEGRALS
 c100    CONTINUE
        RETURN
        END
-! *******************************************************************
-! SUBROUTINE chasel
-! analysis of emittance by elimination of remote particles in the
-! z-direction
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE chasel
+!! analysis of emittance by elimination of remote particles in the 
+!! z-direction
+!< *******************************************************************
        SUBROUTINE chasel
        implicit real*8 (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
@@ -10167,10 +10167,11 @@ c       betatron parameters
            xxl=tx2-tx*tx
            zzl=txp2-txp*txp
            xzl=txxp-tx*txp
-           if(inz.eq.1) go to 8880
-           flcrit=2.*fl2rms*log(2.*imaxx)
-           if(zlma.lt.flcrit) goto 7770
-8880       emil=sqrt(xxl*zzl-xzl*xzl)
+           if(inz.ne.1) then
+             flcrit=2.*fl2rms*log(2.*imaxx)
+             if(zlma.lt.flcrit) goto 7770
+           endif
+           emil=sqrt(xxl*zzl-xzl*xzl)
            if (emil.eq.0.) then
              al=0.
              bl=0.
@@ -10211,11 +10212,11 @@ c    particle is eliminated
 9990   continue
        return
        end
-! *******************************************************************
-! SUBROUTINE chasex
-! analysis of emittance by elimination of remote particles in the
-! x-direction
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE chasex
+!! analysis of emittance by elimination of remote particles in the
+!! x-direction
+!< *******************************************************************
        SUBROUTINE chasex
        implicit real*8 (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
@@ -10308,10 +10309,11 @@ c       betatron parameters
            xxl=tx2-tx*tx
            zzl=txp2-txp*txp
            xzl=txxp-tx*txp
-           if(inz.eq.1) go to 8880
-           flcrit=2.*fl2rms*log(2.*imaxx)
-           if(zlma.lt.flcrit) goto 7770
-8880       emil=sqrt(xxl*zzl-xzl*xzl)
+           if(inz.ne.1) then
+             flcrit=2.*fl2rms*log(2.*imaxx)
+             if(zlma.lt.flcrit) goto 7770
+           endif  
+           emil=sqrt(xxl*zzl-xzl*xzl)
            if (emil.eq.0.) then
              al=0.
              bl=0.
@@ -10352,11 +10354,11 @@ c    particle is eliminated
 9990   continue
        return
        end
-! *******************************************************************
-! SUBROUTINE chase
-! analysis of emittance by elimination of remote particles
-! read the parameters and print them out
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE chase
+!! analysis of emittance by elimination of remote particles 
+!! read the parameters and print them out
+!< *******************************************************************
        SUBROUTINE chase
        implicit real*8 (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
@@ -10377,11 +10379,11 @@ C
        if(fractl.lt.1.) CHASIT=.TRUE.
        RETURN
        END
-! *******************************************************************
-! SUBROUTINE chasey
-! analysis of emittance by elimination of remote particles in the
-! y-direction
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE chasey
+!! analysis of emittance by elimination of remote particles in the
+!! y-direction
+!< *******************************************************************
        SUBROUTINE chasey
        implicit real*8 (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
@@ -10473,10 +10475,11 @@ c       betatron parameters
            xxl=ty2-ty*ty
            zzl=typ2-typ*typ
            xzl=tyyp-ty*typ
-           if(inz.eq.1) go to 8880
-           flcrit=2.*fl2rms*log(2.*imaxx)
-           if(zlma.lt.flcrit) goto 7770
-8880       emil=sqrt(xxl*zzl-xzl*xzl)
+           if(inz.ne.1) then
+             flcrit=2.*fl2rms*log(2.*imaxx)
+             if(zlma.lt.flcrit) goto 7770
+           endif  
+           emil=sqrt(xxl*zzl-xzl*xzl)
            if (emil.eq.0.) then
              al=0.
              bl=0.
@@ -10517,10 +10520,10 @@ c    particle is eliminated
 9990   continue
        return
        end
-! *******************************************************************
-! SUBROUTINE corre(n,nall)
-! correction over the beam generated by MONTE
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE corre(n,nall)
+!! correction over the beam generated by MONTE
+!< *******************************************************************
        SUBROUTINE corre(n,nall)
        implicit real*8 (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
@@ -10561,11 +10564,12 @@ C WE MAKE MATRIX A=B*BT WHERE B,BT ARE TRIANGULAR
          DO J=1,I
            H=A(I,J)
            J1=J-1
-           IF(J.EQ.1)GO TO 8
-           DO K=1,J1
-             H=H-A(I,K)*A(J,K)
-           ENDDO
-8          IF(I.EQ.J)GO TO 10
+           IF(J.NE.1) then
+             DO K=1,J1
+               H=H-A(I,K)*A(J,K)
+             ENDDO
+           ENDIF  
+           IF(I.EQ.J)GO TO 10
            A(I,J)=H/A(J,J)
            GO TO 7
 10         A(I,J)=SQRT(H)
@@ -10581,11 +10585,12 @@ C  WE INVERT B TO GIVE AN UPDATED B
            J=I-JJ
            J3=J+1
            S=0.0
-           IF(JJ.EQ.1)GO TO 13
-           DO K=J3,J1
-             S=S-B(K,I)*B(K,J)
-           ENDDO
-13         B(J,I)=(S-B(I,J)*E(I))/B(J,J)
+           IF(JJ.NE.1) THEN
+             DO K=J3,J1
+               S=S-B(K,I)*B(K,J)
+             ENDDO
+           ENDIF  
+           B(J,I)=(S-B(I,J)*E(I))/B(J,J)
          ENDDO
        ENDDO
        DO I=1,6
@@ -10632,12 +10637,12 @@ C WE TEST THE MEANS AND SIGMA MATRIX
        ENDDO
        RETURN
        END
-! *******************************************************************
-! SUBROUTINE pintim
-! Shifts particle coordinates to a single point in time. Uses a
-! linear shift Divide by 100 to convert from cm to meters
-! called by SCHEFF or SCHERM
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE pintim
+!! Shifts particle coordinates to a single point in time. Uses a 
+!! linear shift Divide by 100 to convert from cm to meters
+!! called by SCHEFF or SCHERM
+!< *******************************************************************
        SUBROUTINE pintim
        implicit real*8 (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
@@ -10721,11 +10726,11 @@ c  coordinate origin to (0,0,0)
        enddo
        return
        end
-! *******************************************************************
-! SUBROUTINE schermi1
-! Called by SCHERMI when the bunch can be represented
-! by a simple ellipse in the longitudinal direction
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE schermi1
+!! Called by SCHERMI when the bunch can be represented
+!! by a simple ellipse in the longitudinal direction
+!< *******************************************************************
        SUBROUTINE schermi1
        implicit real*8 (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
@@ -10946,11 +10951,11 @@ c     load the entrance beam in cavities or gaps
        enddo
        RETURN
        END
-! *******************************************************************
-! SUBROUTINE schermi
-! SCHERM space charge method
-! See NIM A 309(1996) 21-40
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE schermi
+!! SCHERM space charge method
+!! See NIM A 309(1996) 21-40
+!< *******************************************************************
        SUBROUTINE schermi
        implicit real*8 (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
@@ -11345,26 +11350,26 @@ comment           f(4,i)=f(4,i)-dz1*dyp*100.
        enddo
        RETURN
        END
-! *******************************************************************
-! SUBROUTINE entre
-! define some input beam characteristics
-!   uem : Rest mass in MeV
+!> *******************************************************************
+!! SUBROUTINE entre
+!! define some input beam characteristics
+!!   uem : Rest mass in MeV
 !
-!          proton:938.27231  MeV
-!          H_    :939.3145   MeV
-!          mesons:33.9093    MeV
-!          pions :139.5685   MeV
-!          kaons :493.667    MeV
-!          electrons : 0.511 MeV
+!!          proton:938.27231  MeV
+!!          H_    :939.3145   MeV
+!!          mesons:33.9093    MeV
+!!          pions :139.5685   MeV
+!!          kaons :493.667    MeV
+!!          electrons : 0.511 MeV
 !
-!   atm : Atomic number
-!   qst : charge
+!!   atm : Atomic number
+!!   qst : charge
 !
-!   enedep: Kinetic energy
-!   tofini: Time of flight
+!!   enedep: Kinetic energy
+!!   tofini: Time of flight
 !
-!   REMARK : After INPUT the reference coincides with the c.o.g.
-! *******************************************************************
+!!   REMARK : After INPUT the reference coincides with the c.o.g.
+!< *******************************************************************
        SUBROUTINE entre
        implicit real*8 (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
@@ -11411,7 +11416,7 @@ c --- xmat= rest mass
        tofini=tofini*pi/(180.*fh)
        gdep=enedep/xmat+1.
        bdep=sqrt(1.-1./(gdep*gdep))
-c
+c       
        tracebi(6)=tracebi(6)*sqrt(atm)
        write(tif,901) (tracebi(i),i=1,6)
 901    format(' BEAMI(1)= ',5(f12.6,1x),f12.4)
@@ -11422,7 +11427,7 @@ c
 902    format(' EMITI(1)= ',f12.6,1x,f12.6,1x,f12.4)
        kt3h=kt3h+1
        trace3h(kt3h)=tif
-c
+c       
        write(tif,903) uem*atm/qst,fhinit/2./pi/1.E6
 903    format(' ER= ',E16.7,', Q=1 FREQ= ',E14.7)
        kt3h=kt3h+1
@@ -11515,36 +11520,36 @@ c  in case of itwiss.ne.1 apply CENTRE and write input beam in TILTBM
        call emiprt(0)
        return
        end
-! *******************************************************************
-! SUBROUTINE monte
-! random generation of the 6D coordinates of the cloud of particles
-!   LOI : 1 IMAX particles are generated randomly in three phase
-!           plane ellipse with uniform distribution in real space
-!           (x,y,z), then xp,yp, and zp from within each phase-plane
-!           ellipse. z,zp are converted to phi,w
-!   LOI : 2 IMAX particles are generated randomly in a six
-!           dimensional ellipsoid
-!   LOI : 3 IMAX particles are generated randomly in three phase
-!           plane ellipse in real space (x,y,z),with distribution
-!           corrresponding to an equilibrium stationary sphere at the
-!           limit of the of the current acceptable (see help_DYNAC).
-!           Then xp,yp, and zp from within each phase-plane for
-!           each phase-plane ellipse. z,zp are converted to phi,w
-!   LOI : 4 IMAX particles are generated randomly in a six
-!           dimensional ellipsoid from a distribution corresponding
-!           to an equilibrium stationary sphere
-!   LOI : 5 IMAX particles are generated randomly in a six
-!           dimensional cylinder (axis in z-direction)
-!           with uniform distribution in transverse directions
-!   LOI : 6 IMAX particles are generated randomly in a six
-!           dimensional cylinder (axis in z-direction)
-!           with gaussian distribution in transverse directions
-!   ITWISS=1   read Twiss parameters for emittance definition
-!   ITWISS<>1  reading emittance bounderies for upright ellips
+!> *******************************************************************
+!! SUBROUTINE monte
+!! random generation of the 6D coordinates of the cloud of particles
+!!   LOI : 1 IMAX particles are generated randomly in three phase 
+!!           plane ellipse with uniform distribution in real space 
+!!           (x,y,z), then xp,yp, and zp from within each phase-plane
+!!           ellipse. z,zp are converted to phi,w
+!!   LOI : 2 IMAX particles are generated randomly in a six
+!!           dimensional ellipsoid
+!!   LOI : 3 IMAX particles are generated randomly in three phase
+!!           plane ellipse in real space (x,y,z),with distribution
+!!           corrresponding to an equilibrium stationary sphere at the
+!!           limit of the of the current acceptable (see help_DYNAC).
+!!           Then xp,yp, and zp from within each phase-plane for
+!!           each phase-plane ellipse. z,zp are converted to phi,w
+!!   LOI : 4 IMAX particles are generated randomly in a six 
+!!           dimensional ellipsoid from a distribution corresponding
+!!           to an equilibrium stationary sphere
+!!   LOI : 5 IMAX particles are generated randomly in a six 
+!!           dimensional cylinder (axis in z-direction)
+!!           with uniform distribution in transverse directions
+!!   LOI : 6 IMAX particles are generated randomly in a six 
+!!           dimensional cylinder (axis in z-direction)
+!!           with gaussian distribution in transverse directions
+!!   ITWISS=1   read Twiss parameters for emittance definition
+!!   ITWISS<>1  reading emittance bounderies for upright ellips
 !
-! This routine uses the CERN random # routine RLUX (named ranlux in
-! the CERN library)
-! *******************************************************************
+!! This routine uses the CERN random # routine RLUX (named ranlux in
+!! the CERN library)
+!< *******************************************************************
        SUBROUTINE monte
        implicit real*8 (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
@@ -11577,7 +11582,7 @@ c       dimension fn(9,iptsz),foo(9),so(6),vecx(1)
        read(in,*)LOI,itwiss
        WRITE(16,*) ' Generate particles based on law ',loi
        if(loi.gt.6) then
-         write(16,*) ' ERROR in GEBEAM: law .gt. 6 invalid ! '
+         write(16,*) ' ERROR in GEBEAM: law .gt. 6 invalid !! '
          stop
        endif
        read(in,*)FH,IMAX
@@ -11618,7 +11623,7 @@ C    X X' Y Y' Z' Z
          if(loi.eq.6) then
            sig=betaz
          endif
-c store parameters for trace3d, write them in ENTRE
+c store parameters for trace3d, write them in ENTRE         
          tracebi(1)=alphax
          tracebi(2)=betax
          tracebi(3)=alphay
@@ -11930,10 +11935,10 @@ c correct the phase length for a continuous beam (force +/- 180 deg)
 8       FORMAT(8X ,'  ****law ',i2,'  with ',i6,' particles',/)
         RETURN
         END
-! *******************************************************************
-! subroutine rgaus2(sigma,y1,y2,y3,y4)
-! called by subroutine MONTE
-! *******************************************************************
+!> *******************************************************************
+!! subroutine rgaus2(sigma,y1,y2,y3,y4)
+!! called by subroutine MONTE
+!< *******************************************************************
         subroutine rgaus2(sigma,y1,y2,y3,y4)
         implicit real*8 (a-h,o-z)
         dimension vecx(1)
@@ -11960,56 +11965,56 @@ c correct the phase length for a continuous beam (force +/- 180 deg)
         y4 = x4 * w2
         return
         end
-! *******************************************************************
-! SUBROUTINE rlux(RVEC,LENV)
-! ranlux.f Rev 1.2  1997/09/22 13:45:47  mclareni
-! Correct error in initializing RANLUX by using RLUXIN with the
-! output of RLUXUT from a previous run.
-! CERN Mathlib gen
+!> *******************************************************************
+!! SUBROUTINE rlux(RVEC,LENV)
+!! ranlux.f Rev 1.2  1997/09/22 13:45:47  mclareni
+!! Correct error in initializing RANLUX by using RLUXIN with the 
+!! output of RLUXUT from a previous run.
+!! CERN Mathlib gen
 !
-!         Subtract-and-borrow random number generator proposed by
-!         Marsaglia and Zaman, implemented by F. James with the name
-!         RCARRY in 1991, and later improved by Martin Luescher
-!         in 1993 to produce "Luxury Pseudorandom Numbers".
-!         Fortran 77 coded by F. James, 1993
+!!         Subtract-and-borrow random number generator proposed by
+!!         Marsaglia and Zaman, implemented by F. James with the name
+!!         RCARRY in 1991, and later improved by Martin Luescher
+!!         in 1993 to produce "Luxury Pseudorandom Numbers".
+!!         Fortran 77 coded by F. James, 1993
 !
-!   LUXURY LEVELS.
-!   ------ ------      The available luxury levels are:
+!!   LUXURY LEVELS.
+!!   ------ ------      The available luxury levels are:
 !
-!  level 0  (p=24): equivalent to the original RCARRY of Marsaglia
-!           and Zaman, very long period, but fails many tests.
-!  level 1  (p=48): considerable improvement in quality over level 0,
-!           now passes the gap test, but still fails spectral test.
-!  level 2  (p=97): passes all known tests, but theoretically still
-!           defective.
-!  level 3  (p=223): DEFAULT VALUE.  Any theoretically possible
-!           correlations have very small chance of being observed.
-!  level 4  (p=389): highest possible luxury, all 24 bits chaotic.
+!!  level 0  (p=24): equivalent to the original RCARRY of Marsaglia
+!!           and Zaman, very long period, but fails many tests.
+!!  level 1  (p=48): considerable improvement in quality over level 0,
+!!           now passes the gap test, but still fails spectral test.
+!!  level 2  (p=97): passes all known tests, but theoretically still
+!!           defective.
+!!  level 3  (p=223): DEFAULT VALUE.  Any theoretically possible
+!!           correlations have very small chance of being observed.
+!!  level 4  (p=389): highest possible luxury, all 24 bits chaotic.
 !
-! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-!  Calling sequences for RANLUX:                                  ++
-!      CALL RANLUX (RVEC, LEN)   returns a vector RVEC of LEN     ++
-!               32-bit random floating point numbers between      ++
-!               zero (not included) and one (also not incl.).     ++
-!      CALL RLUXGO(LUX,INT,K1,K2) initializes the generator from  ++
-!               one 32-bit integer INT and sets Luxury Level LUX  ++
-!               which is integer between zero and MAXLEV, or if   ++
-!               LUX .GT. 24, it sets p=LUX directly.  K1 and K2   ++
-!               should be set to zero unless restarting at a break++
-!               point given by output of RLUXAT (see RLUXAT).     ++
-!      CALL RLUXAT(LUX,INT,K1,K2) gets the values of four integers++
-!               which can be used to restart the RANLUX generator ++
-!               at the current point by calling RLUXGO.  K1 and K2++
-!               specify how many numbers were generated since the ++
-!               initialization with LUX and INT.  The restarting  ++
-!               skips over  K1+K2*E9   numbers, so it can be long.++
-!   A more efficient but less convenient way of restarting is by: ++
-!      CALL RLUXIN(ISVEC)    restarts the generator from vector   ++
-!                   ISVEC of 25 32-bit integers (see RLUXUT)      ++
-!      CALL RLUXUT(ISVEC)    outputs the current values of the 25 ++
-!                 32-bit integer seeds, to be used for restarting ++
-!      ISVEC must be dimensioned 25 in the calling program        ++
-! *******************************************************************
+!! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+!!  Calling sequences for RANLUX:                                  ++
+!!      CALL RANLUX (RVEC, LEN)   returns a vector RVEC of LEN     ++
+!!               32-bit random floating point numbers between      ++
+!!               zero (not included) and one (also not incl.).     ++
+!!      CALL RLUXGO(LUX,INT,K1,K2) initializes the generator from  ++
+!!               one 32-bit integer INT and sets Luxury Level LUX  ++
+!!               which is integer between zero and MAXLEV, or if   ++
+!!               LUX .GT. 24, it sets p=LUX directly.  K1 and K2   ++
+!!               should be set to zero unless restarting at a break++
+!!               point given by output of RLUXAT (see RLUXAT).     ++
+!!      CALL RLUXAT(LUX,INT,K1,K2) gets the values of four integers++
+!!               which can be used to restart the RANLUX generator ++
+!!               at the current point by calling RLUXGO.  K1 and K2++
+!!               specify how many numbers were generated since the ++
+!!               initialization with LUX and INT.  The restarting  ++
+!!               skips over  K1+K2*E9   numbers, so it can be long.++
+!!   A more efficient but less convenient way of restarting is by: ++
+!!      CALL RLUXIN(ISVEC)    restarts the generator from vector   ++
+!!                   ISVEC of 25 32-bit integers (see RLUXUT)      ++
+!!      CALL RLUXUT(ISVEC)    outputs the current values of the 25 ++
+!!                 32-bit integer seeds, to be used for restarting ++
+!!      ISVEC must be dimensioned 25 in the calling program        ++
+!< *******************************************************************
        SUBROUTINE rlux(RVEC,LENV)
        implicit real*8 (a-h,o-z)
        DIMENSION RVEC(LENV)
@@ -12116,17 +12121,17 @@ C        Skipping to luxury.  As proposed by Martin Luscher.
        ENDIF
        RETURN
        END
-! *******************************************************************
-! SUBROUTINE RLUXIN(ISDEXT)
-! ranlux.f Rev 1.2  1997/09/22 13:45:47  mclareni
-! Correct error in initializing RANLUX by using RLUXIN with the
-! output of RLUXUT from a previous run.
-! CERN Mathlib gen
-! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-!           RLUXIN(ISVEC)    restarts the generator from vector   ++
-!                   ISVEC of 25 32-bit integers (see RLUXUT)      ++
-!      ISVEC must be dimensioned 25 in the calling program        ++
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE RLUXIN(ISDEXT)
+!! ranlux.f Rev 1.2  1997/09/22 13:45:47  mclareni
+!! Correct error in initializing RANLUX by using RLUXIN with the 
+!! output of RLUXUT from a previous run.
+!! CERN Mathlib gen
+!! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+!!           RLUXIN(ISVEC)    restarts the generator from vector   ++
+!!                   ISVEC of 25 32-bit integers (see RLUXUT)      ++
+!!      ISVEC must be dimensioned 25 in the calling program        ++
+!< *******************************************************************
        SUBROUTINE RLUXIN(ISDEXT)
        implicit real*8 (a-h,o-z)
        DIMENSION SEEDS(24), ISDEXT(25)
@@ -12189,14 +12194,14 @@ C           Entry to input and float integer seeds from previous run
        INSEED = -1
        RETURN
        END
-! *******************************************************************
-! SUBROUTINE RLUXUT(ISDEXT)
-! CERN Mathlib gen
-! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-!      CALL RLUXUT(ISVEC)    outputs the current values of the 25 ++
-!                 32-bit integer seeds, to be used for restarting ++
-!      ISVEC must be dimensioned 25 in the calling program        ++
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE RLUXUT(ISDEXT)
+!! CERN Mathlib gen
+!! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+!!      CALL RLUXUT(ISVEC)    outputs the current values of the 25 ++
+!!                 32-bit integer seeds, to be used for restarting ++
+!!      ISVEC must be dimensioned 25 in the calling program        ++
+!< *******************************************************************
        SUBROUTINE RLUXUT(ISDEXT)
        implicit real*8 (a-h,o-z)
        DIMENSION SEEDS(24), ISDEXT(25)
@@ -12226,18 +12231,18 @@ C                    Entry to output seeds as integers
        IF (CARRY .GT. 0.)  ISDEXT(25) = -ISDEXT(25)
        RETURN
        END
-! *******************************************************************
-! SUBROUTINE RLUXAT(LOUT,INOUT,K1,K2)
-! CERN Mathlib gen
-! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-!      CALL RLUXAT(LUX,INT,K1,K2) gets the values of four integers++
-!               which can be used to restart the RANLUX generator ++
-!               at the current point by calling RLUXGO.  K1 and K2++
-!               specify how many numbers were generated since the ++
-!               initialization with LUX and INT.  The restarting  ++
-!               skips over  K1+K2*E9   numbers, so it can be long.++
-!      ISVEC must be dimensioned 25 in the calling program        ++
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE RLUXAT(LOUT,INOUT,K1,K2)
+!! CERN Mathlib gen
+!! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+!!      CALL RLUXAT(LUX,INT,K1,K2) gets the values of four integers++
+!!               which can be used to restart the RANLUX generator ++
+!!               at the current point by calling RLUXGO.  K1 and K2++
+!!               specify how many numbers were generated since the ++
+!!               initialization with LUX and INT.  The restarting  ++
+!!               skips over  K1+K2*E9   numbers, so it can be long.++
+!!      ISVEC must be dimensioned 25 in the calling program        ++
+!< *******************************************************************
        SUBROUTINE RLUXAT(LOUT,INOUT,K1,K2)
        implicit real*8 (a-h,o-z)
        PARAMETER (MAXLEV=4, LXDFLT=3)
@@ -12253,18 +12258,18 @@ C                    Entry to output the "convenient" restart point
        K2 = MKOUNT
        RETURN
        END
-! *******************************************************************
-! SUBROUTINE RLUXGO(LUX,INS,K1,K2)
-! CERN Mathlib gen
-! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-!      CALL RLUXGO(LUX,INT,K1,K2) initializes the generator from  ++
-!               one 32-bit integer INT and sets Luxury Level LUX  ++
-!               which is integer between zero and MAXLEV, or if   ++
-!               LUX .GT. 24, it sets p=LUX directly.  K1 and K2   ++
-!               should be set to zero unless restarting at a break++
-!               point given by output of RLUXAT (see RLUXAT).     ++
-!      ISVEC must be dimensioned 25 in the calling program        ++
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE RLUXGO(LUX,INS,K1,K2)
+!! CERN Mathlib gen
+!! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+!!      CALL RLUXGO(LUX,INT,K1,K2) initializes the generator from  ++
+!!               one 32-bit integer INT and sets Luxury Level LUX  ++
+!!               which is integer between zero and MAXLEV, or if   ++
+!!               LUX .GT. 24, it sets p=LUX directly.  K1 and K2   ++
+!!               should be set to zero unless restarting at a break++
+!!               point given by output of RLUXAT (see RLUXAT).     ++
+!!      ISVEC must be dimensioned 25 in the calling program        ++
+!< *******************************************************************
        SUBROUTINE RLUXGO(LUX,INS,K1,K2)
        implicit real*8 (a-h,o-z)
        DIMENSION SEEDS(24), ISEEDS(24)
@@ -12380,13 +12385,13 @@ C       Now IN24 had better be between zero and 23 inclusive
        ENDIF
        RETURN
        END
-! *******************************************************************
-! SUBROUTINE gcern(len,s,am,v)
-! generateur aleatoire selon une loi normale
-!        s : ecart-type de la distribution
-!        am: moyenne de ladistribution
-!        v : nombre aléatoire selon la loi normale
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE gcern(len,s,am,v)
+!! generateur aleatoire selon une loi normale
+!!        s : ecart-type de la distribution
+!!        am: moyenne de ladistribution
+!!        v : nombre aléatoire selon la loi normale
+!< *******************************************************************
        SUBROUTINE gcern(len,s,am,v)
        implicit real*8 (a-h,o-z)
        common/ragau/ntir
@@ -12400,10 +12405,10 @@ C       Now IN24 had better be between zero and 23 inclusive
        v=(a-float(ntir)/2.)*s+am
        return
        end
-! *******************************************************************
-! SUBROUTINE adjrfq
-! read the coordinates of particles from file
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE adjrfq
+!! read the coordinates of particles from file
+!< *******************************************************************
        SUBROUTINE adjrfq
        implicit real*8 (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
@@ -12526,13 +12531,13 @@ c  iflag = 2 beam with different charges: f(7,) = charge; figure out how many di
 7001     format(' W= ',f12.4)
          kt3h=kt3h+1
          trace3h(kt3h)=tif
-       endif
+       endif  
        RETURN
        END
-! *******************************************************************
-! SUBROUTINE intfac(tofini)
-! convert the particles coordinates to DYNAC units
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE intfac(tofini)
+!! convert the particles coordinates to DYNAC units
+!< *******************************************************************
        SUBROUTINE intfac(tofini)
        implicit real*8 (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
@@ -12675,25 +12680,25 @@ c9999   format(6(2x,e12.5))
        call emiprt(0)
        if(T3D) then
          call emit3d
-       endif
+       endif  
        RETURN
        END
-! *******************************************************************
-! SUBROUTINE stapl(zpos)
-!   the statistics in EXT2
+!> *******************************************************************
+!! SUBROUTINE stapl(zpos)
+!!   the statistics in EXT2
 !
-!   sprfx(cm): 2.*sqrt( sum(x*x) )
-!   sprfy(cm): 2.*sqrt( sum(y*y) )
-!   sprfw:     2.*sqrt( sum(dp/p * dp/p) )*beta*beta =
-!                     (energy spread)/(energy of c.o.g)
-!   sprfp(deg):2.*sqrt( sum(dphi * dphi) )
-!   sprfz(cm) :   sqrt( sum(dt * dt) )
-!   sprfl(m) : t.o.f of the reference
-!   sprww(MeV):kinetic energy of the c.o.g
-!   eprfw(ns.keV) : longitudinal emittance
-!   eprnx(mm.mrad): normalized emittance in x-direction
-!   eprny(mm.mrad): normalized emittance in y-direction
-! *******************************************************************
+!!   sprfx(cm): 2.*sqrt( sum(x*x) )
+!!   sprfy(cm): 2.*sqrt( sum(y*y) )
+!!   sprfw:     2.*sqrt( sum(dp/p * dp/p) )*beta*beta = 
+!!                     (energy spread)/(energy of c.o.g)
+!!   sprfp(deg):2.*sqrt( sum(dphi * dphi) )
+!!   sprfz(cm) :   sqrt( sum(dt * dt) )
+!!   sprfl(m) : t.o.f of the reference
+!!   sprww(MeV):kinetic energy of the c.o.g
+!!   eprfw(ns.keV) : longitudinal emittance
+!!   eprnx(mm.mrad): normalized emittance in x-direction
+!!   eprny(mm.mrad): normalized emittance in y-direction
+!< *******************************************************************
        SUBROUTINE stapl(zpos)
        implicit real*8 (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
@@ -12734,10 +12739,10 @@ c  izrot: logical flag set as .true. in the routine ZROTA
        suryph=4.*pi*sqrt(trqpy)
        eprnx(iprf)=bcog*surxth*10./(pi*sqrt(1.-bcog*bcog))
        eprny(iprf)=bcog*suryph*10./(pi*sqrt(1.-bcog*bcog))
-c horizontal and vertical dispersion in meter (w.r.t. reference)
+c horizontal and vertical dispersion in meter (w.r.t. reference)     
 c       disprx(iprf)=0.01*exten(12)/exten(14)
 c       dispry(iprf)=0.01*exten(13)/exten(14)
-c horizontal and vertical dispersion in meter (w.r.t. COG)
+c horizontal and vertical dispersion in meter (w.r.t. COG)     
        dispcx(iprf)=0.01*exten(15)/exten(17)
        dispcy(iprf)=0.01*exten(16)/exten(17)
        trqfi=0.
@@ -12793,15 +12798,15 @@ c*et*2014-Sep-25 Add recording of min. and max. positions in x,y and z,z'
        spmn(iprf)=chdmn
        swmx(iprf)=chwmx
        swmn(iprf)=chwmn
-c evolve pointer iprf
+c evolve pointer iprf 
        iprf=iprf+1
        if(izrot) call zrotap(-rzot)
        return
        end
-! *******************************************************************
-! SUBROUTINE eugwrt
-! This routine writes the dynac.print file
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE eugwrt
+!! This routine writes the dynac.print file
+!< *******************************************************************
        SUBROUTINE eugwrt
        implicit real*8 (a-h,o-z)
        common/pltprf/sprfx(3000),sprfy(3000),sprfl(3000),sprfw(3000),
@@ -12841,18 +12846,18 @@ c     *               disprx(i),dispry(i),dispcx(i),dispcy(i)
 c100    format(9(1x,e12.5),1x,i7,3x,14(1x,e12.5))
        return
        end
-! *******************************************************************
-! SUBROUTINE etgap
-! single cell of a DTL (CAVSC)
+!> *******************************************************************
+!! SUBROUTINE etgap
+!! single cell of a DTL (CAVSC)
 !
-!   etcell(1)=cell#, etcell(2)=energy (MeV), etcell(3)=beta
-!   etcell(4)=cell length (cm), etcell(5)=T, etcell(6)=TP,
-!   etcell (7)=S, etcell(8)=SP
-!   etcell(9)=quad length (cm), etcell (10)=quad. strength (kG/cm),
-!   etcell(11)=Eo (MV/m), etcell(12)= phase of RF at middle(deg),
-!   etcell(13)= actual length(cm), etcell(14)=TPP,
-!   etcell(15)=frequency (MHz), etcell(16)=field factor
-! *******************************************************************
+!!   etcell(1)=cell#, etcell(2)=energy (MeV), etcell(3)=beta
+!!   etcell(4)=cell length (cm), etcell(5)=T, etcell(6)=TP,
+!!   etcell (7)=S, etcell(8)=SP
+!!   etcell(9)=quad length (cm), etcell (10)=quad. strength (kG/cm),
+!!   etcell(11)=Eo (MV/m), etcell(12)= phase of RF at middle(deg),
+!!   etcell(13)= actual length(cm), etcell(14)=TPP,
+!!   etcell(15)=frequency (MHz), etcell(16)=field factor
+!< *******************************************************************
        SUBROUTINE etgap
        implicit real*8 (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
@@ -13147,9 +13152,8 @@ C        slip of phase and equivalent field length
              DHX=-(2.*GX*GPX*GPX-GX*GX*GPPX)/(GX**4)
              TIL2=TIL2-HX/DHX
              EQVL=SQRT(ABS(2.*FPK/GPX))
-             IF(ABS(HX).LE.1.E-05) GO TO 556
+             IF(ABS(HX).LE.1.E-05) EXIT
            ENDDO
-556        CONTINUE
            PHSLIP=TIL2*2.
          ENDIF
          PEQVL=YLG/2.
@@ -13251,7 +13255,7 @@ c split cell into drif-gap-drift
        write(tif,6001) kt3t,kt3t,10.*etcell(4)/2.
 6001   format('  nt(',i4,')= 1, a(1,',i4,')=',f12.6)
        trace3t(kt3t)=tif
-c
+c       
        trphase=etcell(12)
 c       tre0tl=etcell(11)*etcell(5)*etcell(4)/100.
        tre0tl=delwrm/cos(pi*trphase/180.)
@@ -13260,11 +13264,11 @@ c       tre0tl=etcell(11)*etcell(5)*etcell(4)/100.
 6005   format('  nt(',i4,')=10, a(1,',i4,')=',f9.5,' , ',f9.2,
      &        ', 1., 1.,',f5.3,',')
        trace3t(kt3t)=tif
-c
+c 
        kt3t=kt3t+1
        write(tif,6001) kt3t,kt3t,10.*etcell(4)/2.
        trace3t(kt3t)=tif
-c end trace3d drift-gap-drift
+c end trace3d drift-gap-drift       
        TESTCA=exten(1)*exten(2)*exten(3)
        epsil=1.E-40
        IF(abs(TESTCA).gt.epsil) THEN
@@ -13356,11 +13360,11 @@ C      RIGIDITY of the ref. prtcle
        call emiprt(0)
        return
        end
-! *******************************************************************
-! SUBROUTINE gap(GAMREF,SAPHI,GAMS,DELPHR)
-! ETGAP or RESTAY ==> GAP
-! dynamics in the accelerating element
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE gap(GAMREF,SAPHI,GAMS,DELPHR)
+!! ETGAP or RESTAY ==> GAP
+!! dynamics in the accelerating element
+!< *******************************************************************
        SUBROUTINE gap(GAMREF,SAPHI,GAMS,DELPHR)
        implicit real*8 (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
@@ -13575,7 +13579,6 @@ c    SAVE BEAM
            fs(js,is)=f(js,is)
          enddo
        enddo
-c1055   CONTINUE
        call boucle(ipas,gamref,saphi,dcum,delphr)
 c  Reshuffles f(i,j) array after boucle
        call shuffle
@@ -13618,10 +13621,10 @@ c  Reshuffles f(i,j) array after window (now done in 'reject')
 c         call shuffle
        RETURN
        END
-! *******************************************************************
-! SUBROUTINE cogetc
-! COG of TOF with respect to the various charge states
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE cogetc
+!! COG of TOF with respect to the various charge states
+!< *******************************************************************
        SUBROUTINE cogetc
        implicit real*8 (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
@@ -13639,19 +13642,19 @@ c         call shuffle
        enddo
 c   the following charge states
        itot=itot+nbch(n)
-       if(itot.ge.ngood) go to 110
-       do i=1,ngood
-         do j=1,n
-           if(f(9,i).eq.charm(j)) go to 120
+       if(itot.lt.ngood) then
+         do i=1,ngood
+           do j=1,n
+             if(f(9,i).eq.charm(j)) go to 120
+           enddo
+           if(f(9,i).ne.charm(n)) then
+             n=n+1
+             charm(n)=f(9,i)
+             go to 100
+           endif
+120        continue
          enddo
-         if(f(9,i).ne.charm(n)) then
-           n=n+1
-           charm(n)=f(9,i)
-           go to 100
-         endif
-120      continue
-       enddo
-110    continue
+       endif  
 c   compute the cog of TOF for each charge state
        do i=1,n
          cgtdv(i)=0.
@@ -13664,11 +13667,11 @@ c        write(16,*)'i,nch,cgtdv=',i,nbch(i),cgtdv(i),charm(i)
        netac=n
        return
        end
-! *******************************************************************
-! SUBROUTINE boucle(ipas,gamref,saphi,dcum,delphr)
-! RESTAY or ETGAP ==> GAP ==> BOUCLE
-! compute the dynamics of the fictitiuos reference and of particles
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE boucle(ipas,gamref,saphi,dcum,delphr)
+!! RESTAY or ETGAP ==> GAP ==> BOUCLE
+!! compute the dynamics of the fictitiuos reference and of particles
+!< *******************************************************************
        SUBROUTINE boucle(ipas,gamref,saphi,dcum,delphr)
        implicit real*8 (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
@@ -14394,10 +14397,10 @@ c *****        endif
 19     CONTINUE
        return
        end
-! *******************************************************************
-! SUBROUTINE bunparm(v,dp,harm,prlim)
-! BUNCHER  (NO SPACE CHARGE EFFECT)
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE bunparm(v,dp,harm,prlim)
+!! BUNCHER  (NO SPACE CHARGE EFFECT)
+!< *******************************************************************
        SUBROUTINE bunparm(v,dp,harm,prlim)
        implicit real*8 (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
@@ -14614,7 +14617,7 @@ c shift=true => reference and COG seperated, otherwise reference=COG
 1789   FORMAT(' COG ',f7.5,3x,f10.6,3x,f8.3,3x,e12.5,3x,e12.5)
 c dave start for buncher
        dav1(idav,36)=ngood
-c as beam passed through buncher, assume bunched beam
+c as beam passed through buncher, assume bunched beam       
        ifcont=.false.
        WRITE(16,*) 'After buncher, bunched beam assumed'
        call emiprt(0)
@@ -14622,22 +14625,22 @@ c dave end
 cxx3928   FORMAT(' # ',i5,1x,7(f10.2,1x))
        return
        end
-! *******************************************************************
-! SUBROUTINE refer
-! change the longitudinal position of the reference
+!> *******************************************************************
+!! SUBROUTINE refer
+!! change the longitudinal position of the reference
 !
-! ---- IREF =0 and IREFW = 0:  dewref is dW/W where W is the kinetic
-!                              energy of the old reference
-! ---- IREF =0 and IREFW = 1:  dewref is dW (MeV) relative to the
-!                              kinetic energy of the old reference
-! ---- IREF =0 and IREFW = 2:  dewref is dW (MeV) is new reference
-!                              energy and dbref new reference
-!                              phase (deg) in abs. units
-! ---- IREF =1 and IREFW = 0:  dewref is dW/W where W is the kinetic
-!                              energy of the c.o.g
-! ---- IREF =1 and IREFW = 1:  dewref is dW (MeV) relative to the
-!                              kinetic energy of the c.o.g.
-! *******************************************************************
+!! ---- IREF =0 and IREFW = 0:  dewref is dW/W where W is the kinetic
+!!                              energy of the old reference
+!! ---- IREF =0 and IREFW = 1:  dewref is dW (MeV) relative to the 
+!!                              kinetic energy of the old reference
+!! ---- IREF =0 and IREFW = 2:  dewref is dW (MeV) is new reference
+!!                              energy and dbref new reference 
+!!                              phase (deg) in abs. units
+!! ---- IREF =1 and IREFW = 0:  dewref is dW/W where W is the kinetic
+!!                              energy of the c.o.g
+!! ---- IREF =1 and IREFW = 1:  dewref is dW (MeV) relative to the
+!!                              kinetic energy of the c.o.g.
+!< *******************************************************************
        SUBROUTINE refer
        implicit real*8 (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
@@ -14744,25 +14747,25 @@ c ------ the new reference is:
      * ,e12.5,' MeV')
        RETURN
        END
-! *******************************************************************
-! SUBROUTINE steer(fld,nvf)
-! TRANSFORM BEAM THRU THIN STEERER
+!> *******************************************************************
+!! SUBROUTINE steer(fld,nvf)
+!! TRANSFORM BEAM THRU THIN STEERER
 !---- MAGNETIC STEERER
 !---- PARAMETERS: fld (Tm), nvf
-!     where fld is the integrated field
-!     if nvf=0,  horizontal magnetic steerer
-!     if nvf=1,  vertical magnetic steerer
+!!     where fld is the integrated field
+!!     if nvf=0,  horizontal magnetic steerer
+!!     if nvf=1,  vertical magnetic steerer
 !
 !---- ELECTROSTATIC STEERER
-!     This is a zero length element: the length shown below is
-!     ONLY used for kick calculation.
+!!     This is a zero length element: the length shown below is
+!!     ONLY used for kick calculation.
 !---- PARAMETERS: fld (kV*m/m), nvf
-!     where fld is Plate Voltage * plate length/plate separation.
-!     if nvf=2, horziontal electrostatic steerer
-!     if nvf=3, vertical electrostatic steerer
+!!     where fld is Plate Voltage * plate length/plate separation.
+!!     if nvf=2, horziontal electrostatic steerer
+!!     if nvf=3, vertical electrostatic steerer
 !
 !-----ANGULAR DISPLACEMENTS DUE TO STEERING
-! *******************************************************************
+!< *******************************************************************
        SUBROUTINE steer(fld,nvf)
        IMPLICIT REAL*8 (A-H,O-Z)
 C     4/15/14 - Daniel Alt: Added electrostatic steerers.
@@ -14834,34 +14837,34 @@ c error on input
        endif
        RETURN
        END
-! *******************************************************************
-! SUBROUTINE emiprt(L)
-! following EMIT or EMITL card, store data in arrays to be printed
-! by subroutine "daves"
-! L=0 corresponds to EMIT (do not read and print a label)
-! L=1 corresponds to EMITL (do read and print a label in dynac.short)
-! look for the statistics with EXT2D and returns them in arrays dav1
-! and dav2
-!      IDCH EQ 1: WITH  CHASE TEST
-!      IDCH NE 1: OTHERWISE
+!> *******************************************************************
+!! SUBROUTINE emiprt(L)
+!! following EMIT or EMITL card, store data in arrays to be printed
+!! by subroutine "daves"
+!! L=0 corresponds to EMIT (do not read and print a label)
+!! L=1 corresponds to EMITL (do read and print a label in dynac.short)
+!! look for the statistics with EXT2D and returns them in arrays dav1
+!! and dav2
+!!      IDCH EQ 1: WITH  CHASE TEST
+!!      IDCH NE 1: OTHERWISE
 !
-!       cog(1) : Energy(MeV)
-!       cog(3) : t.o.f. (sec)
-!       cog(4) : x-direction (cm)
-!       cog(5) : xp(mrd)
-!       cog(6) : y-direction (cm)
-!       cog(7) : yp(mrd)
+!!       cog(1) : Energy(MeV)
+!!       cog(3) : t.o.f. (sec)
+!!       cog(4) : x-direction (cm)
+!!       cog(5) : xp(mrd)
+!!       cog(6) : y-direction (cm)
+!!       cog(7) : yp(mrd)
 !
-!  exten(1) : Sum( dE*dE )  MeV*MeV
-!  exten(2) : Sum( dE*dPHase ) MeV*rad
-!  exten(3) : Sum( dPHase*dPHase ) rad*rad
-!  exten(4) : Sum( x*x )   cm*cm
-!  exten(5) : Sum( xp*xp )   mrad*mrad
-!  exten(6) : Sum( y*y )   cm*cm
-!  exten(7) : Sum( yp*yp )  mrad*mrad
-!  exten(8) : Sum( x*xp )   cm*mrad
-!  exten(9) : Sum( y*yp )   cm*mrad
-! *******************************************************************
+!!  exten(1) : Sum( dE*dE )  MeV*MeV
+!!  exten(2) : Sum( dE*dPHase ) MeV*rad
+!!  exten(3) : Sum( dPHase*dPHase ) rad*rad
+!!  exten(4) : Sum( x*x )   cm*cm
+!!  exten(5) : Sum( xp*xp )   mrad*mrad
+!!  exten(6) : Sum( y*y )   cm*cm
+!!  exten(7) : Sum( yp*yp )  mrad*mrad
+!!  exten(8) : Sum( x*xp )   cm*mrad
+!!  exten(9) : Sum( y*yp )   cm*mrad
+!< *******************************************************************
        SUBROUTINE emiprt(L)
        implicit real*8 (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
@@ -14911,7 +14914,11 @@ c --- sqmdv:  emittance (MeV*rad)
 c --- qdp : average extension in phase (rad)
        qdp=2.*sqrt(exten(3))
 c --- cor12: coefficient of correlation in (dE, dPHI)
-       cor12=exten(2)/sqrt(exten(1)*exten(3))
+       if(exten(1).ne.0. .and. exten(3).ne.0.) then
+         cor12=exten(2)/sqrt(exten(1)*exten(3))
+       else
+         cor12=0.
+       endif    
 c sup       pent12=sqrt(exten(1)/exten(3))/cor12
 c sup       pent21=sqrt(exten(1)/exten(3))*cor12
 c sup       qdpde=qdp*180./pi
@@ -15170,10 +15177,10 @@ c   magnetic rigidity
        endif
        return
        end
-! *******************************************************************
-! SUBROUTINE emit3d
-! get beam data following RDBEAM for TRACE3D file
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE emit3d
+!! get beam data following RDBEAM for TRACE3D file
+!< *******************************************************************
        SUBROUTINE emit3d
        implicit real*8 (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
@@ -15206,7 +15213,7 @@ c ---- statistics in x-xp and y-yp
        qdiant=2.*sqrt(exten(5))
        qditay=2.*sqrt(exten(6))
        qdianp=2.*sqrt(exten(7))
-c trace3d
+c trace3d     
 c x-xp (mm*mrad)
        emitx=surxth*10./pi
        sgn=1.
@@ -15231,7 +15238,7 @@ c z-zp (keV*deg)
        gamz=qdisp*1000.*qdisp*1000./emitz
        alphaz=sqrt(betaz*gamz-1.)
        if(cor12.gt.0.) alphaz=-alphaz
-c store parameters for trace3d
+c store parameters for trace3d        
        tracebi(1)=alphax
        tracebi(2)=betax
        tracebi(3)=alphay
@@ -15240,23 +15247,23 @@ c store parameters for trace3d
        tracebi(6)=betaz
        traceei(1)=emitx
        traceei(2)=emity
-       traceei(3)=emitz
+       traceei(3)=emitz       
        return
-       end
-! *******************************************************************
-! SUBROUTINE statis
-! statitics of the 6-d ellipsoid (for print)
-! calls EXT2D:
-!  exten(1) : Sum( dE(i)*dE(i) )  MeV*MeV
-!  exten(2) : Sum( dE(i)*dPHase(i) ) MeV*rad
-!  exten(3) : Sum( dPHase(i)*dPHase(i) ) rad*rad
-!  exten(4) : Sum( x(i)*x(i) )   cm*cm
-!  exten(5) : Sum( xp(i)*xp(i) )   mrad*mrad
-!  exten(6) : Sum( y(i)*y(i) )   cm*cm
-!  exten(7) : Sum( yp(i)*yp(i) )  mrad*mrad
-!  exten(8) : Sum( x(i)*xp(i) )   cm*mrad
-!  exten(9) : Sum( y(i)*yp(i) )   cm*mrad
-! *******************************************************************
+       end       
+!> *******************************************************************
+!! SUBROUTINE statis
+!! statitics of the 6-d ellipsoid (for print)
+!! calls EXT2D:
+!!  exten(1) : Sum( dE(i)*dE(i) )  MeV*MeV
+!!  exten(2) : Sum( dE(i)*dPHase(i) ) MeV*rad
+!!  exten(3) : Sum( dPHase(i)*dPHase(i) ) rad*rad
+!!  exten(4) : Sum( x(i)*x(i) )   cm*cm
+!!  exten(5) : Sum( xp(i)*xp(i) )   mrad*mrad
+!!  exten(6) : Sum( y(i)*y(i) )   cm*cm
+!!  exten(7) : Sum( yp(i)*yp(i) )  mrad*mrad
+!!  exten(8) : Sum( x(i)*xp(i) )   cm*mrad
+!!  exten(9) : Sum( y(i)*yp(i) )   cm*mrad
+!< *******************************************************************
        SUBROUTINE statis
        implicit real*8 (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
@@ -15342,18 +15349,18 @@ c sup     *        ' correlation coef: ',e12.5)
 c sup     *
        RETURN
        END
-! *******************************************************************
-! SUBROUTINE tiltbm(icg)
-! tilt and shift of the beam with respect to the cog
-!      TIPHA : Shift on the phase axis(DEG)
-!      TIX   : Shift in the x-direction (CM)
-!      TIY   : Shift in the y-direction   (CM)
-!      SHIFW : Change the energy position of the c.o.g.(MeV)
-!      SHIFP : Change the phase position of the c.o.g.(deg)
-!      DTIPH : Change the position of the phase (radian)
-!      ICG  : = 0 VREF and TREF are the ones of sync. particle
-!      ICG  :. NE. 0 VREF ET TREF are the ones of the c. of g.
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE tiltbm(icg)
+!! tilt and shift of the beam with respect to the cog
+!!      TIPHA : Shift on the phase axis(DEG)
+!!      TIX   : Shift in the x-direction (CM)
+!!      TIY   : Shift in the y-direction   (CM)
+!!      SHIFW : Change the energy position of the c.o.g.(MeV)
+!!      SHIFP : Change the phase position of the c.o.g.(deg)
+!!      DTIPH : Change the position of the phase (radian)
+!!      ICG  : = 0 VREF and TREF are the ones of sync. particle
+!!      ICG  :. NE. 0 VREF ET TREF are the ones of the c. of g.
+!< *******************************************************************
        SUBROUTINE tiltbm(icg)
        implicit real*8 (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
@@ -15533,18 +15540,18 @@ C      ENVELOPE
        CALL STAPL(davtot*10.)
        RETURN
        END
-! *******************************************************************
-! SUBROUTINE tiltbm_bis(icg)
-! Change the positions of the beam in the phase planes
-!      TIPHA : Shift with regard to the phase axis(DEG)
-!      TIX   : Shift in the x-direction (CM)
-!      TIY   : Shift in the y-direction   (CM)
-!      SHIFW : Change the energy position of the c.o.g.(MeV)
-!      SHIFP : Change the phase position of the c.o.g.(deg)
-!      DTIPH : Change the position of the phase (radian)
-!      ICG  : = 0 VREF and TREF are the ones of sync. particle
-!      ICG  :. NE. 0 VREF ET TREF are the ones of the c. of g.
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE tiltbm_bis(icg)
+!! Change the positions of the beam in the phase planes
+!!      TIPHA : Shift with regard to the phase axis(DEG)
+!!      TIX   : Shift in the x-direction (CM)
+!!      TIY   : Shift in the y-direction   (CM)
+!!      SHIFW : Change the energy position of the c.o.g.(MeV)
+!!      SHIFP : Change the phase position of the c.o.g.(deg)
+!!      DTIPH : Change the position of the phase (radian)
+!!      ICG  : = 0 VREF and TREF are the ones of sync. particle
+!!      ICG  :. NE. 0 VREF ET TREF are the ones of the c. of g.
+!< *******************************************************************
        SUBROUTINE tiltbm_bis(icg)
        implicit real*8 (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
@@ -15733,10 +15740,10 @@ C      ENVELOPE
        CALL STAPL(davtot*10.)
        RETURN
        END
-! *******************************************************************
-! SUBROUTINE accept
-! computes a physical beam acceptance at the entrance of the machine
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE accept
+!! computes a physical beam acceptance at the entrance of the machine
+!< *******************************************************************
        SUBROUTINE accept
        implicit real*8 (a-h,o-z)
        parameter(iptsz=100002,maxcell=3000,maxcell1=3000)
@@ -15858,10 +15865,10 @@ c recall original coordinates
        fh=savfh
        return
        end
-! *******************************************************************
-! SUBROUTINE ytzp
-! STORAGE OF PARTICLE COORDINATES FOR PLOTS
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE ytzp
+!! STORAGE OF PARTICLE COORDINATES FOR PLOTS
+!< *******************************************************************
        SUBROUTINE ytzp
        implicit real*8 (a-h,o-z)
        parameter(iptsz=100002,maxcell=3000,maxcell1=3000)
@@ -15946,9 +15953,15 @@ c  save limits in GLIM(j,k)
        QMDW=exten(10)*exten(3)-exten(11)*exten(11)
        SURM=rmsmtp*180.*SQRT(QMD)
        QDP=rmssz*SQRT(exten(3))
-       COR12=exten(2)/sqrt(exten(1)*exten(3))
-       PENT12=SQRT(exten(1)/exten(3))/COR12
-       PENT21=SQRT(exten(1)/exten(3))*COR12
+       if(exten(1).ne.0. .and. exten(3).ne.0.) then
+         COR12=exten(2)/sqrt(exten(1)*exten(3))
+         PENT12=SQRT(exten(1)/exten(3))/COR12
+         PENT21=SQRT(exten(1)/exten(3))*COR12
+       else
+         COR12=0.
+         PENT12=0.
+         PENT21=0.
+       ENDIF  
        QDPDE=QDP*180./pi
        TRQTY=exten(4)*exten(5)-exten(8)*exten(8)
        TRQPZ=exten(6)*exten(7)-exten(9)*exten(9)
@@ -16225,10 +16238,10 @@ c  restore limits in GLIM(j,k)
        vref=savref
        RETURN
        END
-! *******************************************************************
-! SUBROUTINE grcomp(text,iskale)
-! routine for plots
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE grcomp(text,iskale)
+!! routine for plots
+!< *******************************************************************
        SUBROUTINE grcomp(text,iskale)
        implicit real*8 (a-h,o-z)
        parameter(iptsz=100002,maxcell=3000,maxcell1=3000)
@@ -16316,11 +16329,9 @@ c igrtyp=17,22,27 --> log    scale in envelopes
          write(66,*) (frms(j),j=2,nzone),' 0.'
        endif
        WRITE(66,*) text
-cnew
        xx(1)=zlix
        yy(1)=xlix
        WRITE(66,*) -xx(1),xx(1),-yy(1),yy(1)
-c120    CONTINUE
        if (imcs.eq.1) then
          do i=1,ngood
            cs(i)=f(9,i)
@@ -16366,7 +16377,6 @@ C Y-Z start
        xx(1)=zlix
        yy(1)=zliy
        WRITE(66,*) -xx(1),xx(1),-yy(1),yy(1)
-c1200   CONTINUE
        if(idwdp.eq.0) then
 c Alvarez type (plot w.r.t. reference)
          do i=1,ngood
@@ -16401,7 +16411,6 @@ C write particle coordinates to graphics file
           WRITE(66,*) xx(i),yy(i),cs(i)
          enddo
        endif
-c1400   CONTINUE
 c beam profile plots for X,Y & Z
        call histgrm
        write(66,*) ixt
@@ -16439,12 +16448,12 @@ c  restore limits in GLIM(j,k)
        endif
        RETURN
        END
-! *******************************************************************
-! SUBROUTINE restay
-! motion of particles in a cavity
-! the field can be read from disk in the form (z,E(z)) or it can be
-! listed in the form of a Fourier series expansion
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE restay
+!! motion of particles in a cavity
+!! the field can be read from disk in the form (z,E(z)) or it can be
+!! listed in the form of a Fourier series expansion
+!< *******************************************************************
        SUBROUTINE restay
        implicit real*8 (a-h,o-z)
 C      ****************************************************
@@ -17007,12 +17016,12 @@ C       new magnetic rigidity of the reference
        call emiprt(0)
        return
        end
-! *******************************************************************
-! SUBROUTINE fieldcav(atte)
-! read from disk the electromagnetic field in the form (z,E(z))
-! SUPERFISH units: z(m) E(z) (Volt/m)
-! converted to: z(cm)  E(z) (MVolt/cm)
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE fieldcav(atte)
+!! read from disk the electromagnetic field in the form (z,E(z))
+!! SUPERFISH units: z(m) E(z) (Volt/m)
+!! converted to: z(cm)  E(z) (MVolt/cm)
+!< *******************************************************************
        SUBROUTINE fieldcav(atte)
        implicit real*8 (a-h,o-z)
        common/consta/vl,pi,xmat,rpel,qst
@@ -17035,12 +17044,11 @@ cnov02       att=att*(1.+eflvl)
        npt=2
        do i=2,4000
          read(20,*) xspl(i),yspl(i)
-         if (xspl(i).eq.0.) go to 10
+         if (xspl(i).eq.0.) exit
          xspl(i)=xspl(i)*100.
          yspl(i)=yspl(i)*att
          npt=npt+1
        enddo
-10     continue
        npt=npt-1
 c **************************************
         tdep=xspl(1)
@@ -17053,13 +17061,12 @@ c **************************************
        xcour=xspl(1)
        nfpt=1
        do i=1,10000
-         if(xcour.gt.xspl(npt) ) go to 20
+         if(xcour.gt.xspl(npt) ) exit
          yf(i)=spline(npt,xcour)
          xf(i)=xcour
          xcour=xcour+xpas
          nfpt=nfpt+1
        enddo
-20     continue
 c   *  valero  mars 2006
        xlimf=xspl(npt)
        xf(nfpt)=0.
@@ -17074,7 +17081,7 @@ c look for the number of cells,the limits of the cells, the number of coordinate
          if (xf(i).eq.0.) then
            ncell=ncell+1
            xlim(ncell)=xlimf
-           go to 30
+           exit
          endif
          if(yf(i)*yf(i-1).lt.0.) then
            ncell=ncell+1
@@ -17083,7 +17090,6 @@ c look for the number of cells,the limits of the cells, the number of coordinate
            npoint(ncell)=npoint(ncell)+1
          endif
        enddo
-30     continue
        flength=xlim(ncell)
        ncell=ncell-1
 c       write(16,*) ' ******Read the field of the cavity************'
@@ -17101,10 +17107,10 @@ c *****************************************
      *        ' upper limit ',e12.5,' cm ','average ',e12.5,' cm')
        return
        end
-! *******************************************************************
-! SUBROUTINE celint
-! average position in the cell
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE celint
+!! average position in the cell
+!< *******************************************************************
        SUBROUTINE celint
        implicit real*8 (a-h,o-z)
        common/cavnum1/xnh,xpas,fmult,npt
@@ -17116,18 +17122,18 @@ c *****************************************
        xlpos=0.
        isce=20
        xlcum=0.
-      do inc=1,ncell
-       xint1=0.
-       xint2=0.
-        xnh=0.
-        xlcel=xlim(inc+1)-xlim(inc)
-        xlpos=xlpos+xlcel
-        xpas=xlcel/float(isce)
-        xnhc=0
-       estop=xpas/10.
-       istop=0
-20     continue
-        xpat=xnhc*xpas
+       do inc=1,ncell
+         xint1=0.
+         xint2=0.
+         xnh=0.
+         xlcel=xlim(inc+1)-xlim(inc)
+         xlpos=xlpos+xlcel
+         xpas=xlcel/float(isce)
+         xnhc=0
+         estop=xpas/10.
+         istop=0
+20       continue
+         xpat=xnhc*xpas
         if(xpat.lt.(xlcel-estop)) then
          z0=xnh*xpas
          z1=(xnh+0.20)*xpas
@@ -17178,10 +17184,10 @@ c     integral E(z) over the cell
        enddo
        return
        end
-! *******************************************************************
-! FUNCTION fcav(xc,nrc)
-! electromagnetic field  at the position xc
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION fcav(xc,nrc)
+!! electromagnetic field  at the position xc
+!< *******************************************************************
        FUNCTION fcav(xc,nrc)
        implicit real*8 (a-h,o-z)
        common/cell/yf(10000),xf(10000),xlim(15),flength,fhc,att,
@@ -17197,24 +17203,23 @@ c     integral E(z) over the cell
          tk=xc-xf(j)
          if(tk.eq.0.)then
            fcav=yf(j)
-           go to 10
+           exit
          endif
          if(tk.lt.0.) then
            a=(xc-xf(j-1))/(xf(j)-xf(j-1))
            b=(xf(j)-xc)/(xf(j)-xf(j-1))
            fcav=b*yf(j-1)+a*yf(j)
-           go to 10
+           exit
          endif
          j=j+1
        enddo
-10     continue
        jsav=j
        return
        end
-! *******************************************************************
-! FUNCTION ta0(betr,nrc)
-! Transit time factor t(k) (single cell)
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION ta0(betr,nrc)
+!! Transit time factor t(k) (single cell)
+!< *******************************************************************
        FUNCTION ta0(betr,nrc)
        implicit real*8 (a-h,o-z)
        common/consta/vl,pi,xmat,rpel,qst
@@ -17235,10 +17240,10 @@ c     integral E(z) over the cell
        ta0=ar*(xc2-xc1)
        return
        END
-! *******************************************************************
-! FUNCTION tta0(betr)
-! Transit time factor t(k) (multi-cells)
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION tta0(betr)
+!! Transit time factor t(k) (multi-cells)
+!< *******************************************************************
        FUNCTION tta0(betr)
        implicit real*8 (a-h,o-z)
        common/cell/yf(10000),xf(10000),xlim(15),flength,fhc,att,
@@ -17284,10 +17289,10 @@ c     integral E(z) over the cell
        endif
        return
        end
-! *******************************************************************
-! FUNCTION ta1(betr,nrc)
-! Transit time factor dT(k)/dk (single cell)
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION ta1(betr,nrc)
+!! Transit time factor dT(k)/dk (single cell)
+!< *******************************************************************
        FUNCTION ta1(betr,nrc)
        implicit real*8 (a-h,o-z)
        common/cell/yf(10000),xf(10000),xlim(15),flength,fhc,att,
@@ -17307,10 +17312,10 @@ c     integral E(z) over the cell
        ta1=ar*(xc2-xc1)
        return
        end
-! *******************************************************************
-! FUNCTION tta1(BETR)
-! Transit time factor dT(k)/dk (multi-cells)
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION tta1(BETR)
+!! Transit time factor dT(k)/dk (multi-cells)
+!< *******************************************************************
        FUNCTION tta1(BETR)
        implicit real*8 (a-h,o-z)
        common/cell/yf(10000),xf(10000),xlim(15),flength,fhc,att,
@@ -17356,10 +17361,10 @@ c     integral E(z) over the cell
          GO TO 101
        endif
        end
-! *******************************************************************
-! FUNCTION ta2(betr,nrc)
-! Transit time factor d2T(k)/dk2 (single cell)
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION ta2(betr,nrc)
+!! Transit time factor d2T(k)/dk2 (single cell)
+!< *******************************************************************
        FUNCTION ta2(betr,nrc)
        implicit real*8 (a-h,o-z)
        common/cell/yf(10000),xf(10000),xlim(15),flength,fhc,att,
@@ -17379,10 +17384,10 @@ c     integral E(z) over the cell
        TA2=AR*(XC2-XC1)
        return
        END
-! *******************************************************************
-! FUNCTION tta2(BETR)
-! Transit time factor d2T(k)/dk2 (multi-cells)
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION tta2(BETR)
+!! Transit time factor d2T(k)/dk2 (multi-cells)
+!< *******************************************************************
        FUNCTION tta2(BETR)
        implicit real*8 (a-h,o-z)
        common/cell/yf(10000),xf(10000),xlim(15),flength,fhc,att,
@@ -17428,10 +17433,10 @@ c     integral E(z) over the cell
          GO TO 101
        endif
        end
-! *******************************************************************
-! FUNCTION ta3(betr,nrc)
-! Transit time factor d3T(k)/dk3 (single cell)
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION ta3(betr,nrc)
+!! Transit time factor d3T(k)/dk3 (single cell)
+!< *******************************************************************
        FUNCTION ta3(betr,nrc)
        implicit real*8 (a-h,o-z)
        common/cell/yf(10000),xf(10000),xlim(15),flength,fhc,att,
@@ -17451,10 +17456,10 @@ c     integral E(z) over the cell
        TA3=AR*(XC2-XC1)
        return
        END
-! *******************************************************************
-! FUNCTION tta3(BETR)
-! Transit time factor d3T(k)/dk2 (multi-cells)
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION tta3(BETR)
+!! Transit time factor d3T(k)/dk2 (multi-cells)
+!< *******************************************************************
        FUNCTION tta3(BETR)
        implicit real*8 (a-h,o-z)
        common/cell/yf(10000),xf(10000),xlim(15),flength,fhc,att,
@@ -17500,10 +17505,10 @@ c     integral E(z) over the cell
          GO TO 101
        endif
        end
-! *******************************************************************
-! FUNCTION ta4(betr,nrc)
-! Transit time factor d4T(k)/dk4 (single cell)
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION ta4(betr,nrc)
+!! Transit time factor d4T(k)/dk4 (single cell)
+!< *******************************************************************
        FUNCTION ta4(betr,nrc)
        implicit real*8 (a-h,o-z)
        common/cell/yf(10000),xf(10000),xlim(15),flength,fhc,att,
@@ -17523,10 +17528,10 @@ c     integral E(z) over the cell
        TA4=AR*(XC2-XC1)
        return
        END
-! *******************************************************************
-! FUNCTION tta4(BETR)
-! Transit time factor d4T(k)/dk4 (multi-cells)
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION tta4(BETR)
+!! Transit time factor d4T(k)/dk4 (multi-cells)
+!< *******************************************************************
        FUNCTION tta4(BETR)
        implicit real*8 (a-h,o-z)
        common/cell/yf(10000),xf(10000),xlim(15),flength,fhc,att,
@@ -17572,10 +17577,10 @@ c     integral E(z) over the cell
          GO TO 101
        endif
        end
-! *******************************************************************
-! FUNCTION ta5(betr,nrc)
-! Transit time factor d5T(k)/dk5 (single cell)
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION ta5(betr,nrc)
+!! Transit time factor d5T(k)/dk5 (single cell)
+!< *******************************************************************
        FUNCTION ta5(betr,nrc)
        implicit real*8 (a-h,o-z)
        common/cell/yf(10000),xf(10000),xlim(15),flength,fhc,att,
@@ -17595,10 +17600,10 @@ c     integral E(z) over the cell
        TA5=AR*(XC2-XC1)
        return
        END
-! *******************************************************************
-! FUNCTION tta5(BETR)
-! Transit time factor d5T(k)/dk5 (multi-cells)
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION tta5(BETR)
+!! Transit time factor d5T(k)/dk5 (multi-cells)
+!< *******************************************************************
        FUNCTION tta5(BETR)
        implicit real*8 (a-h,o-z)
        common/cell/yf(10000),xf(10000),xlim(15),flength,fhc,att,
@@ -17644,10 +17649,10 @@ c     integral E(z) over the cell
          GO TO 101
        endif
        end
-! *******************************************************************
-! FUNCTION sb0(BETR,nrc)
-! Transit time factor s(k) (single cell)
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION sb0(BETR,nrc)
+!! Transit time factor s(k) (single cell)
+!< *******************************************************************
        FUNCTION sb0(BETR,nrc)
        implicit real*8 (a-h,o-z)
        common/cell/yf(10000),xf(10000),xlim(15),flength,fhc,att,
@@ -17667,10 +17672,10 @@ c     integral E(z) over the cell
        SB0=BR*(XC2-XC1)
        return
        END
-! *******************************************************************
-! FUNCTION tsb0(BETR)
-! Transit time factor s(k) (multi-cells)
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION tsb0(BETR)
+!! Transit time factor s(k) (multi-cells)
+!< *******************************************************************
        FUNCTION tsb0(BETR)
        implicit real*8 (a-h,o-z)
        common/cell/yf(10000),xf(10000),xlim(15),flength,fhc,att,
@@ -17716,10 +17721,10 @@ c     integral E(z) over the cell
          GO TO 101
        endif
        end
-! *******************************************************************
-! FUNCTION sb1(BETR,nrc)
-! Transit time factor dS(k)/dk (single cell)
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION sb1(BETR,nrc)
+!! Transit time factor dS(k)/dk (single cell)
+!< *******************************************************************
        FUNCTION sb1(BETR,nrc)
        implicit real*8 (a-h,o-z)
        common/cell/yf(10000),xf(10000),xlim(15),flength,fhc,att,
@@ -17739,10 +17744,10 @@ c     integral E(z) over the cell
        SB1=BR*(XC2-XC1)
        return
        END
-! *******************************************************************
-! FUNCTION tsb1(BETR)
-! Transit time factor ds(k)/dk (multi-cells)
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION tsb1(BETR)
+!! Transit time factor ds(k)/dk (multi-cells)
+!< *******************************************************************
        FUNCTION tsb1(BETR)
        implicit real*8 (a-h,o-z)
        common/cell/yf(10000),xf(10000),xlim(15),flength,fhc,att,
@@ -17788,10 +17793,10 @@ c     integral E(z) over the cell
          GO TO 101
        endif
        end
-! *******************************************************************
-! FUNCTION sb2(BETR,nrc)
-! Transit time factor d2S(k)/dk2 (single cell)
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION sb2(BETR,nrc)
+!! Transit time factor d2S(k)/dk2 (single cell)
+!< *******************************************************************
        FUNCTION sb2(BETR,nrc)
        implicit real*8 (a-h,o-z)
        common/cell/yf(10000),xf(10000),xlim(15),flength,fhc,att,
@@ -17811,10 +17816,10 @@ c     integral E(z) over the cell
        SB2=BR*(XC2-XC1)
        return
        END
-! *******************************************************************
-! FUNCTION tsb2(BETR)
-! Transit time factor d2S(k)/dk2 (multi-cells)
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION tsb2(BETR)
+!! Transit time factor d2S(k)/dk2 (multi-cells)
+!< *******************************************************************
        FUNCTION tsb2(BETR)
        implicit real*8 (a-h,o-z)
        common/cell/yf(10000),xf(10000),xlim(15),flength,fhc,att,
@@ -17860,10 +17865,10 @@ c     integral E(z) over the cell
          GO TO 101
        endif
        end
-! *******************************************************************
-! FUNCTION sb3(BETR,nrc)
-! Transit time factor d3S(k)/dk3 (single cell)
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION sb3(BETR,nrc)
+!! Transit time factor d3S(k)/dk3 (single cell)
+!< *******************************************************************
        FUNCTION sb3(BETR,nrc)
        implicit real*8 (a-h,o-z)
        common/cell/yf(10000),xf(10000),xlim(15),flength,fhc,att,
@@ -17883,10 +17888,10 @@ c     integral E(z) over the cell
        SB3=BR*(XC2-XC1)
        return
        END
-! *******************************************************************
-! FUNCTION tsb3(BETR)
-! Transit time factor d3S(k)/dk3 (multi-cells)
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION tsb3(BETR)
+!! Transit time factor d3S(k)/dk3 (multi-cells)
+!< *******************************************************************
        FUNCTION tsb3(BETR)
        implicit real*8 (a-h,o-z)
        common/cell/yf(10000),xf(10000),xlim(15),flength,fhc,att,
@@ -17932,10 +17937,10 @@ c     integral E(z) over the cell
          GO TO 101
        endif
        end
-! *******************************************************************
-! FUNCTION sb4(BETR,nrc)
-! Transit time factor d4S(k)/dk5 (single cell)
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION sb4(BETR,nrc)
+!! Transit time factor d4S(k)/dk5 (single cell)
+!< *******************************************************************
        FUNCTION sb4(BETR,nrc)
        implicit real*8 (a-h,o-z)
        common/cell/yf(10000),xf(10000),xlim(15),flength,fhc,att,
@@ -17955,10 +17960,10 @@ c     integral E(z) over the cell
        SB4=BR*(XC2-XC1)
        return
        END
-! *******************************************************************
-! FUNCTION tsb4(BETR)
-! Transit time factor d4S(k)/dk5 (multi cells)
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION tsb4(BETR)
+!! Transit time factor d4S(k)/dk5 (multi cells)
+!< *******************************************************************
        FUNCTION tsb4(BETR)
        implicit real*8 (a-h,o-z)
        common/cell/yf(10000),xf(10000),xlim(15),flength,fhc,att,
@@ -18004,10 +18009,10 @@ c     integral E(z) over the cell
          GO TO 101
        endif
        end
-! *******************************************************************
-! FUNCTION sb5(BETR,nrc)
-! Transit time factor d5S(k)/dk5 (single cell)
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION sb5(BETR,nrc)
+!! Transit time factor d5S(k)/dk5 (single cell)
+!< *******************************************************************
        FUNCTION sb5(BETR,nrc)
        implicit real*8 (a-h,o-z)
        common/cell/yf(10000),xf(10000),xlim(15),flength,fhc,att,
@@ -18027,10 +18032,10 @@ c     integral E(z) over the cell
        SB5=BR*(XC2-XC1)
        return
        END
-! *******************************************************************
-! FUNCTION tsb5(BETR)
-! Transit time factor d5S(k)/dk5
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION tsb5(BETR)
+!! Transit time factor d5S(k)/dk5
+!< *******************************************************************
        FUNCTION tsb5(BETR)
        implicit real*8 (a-h,o-z)
        common/cell/yf(10000),xf(10000),xlim(15),flength,fhc,att,
@@ -18076,11 +18081,11 @@ c     integral E(z) over the cell
          GO TO 101
        endif
        end
-! *******************************************************************
-! FUNCTION fone(Z)
-! Electromagnetic field at the longitudinal point (z,0)
-! The field harmonics are  stored in  A(200)
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION fone(Z)
+!! Electromagnetic field at the longitudinal point (z,0)
+!! The field harmonics are  stored in  A(200)
+!< *******************************************************************
        FUNCTION fone(Z)
        implicit real*8 (a-h,o-z)
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
@@ -18093,10 +18098,10 @@ c     integral E(z) over the cell
        enddo
        RETURN
        end
-! *******************************************************************
-! SUBROUTINE rharm
-! the field is in the form of a Fourier series expansion
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE rharm
+!! the field is in the form of a Fourier series expansion
+!< *******************************************************************
        SUBROUTINE rharm
        implicit real*8 (a-h,o-z)
        COMMON/FUNC/A(200),YLG,ATTE,NCEL,NHARM
@@ -18145,11 +18150,11 @@ cc        yh=yh+a(inh)*cos(xl*zx)
 c **********************************************
        return
        end
-! *******************************************************************
-! SUBROUTINE profil
-! Store header and envelopes in a binary file for
-! graphics post-processor
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE profil
+!! Store header and envelopes in a binary file for
+!! graphics post-processor
+!< *******************************************************************
        SUBROUTINE profil
        implicit real*8 (a-h,o-z)
        COMMON/DPLT/ZDEB,ZFIN,YWMAX,YPMAX,RMSN
@@ -18158,16 +18163,16 @@ c **********************************************
        CALL PLPRF2
        RETURN
        END
-! *******************************************************************
-! SUBROUTINE plprf1
-!     IPRF  : POINTEUR
-!     RMSN  :envelope size in multiples of RMS size
-!     SPRFX :half horizontal extent (cm)
-!     SPRFY :half vertical extent (cm)
-!     SPRFW :half energy extent (MeV)
-!     SPRFP :half phase extent    (deg)
-!     SPRFL :position along Z(m)
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE plprf1
+!!     IPRF  : POINTEUR
+!!     RMSN  :envelope size in multiples of RMS size
+!!     SPRFX :half horizontal extent (cm)
+!!     SPRFY :half vertical extent (cm)
+!!     SPRFW :half energy extent (MeV)
+!!     SPRFP :half phase extent    (deg)
+!!     SPRFL :position along Z(m)
+!< *******************************************************************
        SUBROUTINE plprf1
        implicit real*8 (a-h,o-z)
        dimension xx(3000),yy(3000)
@@ -18248,11 +18253,11 @@ C write envelope coordinates to graphics file
        ENDDO
        RETURN
        END
-! *******************************************************************
-! SUBROUTINE plprf2
-! Store header and envelopes in binary file for
-! graphics post-processor
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE plprf2
+!! Store header and envelopes in binary file for
+!! graphics post-processor
+!< *******************************************************************
        SUBROUTINE plprf2
        implicit real*8 (a-h,o-z)
        dimension xx(3000),yy(3000)
@@ -18336,10 +18341,10 @@ C write envelope coordinates to graphics file
        IPRF=IPRF+1
        RETURN
        END
-! *******************************************************************
-! FUNCTION slope(N,XV)
-! first derivative of the spline function
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION slope(N,XV)
+!! first derivative of the spline function
+!< *******************************************************************
        FUNCTION slope(N,XV)
        implicit real*8 (a-h,o-z)
        common/spl/x(4000),y(4000),s(5000),p(5000),q(5000)
@@ -18350,22 +18355,22 @@ C write envelope coordinates to graphics file
          if(xtvi.eq.0.00) go to 3
 4        continue
        enddo
-3       I=I-1
-        AVX=X(I+1)-X(I)
-        SLOPE=S(I+1)*AVX/3.+S(I)*AVX/6.+(Y(I+1)-Y(I))/AVX
-        return
-2       I=I-1
-        DGX=XV-X(I)
-        DDX=X(I+1)-XV
-        AVX=X(I+1)-X(I)
-        SLOPE=-(S(I)*DDX*DDX)/(2.*AVX)+(S(I+1)*DGX*DGX)/(2.*AVX)
+3      I=I-1
+       AVX=X(I+1)-X(I)
+       SLOPE=S(I+1)*AVX/3.+S(I)*AVX/6.+(Y(I+1)-Y(I))/AVX
+       return
+2      I=I-1
+       DGX=XV-X(I)
+       DDX=X(I+1)-XV
+       AVX=X(I+1)-X(I)
+       SLOPE=-(S(I)*DDX*DDX)/(2.*AVX)+(S(I+1)*DGX*DGX)/(2.*AVX)
      *          +((Y(I+1)-Y(I))/AVX)-(AVX*(S(I+1)-S(I))/6.)
-        return
-        end
-! *******************************************************************
-! FUNCTION spline (N,XV)
-! SPLINE FUNCTION
-! *******************************************************************
+       return
+       end
+!> *******************************************************************
+!! FUNCTION spline (N,XV)
+!! SPLINE FUNCTION
+!< *******************************************************************
        FUNCTION spline (N,XV)
        implicit real*8 (a-h,o-z)
        COMMON /SPL/X(4000),Y(4000),S(5000),P(5000),Q(5000)
@@ -18411,10 +18416,10 @@ C write envelope coordinates to graphics file
         endif
        endif
        end
-! *******************************************************************
-! SUBROUTINE DERIV2(N)
-! second derivative of spline functions at position (x,y)
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE DERIV2(N)
+!! second derivative of spline functions at position (x,y)
+!< *******************************************************************
        SUBROUTINE DERIV2(N)
        implicit real*8 (a-h,o-z)
        common/spl/x(4000),y(4000),s(5000),p(5000),q(5000)
@@ -18450,10 +18455,10 @@ C write envelope coordinates to graphics file
        ENDDO
        RETURN
        END
-! *******************************************************************
-! SUBROUTINE DERIF2(N)
-! second derivative of spline functions at position (x,y)
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE DERIF2(N)
+!! second derivative of spline functions at position (x,y)
+!< *******************************************************************
        SUBROUTINE DERIF2(N)
        implicit real*8 (a-h,o-z)
        common/spff/x(400),y(400),s(500),p(500),q(500)
@@ -18489,10 +18494,10 @@ C write envelope coordinates to graphics file
        ENDDO
        RETURN
        END
-! *******************************************************************
-! FUNCTION splinf (N,XV)
-! SPLINE FUNCTION
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION splinf (N,XV)
+!! SPLINE FUNCTION
+!< *******************************************************************
        FUNCTION splinf (N,XV)
        implicit real*8 (a-h,o-z)
        COMMON /SPFF/X(400),Y(400),S(500),P(500),Q(500)
@@ -18538,10 +18543,10 @@ C write envelope coordinates to graphics file
         endif
        endif
        end
-! *******************************************************************
-! FUNCTION slopf(N,XV)
-! first derivative of the spline function
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION slopf(N,XV)
+!! first derivative of the spline function
+!< *******************************************************************
        FUNCTION slopf(N,XV)
        implicit real*8 (a-h,o-z)
        COMMON /SPFF/X(400),Y(400),S(500),P(500),Q(500)
@@ -18564,13 +18569,13 @@ C write envelope coordinates to graphics file
      *          +((Y(I+1)-Y(I))/AVX)-(AVX*(S(I+1)-S(I))/6.)
         return
         end
-! *******************************************************************
-! SUBROUTINE area(init)
-! selection of the regions in the space x/a, y/b and z/c. The values
-! a,b and c are the RMS of the bunch in the space x, y, and z
-! The particles lying in any one region are affected with the same
-! color.
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE area(init)
+!! selection of the regions in the space x/a, y/b and z/c. The values 
+!! a,b and c are the RMS of the bunch in the space x, y, and z
+!! The particles lying in any one region are affected with the same
+!! color.
+!< *******************************************************************
        SUBROUTINE area(init)
        implicit real*8 (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
@@ -18607,7 +18612,7 @@ c limits of the zones ; read the upper limits of the regions
            enddo
          else
            read(in,*) frms(2)
-         endif
+         endif                     
        endif
        if(nzone.ge.2) then
          trmoy=0.
@@ -18710,10 +18715,10 @@ c       ityp=1, the zones are defined in the plane (x/a,y/b)
        endif
        return
        end
-! *******************************************************************
-! subroutine histgrm
-! called by plotting routine grcomp(text,iskale)
-! *******************************************************************
+!> *******************************************************************
+!! subroutine histgrm
+!! called by plotting routine grcomp(text,iskale)
+!< *******************************************************************
        subroutine histgrm
        implicit real*8 (a-h,o-z)
        parameter (iptsz=100002)
@@ -18858,22 +18863,24 @@ c  histogram in x-direction,the step (stepx) is: pax/50
        x0=xinf-stepx
        x1=x0+stepx
        j=1
-150    continue
 c   xpos(j): position of the elementary cylinder j
 c   xn(j)  : number of particles in the elementary cylinder j
 c   xtot   : total number of particles in x-direction
-       if(x1.gt.xsup+stepx) go to 160
-       do i=1,ngood
-         if(xc(i).gt.x0.and.xc(i).le.x1) xn(j)=xn(j)+1.
-       enddo
-       xtot=xtot+xn(j)
-       xpos(j)=x0+stepx/2.
-       j=j+1
-       sta=x1
-       x1=x1+stepx
-       x0=sta
-       go to 150
-160    continue
+       do
+         if(x1.le.xsup+stepx) then
+           do i=1,ngood
+             if(xc(i).gt.x0.and.xc(i).le.x1) xn(j)=xn(j)+1.
+           enddo
+           xtot=xtot+xn(j)
+           xpos(j)=x0+stepx/2.
+           j=j+1
+           sta=x1
+           x1=x1+stepx
+           x0=sta
+         else
+           exit
+         endif
+       enddo  
 c  normalize the number of particles in each step with regard to max.(xn(j))
        j=j-1
        ixt=j
@@ -18896,19 +18903,21 @@ c   histogram in y-direction,the step (stepy) is: pay/50
 c   ypos(j): position of the step j
 c   yn(j)  : number of particles lying in the  j
 c   ytot   : total number of particles in y-direction
-151    continue
-       if(y1.gt.ysup+stepy) go to 161
-       do i=1,ngood
-         if(yc(i).gt.y0.and.yc(i).le.y1) yn(j)=yn(j)+1.
-       enddo
-       ytot=ytot+yn(j)
-       ypos(j)=y0+stepy/2.
-       j=j+1
-       sta=y1
-       y1=y1+stepy
-       y0=sta
-       go to 151
-161    continue
+       do
+         if(y1.le.ysup+stepy) then
+           do i=1,ngood
+             if(yc(i).gt.y0.and.yc(i).le.y1) yn(j)=yn(j)+1.
+           enddo
+           ytot=ytot+yn(j)
+           ypos(j)=y0+stepy/2.
+           j=j+1
+           sta=y1
+           y1=y1+stepy
+           y0=sta
+         else
+           exit
+         endif
+       enddo  
        j=j-1
        iyt=j
        y0=yinf
@@ -18933,19 +18942,21 @@ c  of length :stepz and radius:ray
 c   zpos(j): position of the step j
 c   zn(j)  : number of particles in the step j
 c   ztot   : total number of particles in z-direction
-152    continue
-       if(z1.gt.zsup+2.*stepz) go to 162
-       do i=1,ngood
-         if(zc(i).gt.z0.and.zc(i).le.z1)zn(j)=zn(j)+1.
-       enddo
-       ztot=ztot+zn(j)
-       zpos(j)=z0+stepz/2.
-       j=j+1
-       sta=z1
-       z1=z1+stepz
-       z0=sta
-       go to 152
-162    continue
+       do
+         if(z1.le.zsup+2.*stepz) then
+           do i=1,ngood
+             if(zc(i).gt.z0.and.zc(i).le.z1)zn(j)=zn(j)+1.
+           enddo
+           ztot=ztot+zn(j)
+           zpos(j)=z0+stepz/2.
+           j=j+1
+           sta=z1
+           z1=z1+stepz
+           z0=sta
+         else
+           exit
+         endif
+       enddo  
        j=j-1
        izt=j
 c*et*2011 added next line
@@ -19013,20 +19024,22 @@ c  histogram in xp-direction,the step (stxp) is: paxp/50
        xp0=xpinf-stpx
        xp1=xp0+stpx
        j=1
-250    continue
 c   xps(j): position of the step j
 c   xpn(j): number of particles lying in the step j
-       if(xp1.gt.xpsup+stpx) go to 260
-       do i=1,ngood
-         if(f(3,i).gt.xp0.and.f(3,i).le.xp1) xpn(j)=xpn(j)+1.
+       do
+         if(xp1.le.xpsup+stpx) then
+           do i=1,ngood
+             if(f(3,i).gt.xp0.and.f(3,i).le.xp1) xpn(j)=xpn(j)+1.
+           enddo
+           xps(j)=xp0+stpx/2.
+           j=j+1
+           sta=xp1
+           xp1=xp1+stpx
+           xp0=sta
+         else
+           exit
+         endif
        enddo
-       xps(j)=xp0+stpx/2.
-       j=j+1
-       sta=xp1
-       xp1=xp1+stpx
-       xp0=sta
-       go to 250
-260    continue
 c   normalize the number of particles in each step with regard to max.(xpn(j))
        j=j-1
        ixpt=j
@@ -19048,18 +19061,20 @@ c  histogram in yp-direction,the step (stpy) is: payp/50
        j=1
 c   yps(j): position of the step j in mrd
 c   ypn(j)  : number of particles lying in the  j
-251    continue
-       if(yp1.gt.ypsup+stpy) go to 261
-       do i=1,ngood
-         if(f(5,i).gt.yp0.and.f(5,i).le.yp1) ypn(j)=ypn(j)+1.
+       do
+         if(yp1.le.ypsup+stpy) then
+           do i=1,ngood
+             if(f(5,i).gt.yp0.and.f(5,i).le.yp1) ypn(j)=ypn(j)+1.
+           enddo
+           yps(j)=yp0+stpy/2.
+           j=j+1
+           sta=yp1
+           yp1=yp1+stpy
+           yp0=sta
+         else
+           exit
+         endif
        enddo
-       yps(j)=yp0+stpy/2.
-       j=j+1
-       sta=yp1
-       yp1=yp1+stpy
-       yp0=sta
-       go to 251
-261    continue
        j=j-1
        iypt=j
        yp0=ypinf
@@ -19083,19 +19098,21 @@ c  histogram in zp-direction,the step (stpz) is: pazp/50
 c  of length :stepz and radius:ray
 c   zps(j): position of the step j (deg)
 c   zpn(j)  : number of particles in the step j
-252    continue
-       if(zp1.gt.zpsup+2.*stpz) go to 262
-       do i=1,ngood
-         f6=f(6,i)-trmoy
-         if(f6.gt.zp0.and.f6.le.zp1) zpn(j)=zpn(j)+1.
+       do
+         if(zp1.le.zpsup+2.*stpz) then
+           do i=1,ngood
+             f6=f(6,i)-trmoy
+             if(f6.gt.zp0.and.f6.le.zp1) zpn(j)=zpn(j)+1.
+           enddo
+           zps(j)=zp0+stpz/2.
+           j=j+1
+           sta=zp1
+           zp1=zp1+stpz
+           zp0=sta
+         else
+           exit
+         endif
        enddo
-       zps(j)=zp0+stpz/2.
-       j=j+1
-       sta=zp1
-       zp1=zp1+stpz
-       zp0=sta
-       go to 252
-262    continue
 c  normalize the number of particles in each step with regard to max(zn(j))
        j=j-1
        izpt=j
@@ -19109,33 +19126,33 @@ c  normalize the number of particles in each step with regard to max(zn(j))
        enddo
        return
        end
-! *******************************************************************
-! SUBROUTINE daves
-! Write the characteristics of the beam to the disk
+!> *******************************************************************
+!! SUBROUTINE daves
+!! Write the characteristics of the beam to the disk
 !
-! ---- statistics (dE-dPHI)
-!    dav1(i,10) :  extension of phase  dPHI (deg)
-!    dav1(i,11) :  dispersion of energy dE (MeV)
-!    dav1(i,12) :  emittance (MeV*rad)
-!    dav1(i,23) :  correlation  between dE an dPHI
+!! ---- statistics (dE-dPHI)
+!!    dav1(i,10) :  extension of phase  dPHI (deg)
+!!    dav1(i,11) :  dispersion of energy dE (MeV)
+!!    dav1(i,12) :  emittance (MeV*rad)
+!!    dav1(i,23) :  correlation  between dE an dPHI
 !
-! ---- statistics (x-xp)
+!! ---- statistics (x-xp)
 !
-!    dav1(i,13): x-extension (mm)
-!    dav1(i,14): xp-extension (mrad)
-!    dav1(i,15): correlation between x and xp
-!    dav1(i,16): Emittance(norm)  x-xp (mm*mrad)
-!    dav1(i,17): Emittance(non norm) x-xp (mm*mrad)
+!!    dav1(i,13): x-extension (mm)
+!!    dav1(i,14): xp-extension (mrad)
+!!    dav1(i,15): correlation between x and xp
+!!    dav1(i,16): Emittance(norm)  x-xp (mm*mrad)
+!!    dav1(i,17): Emittance(non norm) x-xp (mm*mrad)
 !
-! ---- statistics (y-yp)
-!     dav1(i,18): y-extension  (mm)
-!     dav1(i,19): yp-extension (mrad)
-!     dav1(i,20): correlation between y and yp
-!     dav1(i,21) : Emittance(norm) y-yp (mm*mrad)
-!     dav1(i,22) : Emittance(non norm) y-yp (mm*mrad)
+!! ---- statistics (y-yp)
+!!     dav1(i,18): y-extension  (mm)
+!!     dav1(i,19): yp-extension (mrad)
+!!     dav1(i,20): correlation between y and yp
+!!     dav1(i,21) : Emittance(norm) y-yp (mm*mrad)
+!!     dav1(i,22) : Emittance(non norm) y-yp (mm*mrad)
 !
-!  with CHASE These parameters are in the array dav2 like above
-! *******************************************************************
+!!  with CHASE These parameters are in the array dav2 like above
+!< *******************************************************************
        SUBROUTINE daves
        implicit real*8 (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
@@ -19219,7 +19236,8 @@ c ********************************************************************
        ifirst=1
        iit6=0
        nemit=0
-       do 10 i=1,idav
+c   start (big loop)       
+       do i=1,idav
          if(davprt(i).ne."") write(12,'(A)') davprt(i)
          if(iitem(i) .eq. 1) then
 c  cavity
@@ -19759,17 +19777,17 @@ c EDFLEC electric deflector
      *   '  particles left  ',f7.0)
          write(12,*)
        endif
-c   end (big boucle)
-10    continue
+c   end (big loop)
+      enddo
       return
       end
-! *******************************************************************
-! SUBROUTINE POFAR1(GAP)
-!   ENTRANCE OR EXIT OF THE BENDING MAGNET,
-!   MATRIX R AND T ARE IN (M,RD)
-! **** WARNING : IN THIS ROUTINE ALL VARIABLES ARE REAL UNLESS
-!                OTHERWIZE DECLARED *********
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE POFAR1(GAP)
+!!   ENTRANCE OR EXIT OF THE BENDING MAGNET, 
+!!   MATRIX R AND T ARE IN (M,RD)
+!!  **** WARNING : IN THIS ROUTINE ALL VARIABLES ARE REAL UNLESS
+!!                 OTHERWIZE DECLARED *********
+!< *******************************************************************
       SUBROUTINE POFAR1(GAP)
       IMPLICIT REAL*8(A-Z)
 C      -- POLE FACE ROTATION
@@ -19804,38 +19822,38 @@ C     SAVE H, GAP AND RABT BEFORE CONVERSION IN M UNITS
       TB2 = TB**2
       R(2,1) = H*TB
       R(4,3) = - H*TB1
-      IF(.NOT.ISEOR) GO TO 3333
-      SB=1./CB
-      SB2 = SB**2
-      SB3 = SB2*  SB
-      T(1,1,1)=- 0.5*H*TB2
-      T(1,3,3)=0.5*H*SB2
-      T(2,1,1)=0.5*H*RABT*SB3- TB*NB*H**2
-      T(2,1,2)=H*TB2
-      T(2,1,6)=-H*TB
-      T(2,3,3)=H**2*(NB+0.5+TB2)*TB-0.5*H*RABT*SB3
-      T(2,3,4)=-H*TB2
-      T(3,1,3)=H*TB2
-      T(4,1,3)=-H*RABT*SB3+2.*H**2*NB*TB
-      T(4,1,4)=-H*TB2
-      T(4,2,3)=-H*SB2
-      SEC2=COS(BE1)*COS(BE1)
-      SEC2=1./SEC2
-      T(4,3,6)=H*TB-H*TCOR*SEC2
-3333  CONTINUE
+      IF(ISEOR) THEN
+        SB=1./CB
+        SB2 = SB**2
+        SB3 = SB2*  SB
+        T(1,1,1)=- 0.5*H*TB2
+        T(1,3,3)=0.5*H*SB2
+        T(2,1,1)=0.5*H*RABT*SB3- TB*NB*H**2
+        T(2,1,2)=H*TB2
+        T(2,1,6)=-H*TB
+        T(2,3,3)=H**2*(NB+0.5+TB2)*TB-0.5*H*RABT*SB3
+        T(2,3,4)=-H*TB2
+        T(3,1,3)=H*TB2
+        T(4,1,3)=-H*RABT*SB3+2.*H**2*NB*TB
+        T(4,1,4)=-H*TB2
+        T(4,2,3)=-H*SB2
+        SEC2=COS(BE1)*COS(BE1)
+        SEC2=1./SEC2
+        T(4,3,6)=H*TB-H*TCOR*SEC2
+      ENDIF
 C     RESTORE H , RABT, APB(2)
       H=SAH
       RABT=SARABT
       GAP=SAGAP
       RETURN
       END
-! *******************************************************************
-! SUBROUTINE POFAR2(GAP)
-!     FIRST AND SECOND order MATRIX R AND T
-!     SAVE H, GAP AND RABT BEFORE CONVERSION IN M UNITY
-! **** WARNING : IN THIS ROUTINE ALL VARIABLES ARE REAL UNLESS
-!                OTHERWIZE DECLARED *********
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE POFAR2(GAP)
+!!     FIRST AND SECOND order MATRIX R AND T
+!!     SAVE H, GAP AND RABT BEFORE CONVERSION IN M UNITY
+!!  **** WARNING : IN THIS ROUTINE ALL VARIABLES ARE REAL UNLESS
+!!                 OTHERWIZE DECLARED *********
+!< *******************************************************************
       SUBROUTINE POFAR2(GAP)
       IMPLICIT REAL*8(A-Z)
 C      -- POLE FACE ROTATION
@@ -19869,37 +19887,37 @@ C
       TB2 = TB**2
       R(2,1) = H*TB
       R(4,3) = - H*TB1
-      IF(.NOT.ISEOR) GO TO 4444
-      SB=1./CB
-      SB2 = SB**2
-      SB3 = SB2*  SB
-      T(1,1,1)=0.5*H*TB2
-      T(1,3,3)=-0.5*H*SB2
-      T(2,1,1)=0.5*H*RABT*SB3- TB*(NB+0.5*TB2)*H**2
-      T(2,1,2)=-H*TB2
-      T(2,1,6)=-H*TB
-      T(2,3,3)=H**2*(NB-0.5*TB2)*TB-0.5*H*RABT*SB3
-      T(2,3,4)=H*TB2
-      T(3,1,3)=-H*TB2
-      T(4,1,3)=-H*RABT*SB3+H**2*(2.*NB+SB2)*TB
-      T(4,1,4)=H*TB2
-      T(4,2,3)=H*SB2
-      SEC2=COS(BE1)*COS(BE1)
-      SEC2=1./SEC2
-      T(4,3,6)=H*TB-H*TCOR*SEC2
-4444  CONTINUE
+      IF(ISEOR) THEN
+        SB=1./CB
+        SB2 = SB**2
+        SB3 = SB2*  SB
+        T(1,1,1)=0.5*H*TB2
+        T(1,3,3)=-0.5*H*SB2
+        T(2,1,1)=0.5*H*RABT*SB3- TB*(NB+0.5*TB2)*H**2
+        T(2,1,2)=-H*TB2
+        T(2,1,6)=-H*TB
+        T(2,3,3)=H**2*(NB-0.5*TB2)*TB-0.5*H*RABT*SB3
+        T(2,3,4)=H*TB2
+        T(3,1,3)=-H*TB2
+        T(4,1,3)=-H*RABT*SB3+H**2*(2.*NB+SB2)*TB
+        T(4,1,4)=H*TB2
+        T(4,2,3)=H*SB2
+        SEC2=COS(BE1)*COS(BE1)
+        SEC2=1./SEC2
+        T(4,3,6)=H*TB-H*TCOR*SEC2
+      ENDIF
 C     RESTORE H , RABT, APB(2)
       H=SAH
       RABT=SARABT
       GAP=SAGAP
       RETURN
       END
-! *******************************************************************
-! SUBROUTINE BENMAG(sbet,fdtot)
-!     IDEAL MAGNET, MATRIX R AND T ARE IN (M,RD)
-! **** WARNING : IN THIS ROUTINE ALL VARIABLES ARE REAL UNLESS
-!                OTHERWIZE DECLARED *********
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE BENMAG(sbet,fdtot)
+!!     IDEAL MAGNET, MATRIX R AND T ARE IN (M,RD)
+!!  **** WARNING : IN THIS ROUTINE ALL VARIABLES ARE REAL UNLESS
+!!                 OTHERWIZE DECLARED *********
+!< *******************************************************************
       SUBROUTINE BENMAG(sbet,fdtot)
       IMPLICIT REAL*8(A-Z)
 C      -- POLE FACE ROTATION
@@ -20001,339 +20019,340 @@ C    First order Matrix R
 c  Carey eq.2.41 p 34
       R(5,6)=R(5,6)-AL*fdtot/sgam2
 c ************************
-      IF(.NOT.ISEOR) GO TO 3334
+      IF(ISEOR) THEN
 C   Second order Matrix T
-      COSX=COS(ARGX)
-      CHX=COSH(ARGX)
-      KX4=KX2*KX2
-      KX6=KX4*KX2
-      ARGY=KY*AL
-      SINY=SIN(ARGY)
-      COSY=COS(ARGY)
-      SHY=SINH(ARGY)
-      CHY=COSH(ARGY)
-      KY3=KY2*KY
-      KY4=KY2*KY2
-      TARGX=ARGX+ARGX
-      SIN2X=SIN(TARGX)
-      COS2X=COS(TARGX)
-      SH2X=SINH(TARGX)
-      CH2X=COSH(TARGX)
-      KX3=KX*KX2
-      KX5=KX3*KX2
-      KX7=KX5*KX2
-      TARGY=ARGY+ARGY
-      SIN2Y=SIN(TARGY)
-      COS2Y=COS(TARGY)
-      SH2Y=SINH(TARGY)
-      CH2Y=COSH(TARGY)
-      AL4=AL3*AL
-      AL5=AL4*AL
-      AL6=AL5*AL
-      AL7=AL6*AL
-      C=1.0/(KX2-4.0*KY2)
-      j1l=0.
-      j2l=0.
-      j3l=0.
-      j2xl=0.
-      j3xl=0.
-      j4xl=0.
-      j5xl=0.
-      j7xl=0.
-      j9xl=0.
-      j10xl=0.
-      j11xl=0.
-      j12xl=0.
-      j13xl=0.
-      j14xl=0.
-      j15xl=0.
-      j16xl=0.
-      j17xl=0.
-      IF(kx2.gt.6.*0) THEN
-       CX=DCOS(KX*AL)
-       SX=DSIN(KX*AL)/KX
-       DX=H*(1.0D0-CX)/KX2
-       J1XL=(ARGX-SINX)/KX3
-       J2XL=(1.0-COSX-.5*ARGX*SINX)/KX4
-       J3XL=.5*(SINX-ARGX*COSX)/KX3
-       J4XL=(.5*ARGX-2.0*SINX/3.0+SIN2X/12.)/KX5
-       J5XL=(.25D0-COSX/3.0+COS2X/12.0)/KX4
-       J10XL=(ARGX-1.5*SINX+.5*ARGX*COSX)/KX5
-       J11XL=(-2.0*ARGX+3.0*SINX-ARGX*COSX)/KX5
-       J12XL=(4.0*ARGX-5.5*SINX+1.5*ARGX*COSX)/KX3
-       J13XL=(.75-2.0*COSX/3.0-COS2X/12.0-.5*ARGX*SINX)
-     <  /KX6
-       J14XL=(1.5-4.0*COSX/3.0-COS2X/6.0-ARGX*SINX)/KX6
-       J15XL=(-1.75+4.0*COSX/3.0+5.0*COS2X/12.0+1.5*ARGX
-     <  *SINX)/KX4
-       J16XL=(1.5*ARGX-7.0*SINX/3.0-SIN2X/12.0+ARGX*COSX)/
-     <  KX7
-       J17XL=(-1.75*ARGX+17.0*SINX/6.0+5.0*SIN2X/24.0-1.5
-     <  *ARGX*COSX)/KX5
-       J1L=(.5*ARGX-.25*SIN2X)/KX3
-       J2L=(.5*ARGX+.25*SIN2X)/KX
-       J3L=.25*(1.0-COS2X)/KX2
-       if(ky2.lt.6.*0) then
-        J7XL=.5*(ARGX-SINX+KX2*C*(SINX-.5*KX*SH2Y/KY))/(KX3*KY2)
-        J9XL=C*((COSX-1.0)/KX2+(1.0-CH2Y)/(4.0*KY2))
-       endif
-       if(ky2.eq.6.*0) then
-        J7XL=(2.0*(SINX-ARGX)/KX3+AL3/3.0)/KX2
-        J9XL=AL2/(2.0*KX2)+(COSX-1.0)/KX4
-       endif
-       if(ky2.gt.6.*0) then
-        J7XL=.5*(ARGX-SINX+KX2*C*(SINX-.5*KX*SIN2Y/KY))/(KX3*KY2)
-        J9XL=C*((COSX-1.0)/KX2+(1.0-COS2Y)/(4.0*KY2))
-       endif
+        COSX=COS(ARGX)
+        CHX=COSH(ARGX)
+        KX4=KX2*KX2
+        KX6=KX4*KX2
+        ARGY=KY*AL
+        SINY=SIN(ARGY)
+        COSY=COS(ARGY)
+        SHY=SINH(ARGY)
+        CHY=COSH(ARGY)
+        KY3=KY2*KY
+        KY4=KY2*KY2
+        TARGX=ARGX+ARGX
+        SIN2X=SIN(TARGX)
+        COS2X=COS(TARGX)
+        SH2X=SINH(TARGX)
+        CH2X=COSH(TARGX)
+        KX3=KX*KX2
+        KX5=KX3*KX2
+        KX7=KX5*KX2
+        TARGY=ARGY+ARGY
+        SIN2Y=SIN(TARGY)
+        COS2Y=COS(TARGY)
+        SH2Y=SINH(TARGY)
+        CH2Y=COSH(TARGY)
+        AL4=AL3*AL
+        AL5=AL4*AL
+        AL6=AL5*AL
+        AL7=AL6*AL
+        C=1.0/(KX2-4.0*KY2)
+        j1l=0.
+        j2l=0.
+        j3l=0.
+        j2xl=0.
+        j3xl=0.
+        j4xl=0.
+        j5xl=0.
+        j7xl=0.
+        j9xl=0.
+        j10xl=0.
+        j11xl=0.
+        j12xl=0.
+        j13xl=0.
+        j14xl=0.
+        j15xl=0.
+        j16xl=0.
+        j17xl=0.
+        IF(kx2.gt.6.*0) THEN
+          CX=DCOS(KX*AL)
+          SX=DSIN(KX*AL)/KX
+          DX=H*(1.0D0-CX)/KX2
+          J1XL=(ARGX-SINX)/KX3
+          J2XL=(1.0-COSX-.5*ARGX*SINX)/KX4
+          J3XL=.5*(SINX-ARGX*COSX)/KX3
+          J4XL=(.5*ARGX-2.0*SINX/3.0+SIN2X/12.)/KX5
+          J5XL=(.25D0-COSX/3.0+COS2X/12.0)/KX4
+          J10XL=(ARGX-1.5*SINX+.5*ARGX*COSX)/KX5
+          J11XL=(-2.0*ARGX+3.0*SINX-ARGX*COSX)/KX5
+          J12XL=(4.0*ARGX-5.5*SINX+1.5*ARGX*COSX)/KX3
+          J13XL=(.75-2.0*COSX/3.0-COS2X/12.0-.5*ARGX*SINX)
+     <          /KX6
+          J14XL=(1.5-4.0*COSX/3.0-COS2X/6.0-ARGX*SINX)/KX6
+          J15XL=(-1.75+4.0*COSX/3.0+5.0*COS2X/12.0+1.5*ARGX
+     <          *SINX)/KX4
+          J16XL=(1.5*ARGX-7.0*SINX/3.0-SIN2X/12.0+ARGX*COSX)/
+     <          KX7
+          J17XL=(-1.75*ARGX+17.0*SINX/6.0+5.0*SIN2X/24.0-1.5
+     <          *ARGX*COSX)/KX5
+          J1L=(.5*ARGX-.25*SIN2X)/KX3
+          J2L=(.5*ARGX+.25*SIN2X)/KX
+          J3L=.25*(1.0-COS2X)/KX2
+          if(ky2.lt.6.*0) then
+            J7XL=.5*(ARGX-SINX+KX2*C*(SINX-.5*KX*SH2Y/KY))/(KX3*KY2)
+            J9XL=C*((COSX-1.0)/KX2+(1.0-CH2Y)/(4.0*KY2))
+          endif
+          if(ky2.eq.6.*0) then
+            J7XL=(2.0*(SINX-ARGX)/KX3+AL3/3.0)/KX2
+            J9XL=AL2/(2.0*KX2)+(COSX-1.0)/KX4
+          endif
+          if(ky2.gt.6.*0) then
+            J7XL=.5*(ARGX-SINX+KX2*C*(SINX-.5*KX*SIN2Y/KY))/(KX3*KY2)
+           J9XL=C*((COSX-1.0)/KX2+(1.0-COS2Y)/(4.0*KY2))
+          endif
 c   endif kx2.gt.0.
-      endif
-      IF (kx2.lt.6.*0) then
-       CX=COSH(KX*AL)
-       SX=SINH(KX*AL)/KX
-       DX=H*(1.0-CX)/KX2
-       J1XL=(ARGX-SHX)/KX3
-       J2XL=(1.0-CHX+.5*ARGX*SHX)/KX4
-       J3XL=.5*(SHX-ARGX*CHX)/KX3
-       J4XL=(.5*ARGX-2.0*SHX/3.0+SH2X/12.0)/KX5
-       J5XL=(.25-CHX/3.0+CH2X/12.0)/KX4
-       J10XL=(ARGX-1.5*SHX+.5*ARGX*CHX)/KX5
-       J11XL=(-2.0*ARGX+3.0*SHX-ARGX*CHX)/KX5
-       J12XL=(4.0*ARGX-5.5*SHX+1.5*ARGX*CHX)/KX3
-       J13XL=(.75-2.0*CHX/3.0-CH2X/12.0+.5*ARGX*SHX)
-     <  /KX6
-       J14XL=(1.5-4.0*CHX/3.0-CH2X/6.0+ARGX*SHX)/KX6
-       J15XL=(-1.75+4.0*CHX/3.0+5.0*CH2X/12.0-1.5*ARGX*SHX)
-     <  /KX4
-       J16XL=(1.5*ARGX-7.0*SHX/3.0-SH2X/12.0+ARGX*CHX)/
-     <  KX7
-       J17XL=(-1.75*ARGX+17.0*SHX/6.0+5.0*SH2X/24.0-1.5
-     <  *ARGX*CHX)/KX5
-       J1L=(.5*ARGX-.25*SH2X)/KX3
-       J2L=(.5*ARGX+.25*SH2X)/KX
-       J3L=.25*(1.0-CH2X)/KX2
-       IF(KY2.LT.6.*0) THEN
-         J7XL=.5*(ARGX-SHX+KX2*C*(SHX-.5*KX*SH2Y/KY))/(KX3*KY2)
-         J9XL=C*((CHX-1)/KX2+(1.0D0-CH2Y)/(4.0D0*KY2))
-       ENDIF
-       IF(KY2.EQ.6.*0) THEN
-         J7XL=(2.0*(SINX-ARGX)/KX3+AL3/3.0D0)/KX2
-         J9XL=AL2/(2.0D0*KX2)+(CHX-1.0D0)/KX4
-       ENDIF
-       IF(KY2.GT.6.*0) THEN
-        J7XL=.5*(ARGX-SHX+KX2*C*(SHX-.5D0*KX*SIN2Y/KY))/(KX3*KY2)
-        J9XL=C*((CHX-1.0)/KX2+(1.0-COS2Y)/(4.0*KY2))
-       ENDIF
+        ENDIF
+        IF (kx2.lt.6.*0) then
+          CX=COSH(KX*AL)
+          SX=SINH(KX*AL)/KX
+          DX=H*(1.0-CX)/KX2
+          J1XL=(ARGX-SHX)/KX3
+          J2XL=(1.0-CHX+.5*ARGX*SHX)/KX4
+          J3XL=.5*(SHX-ARGX*CHX)/KX3
+          J4XL=(.5*ARGX-2.0*SHX/3.0+SH2X/12.0)/KX5
+          J5XL=(.25-CHX/3.0+CH2X/12.0)/KX4
+          J10XL=(ARGX-1.5*SHX+.5*ARGX*CHX)/KX5
+          J11XL=(-2.0*ARGX+3.0*SHX-ARGX*CHX)/KX5
+          J12XL=(4.0*ARGX-5.5*SHX+1.5*ARGX*CHX)/KX3
+          J13XL=(.75-2.0*CHX/3.0-CH2X/12.0+.5*ARGX*SHX)
+     <          /KX6
+          J14XL=(1.5-4.0*CHX/3.0-CH2X/6.0+ARGX*SHX)/KX6
+          J15XL=(-1.75+4.0*CHX/3.0+5.0*CH2X/12.0-1.5*ARGX*SHX)
+     <          /KX4
+          J16XL=(1.5*ARGX-7.0*SHX/3.0-SH2X/12.0+ARGX*CHX)/
+     <          KX7
+          J17XL=(-1.75*ARGX+17.0*SHX/6.0+5.0*SH2X/24.0-1.5
+     <          *ARGX*CHX)/KX5
+          J1L=(.5*ARGX-.25*SH2X)/KX3
+          J2L=(.5*ARGX+.25*SH2X)/KX
+          J3L=.25*(1.0-CH2X)/KX2
+          IF(KY2.LT.6.*0) THEN
+            J7XL=.5*(ARGX-SHX+KX2*C*(SHX-.5*KX*SH2Y/KY))/(KX3*KY2)
+            J9XL=C*((CHX-1)/KX2+(1.0D0-CH2Y)/(4.0D0*KY2))
+          ENDIF
+          IF(KY2.EQ.6.*0) THEN
+            J7XL=(2.0*(SINX-ARGX)/KX3+AL3/3.0D0)/KX2
+            J9XL=AL2/(2.0D0*KX2)+(CHX-1.0D0)/KX4
+          ENDIF
+          IF(KY2.GT.6.*0) THEN
+           J7XL=.5*(ARGX-SHX+KX2*C*(SHX-.5D0*KX*SIN2Y/KY))/(KX3*KY2)
+           J9XL=C*((CHX-1.0)/KX2+(1.0-COS2Y)/(4.0*KY2))
+          ENDIF
 c   end kx2.lt.0.
-      endif
-      IF (KX2.EQ.6.*0) THEN
-       CX=1
-       SX=AL
-       DX=H*AL*AL/2.0
-       J1XL=AL3/6.0
-       J2XL=AL4/24.0
-       J3XL=AL3/6.0
-       J4XL=AL5/60.0
-       J5XL=AL4/24.0
-       J7XL=(AL3/12.0-AL/(8.0*KY2)-SIN2Y/(16.0*KY3))/KY2
-       J10XL=-AL5/24.0
-       J11XL=-AL5/60.0
-       J12XL=AL3/6.0
-       J9XL=AL2/(8.0*KY2)-(1.0-COS2Y)/(16.0*KY4)
-       J13XL=AL6/240.0
-       J14XL=AL6/1080.0
-       J15XL=AL4/12.0
-       J16XL=AL7/840.0
-       J17XL=AL5/60.0
-       J1L=AL3/3.0
-       J2L=AL
-       J3L=AL2/2.0
+        ENDIF
+        IF (KX2.EQ.6.*0) THEN
+          CX=1
+          SX=AL
+          DX=H*AL*AL/2.0
+          J1XL=AL3/6.0
+          J2XL=AL4/24.0
+          J3XL=AL3/6.0
+          J4XL=AL5/60.0
+          J5XL=AL4/24.0
+          J7XL=(AL3/12.0-AL/(8.0*KY2)-SIN2Y/(16.0*KY3))/KY2
+          J10XL=-AL5/24.0
+          J11XL=-AL5/60.0
+          J12XL=AL3/6.0
+          J9XL=AL2/(8.0*KY2)-(1.0-COS2Y)/(16.0*KY4)
+          J13XL=AL6/240.0
+          J14XL=AL6/1080.0
+          J15XL=AL4/12.0
+          J16XL=AL7/840.0
+          J17XL=AL5/60.0
+          J1L=AL3/3.0
+          J2L=AL
+          J3L=AL2/2.0
 c   end kx2.eq.0.
-      endif
-      CPX=-KX2*SX
-      SPX=CX
-      DPX=H*SX
-      j4l=0.
-      j5l=0.
-      j6l=0.
-      IF (KY2.LT.6.*0) THEN
-       CY=COSH(KY*AL)
-       SY=SINH(KY*AL)/KY
-       J4L=(.5*ARGY-.25*SH2Y)/KY3
-       J5L=(.5*ARGY+.25*SH2Y)/KY
-       J6L=.25*(1.0-CH2Y)/KY2
-      ENDIF
-      IF (KY2.EQ.6.*0) THEN
-       CY=1.0
-       SY=AL
-       J4L=AL3/3.0
-       J5L=AL
-       J6L=AL2/2.0
-      ENDIF
-      IF (KY2.GT.6.*0) THEN
-       CY=COS(KY*AL)
-       SY=SIN(KY*AL)/KY
-       J4L=(.5*ARGY-.25*SIN2Y)/KY3
-       J5L=(.5*ARGY+.25*SIN2Y)/KY
-       J6L=.25*(1.0-COS2Y)/KY2
-      ENDIF
-      CPY=-KY2*SY
-      SPY=CY
-      SY2=SY*SY
-      A=2.0*FIELDN-1.0-BETA
-      B=(2.0-FIELDN)
-      BN1=2.0*FIELDN-1.0-BETA
-      BN2=2.5*FIELDN-BETA-1.5
-      BN3=2.0*BETA-FIELDN
+        ENDIF
+        CPX=-KX2*SX
+        SPX=CX
+        DPX=H*SX
+        j4l=0.
+        j5l=0.
+        j6l=0.
+        IF (KY2.LT.6.*0) THEN
+          CY=COSH(KY*AL)
+          SY=SINH(KY*AL)/KY
+          J4L=(.5*ARGY-.25*SH2Y)/KY3
+          J5L=(.5*ARGY+.25*SH2Y)/KY
+          J6L=.25*(1.0-CH2Y)/KY2
+        ENDIF
+        IF (KY2.EQ.6.*0) THEN
+          CY=1.0
+          SY=AL
+          J4L=AL3/3.0
+          J5L=AL
+          J6L=AL2/2.0
+        ENDIF
+        IF (KY2.GT.6.*0) THEN
+          CY=COS(KY*AL)
+          SY=SIN(KY*AL)/KY
+          J4L=(.5*ARGY-.25*SIN2Y)/KY3
+          J5L=(.5*ARGY+.25*SIN2Y)/KY
+          J6L=.25*(1.0-COS2Y)/KY2
+        ENDIF
+        CPY=-KY2*SY
+        SPY=CY
+        SY2=SY*SY
+        A=2.0*FIELDN-1.0-BETA
+        B=(2.0-FIELDN)
+        BN1=2.0*FIELDN-1.0-BETA
+        BN2=2.5*FIELDN-BETA-1.5
+        BN3=2.0*BETA-FIELDN
 c  tabulation of the integrals (notations TRANSPORT SLAC R-75 table VIb)
-      I10=DX/H
-      I11=0.5*AL*SX
-      I111=1.0*(SX**2+DX*RAD)/3.0
-      I112=SX*DX*RAD/3.0
-      I133=DX/H-(KY2/(KX2-4.0*KY2))*(SY2-2.0*DX*RAD)
-      I134=C*(SY*CY-SX)
-      I144=(SY2-2.0*DX*RAD)*C
-      I20=SX
-      I21=(SX+AL*CX)/2.0
-      I22=I11
-      I211=SX*(1.0+2.0*CX)/3.0
-      I212=(2.0*SX**2-DX/H)/3.0
-      I222=2.0*SX*DX*RAD/3.0
-      I233=SX-2.0*KY2*(SY*CY-SX)*C
-      I234=(KX2*DX*RAD-2.0*KY2*SY2)*C
-      I244=2.0*C*(SY*CY-SX)
-      I33=0.5*AL*SY
-      IF(KY2.EQ.6.*0) I34=AL3/6.0
-      IF(KY2.NE.6.*0) I34=0.5*(SY-AL*CY)/KY2
-      I314=(2.0*SX*CY-SY*(1.0+CX))*C
-      I324=C*(2.0*CY*DX*RAD-SX*SY)
-      I43=0.5*(SY+AL*CY)
-      I44=I33
-      I413=C*((KX2-2.0*KY2)*SX*CY-KY2*SY*(1.0+CX))
-      I414=C*((KX2-2.0*KY2)*SX*SY-CY*(1.0-CX))
-      I424=C*(CY*SX-CX*SY-2.0*KY2*SY*DX*RAD)
-      I12=(SX-AL*CX)*0.5/KX2
-      I27=(DX*RAD-.5*AL*SX)/KX2
-      I313=C*(KX2*CY*DX*RAD-2.0*SX*SY*KY2)
-      I314=(2.0*SX*CY-SY*(1.0+CX))*C
-      I324=C*(2.0*CY*DX*RAD-SX*SY)
-      I43=0.5*(SY+AL*CY)
-      I44=I33
-      I413=C*((KX2-2.0*KY2)*SX*CY-KY2*SY*(1.0+CX))
-      I414=C*((KX2-2.0*KY2)*SX*SY-CY*(1.0-CX))
-      I424=C*(CY*SX-CX*SY-2.0*KY2*SY*DX*RAD)
-      IF (KX.NE.6.*0) THEN
-       I12=(SX-AL*CX)*0.5/KX2
-       I27=(DX*RAD-.5*AL*SX)/KX2
-       I116=(0.5*AL*SX-(SX**2+DX/H)/3.0)*H/KX2
-       I122=(2.0*DX/H-SX**2)/3.0/KX2
-       I126=H*(SX+2.0*SX*CX-3.0*AL*CX)/6.0/KX2**2
-       I166=H2*(4.0*DX*RAD/3.0+SX**2/3.0-AL*SX)/KX2**2
-       I216=H*(AL*CX/2.0+SX/6.0-2.0*SX*CX/3.0)/KX2
-       I226=H*(0.5*AL*SX-2.0*SX**2/3.0+DX*RAD/3.0)/KX2
-       I266=H2*(SX/3.0+2.0*SX*CX/3.0-AL*CX)/KX2**2
-       I323=C*(2.0*KY2*SY*(1.0+CX)/KX2-SX*CY)+SY/KX2
-       I336=H*(0.5*AL*SY-C*(CY*(1.0-CX)-2.0*KY2*SX*SY))/KX2
-       I346=H*(I34-C*(2.0*SX*CY-SY*(1.0+CX)))/KX2
-       I423=C*(2.0*KY2*CY*(1.0+CX)/KX2-CX*CY-KY2*SX*SY)+CY/KX2
-       I436=H*(0.5*AL*CY+0.5*SY+C*(KY2*SY*(1.0+CX)
-     >-(KX2-2.0*KY2)*SX*CY))/KX2
-       I446=H*(AL*SY*0.5-C*((KX2-2.0*KY2)*SX*SY-CY*(1.0-CX)))/KX2
-       I26=I12*H
-      ELSE
-       I12=AL3/6.0
-       I27=AL4/12.0
-       I116=H*AL4/24.0
-       I122=AL4/12.0
-       I126=H*AL5/40.0
-       I166=H2*AL2/120.0
-       I216=H*AL3/6.0
-       I226=H*AL4/8.0
-       I266=H2*AL5/20.0
-       I323=AL2*SY/4.0
-       I336=H*AL*(AL2*SY/12.0+(AL*CY-SY)/(KY2*8.0))
-       I346=H*AL2*(SY/(KY2*8.0)-AL*CY/(KY2*12.0))
-       I423=(AL2*CY+AL*SY)/4.0
-       I436=H*AL2*(SY/8.0+CY*AL/12.0)
-       I446=H*AL*(AL2*SY/12.0+(SY-AL*CY)/(KY2*8.0))
-       I26=I12*H
-      ENDIF
+        I10=DX/H
+        I11=0.5*AL*SX
+        I111=1.0*(SX**2+DX*RAD)/3.0
+        I112=SX*DX*RAD/3.0
+        I133=DX/H-(KY2/(KX2-4.0*KY2))*(SY2-2.0*DX*RAD)
+        I134=C*(SY*CY-SX)
+        I144=(SY2-2.0*DX*RAD)*C
+        I20=SX
+        I21=(SX+AL*CX)/2.0
+        I22=I11
+        I211=SX*(1.0+2.0*CX)/3.0
+        I212=(2.0*SX**2-DX/H)/3.0
+        I222=2.0*SX*DX*RAD/3.0
+        I233=SX-2.0*KY2*(SY*CY-SX)*C
+        I234=(KX2*DX*RAD-2.0*KY2*SY2)*C
+        I244=2.0*C*(SY*CY-SX)
+        I33=0.5*AL*SY
+        IF(KY2.EQ.6.*0) I34=AL3/6.0
+        IF(KY2.NE.6.*0) I34=0.5*(SY-AL*CY)/KY2
+        I314=(2.0*SX*CY-SY*(1.0+CX))*C
+        I324=C*(2.0*CY*DX*RAD-SX*SY)
+        I43=0.5*(SY+AL*CY)
+        I44=I33
+        I413=C*((KX2-2.0*KY2)*SX*CY-KY2*SY*(1.0+CX))
+        I414=C*((KX2-2.0*KY2)*SX*SY-CY*(1.0-CX))
+        I424=C*(CY*SX-CX*SY-2.0*KY2*SY*DX*RAD)
+        I12=(SX-AL*CX)*0.5/KX2
+        I27=(DX*RAD-.5*AL*SX)/KX2
+        I313=C*(KX2*CY*DX*RAD-2.0*SX*SY*KY2)
+        I314=(2.0*SX*CY-SY*(1.0+CX))*C
+        I324=C*(2.0*CY*DX*RAD-SX*SY)
+        I43=0.5*(SY+AL*CY)
+        I44=I33
+        I413=C*((KX2-2.0*KY2)*SX*CY-KY2*SY*(1.0+CX))
+        I414=C*((KX2-2.0*KY2)*SX*SY-CY*(1.0-CX))
+        I424=C*(CY*SX-CX*SY-2.0*KY2*SY*DX*RAD)
+        IF (KX.NE.6.*0) THEN
+          I12=(SX-AL*CX)*0.5/KX2
+          I27=(DX*RAD-.5*AL*SX)/KX2
+          I116=(0.5*AL*SX-(SX**2+DX/H)/3.0)*H/KX2
+          I122=(2.0*DX/H-SX**2)/3.0/KX2
+          I126=H*(SX+2.0*SX*CX-3.0*AL*CX)/6.0/KX2**2
+          I166=H2*(4.0*DX*RAD/3.0+SX**2/3.0-AL*SX)/KX2**2
+          I216=H*(AL*CX/2.0+SX/6.0-2.0*SX*CX/3.0)/KX2
+          I226=H*(0.5*AL*SX-2.0*SX**2/3.0+DX*RAD/3.0)/KX2
+          I266=H2*(SX/3.0+2.0*SX*CX/3.0-AL*CX)/KX2**2
+          I323=C*(2.0*KY2*SY*(1.0+CX)/KX2-SX*CY)+SY/KX2
+          I336=H*(0.5*AL*SY-C*(CY*(1.0-CX)-2.0*KY2*SX*SY))/KX2
+          I346=H*(I34-C*(2.0*SX*CY-SY*(1.0+CX)))/KX2
+          I423=C*(2.0*KY2*CY*(1.0+CX)/KX2-CX*CY-KY2*SX*SY)+CY/KX2
+          I436=H*(0.5*AL*CY+0.5*SY+C*(KY2*SY*(1.0+CX)
+     >         -(KX2-2.0*KY2)*SX*CY))/KX2
+          I446=H*(AL*SY*0.5-C*((KX2-2.0*KY2)*SX*SY-CY*(1.0-CX)))/KX2
+          I26=I12*H
+        ELSE
+          I12=AL3/6.0
+          I27=AL4/12.0
+          I116=H*AL4/24.0
+          I122=AL4/12.0
+          I126=H*AL5/40.0
+          I166=H2*AL2/120.0
+          I216=H*AL3/6.0
+          I226=H*AL4/8.0
+          I266=H2*AL5/20.0
+          I323=AL2*SY/4.0
+          I336=H*AL*(AL2*SY/12.0+(AL*CY-SY)/(KY2*8.0))
+          I346=H*AL2*(SY/(KY2*8.0)-AL*CY/(KY2*12.0))
+          I423=(AL2*CY+AL*SY)/4.0
+          I436=H*AL2*(SY/8.0+CY*AL/12.0)
+          I446=H*AL*(AL2*SY/12.0+(SY-AL*CY)/(KY2*8.0))
+          I26=I12*H
+        ENDIF
 C     MATRIX T(i,j,k), TRANSPORT SLAC R-75 table VIa
 C
-      T(1,1,1)=A*H3*I111+0.5*KX2**2*I122*H
-      T(1,1,2)=2.0*A*H3*I112-KX2*H*I112+H*SX
-      T(1,1,6)=B*H2*I11+2.0*A*H3*I116-KX2*H2*I122
-      T(1,2,2)=A*H3*I122+0.5*H*I111
-      T(1,2,6)=B*H2*I12+2.0*A*H3*I126+H2*I112
-      T(1,3,3)=BETA*H3*I133-0.5*KY2*H*I10
-      T(1,3,4)=2.0*BETA*H3*I134
-      T(1,4,4)=BETA*H3*I144-0.5*H*I10
-      T(1,6,6)=B*H2*H*I27+A*H3*I166+0.5D0*H3*I122-
+        T(1,1,1)=A*H3*I111+0.5*KX2**2*I122*H
+        T(1,1,2)=2.0*A*H3*I112-KX2*H*I112+H*SX
+        T(1,1,6)=B*H2*I11+2.0*A*H3*I116-KX2*H2*I122
+        T(1,2,2)=A*H3*I122+0.5*H*I111
+        T(1,2,6)=B*H2*I12+2.0*A*H3*I126+H2*I112
+        T(1,3,3)=BETA*H3*I133-0.5*KY2*H*I10
+        T(1,3,4)=2.0*BETA*H3*I134
+        T(1,4,4)=BETA*H3*I144-0.5*H*I10
+        T(1,6,6)=B*H2*H*I27+A*H3*I166+0.5D0*H3*I122-
      1           H*I10
 C
-      T(2,1,1)=A*H3*I211+0.5*KX2**2*H*I222-H*CX*CPX
-      T(2,1,2)=H*SPX+2.0D0*A*H3*I212-KX2*H*I212
+        T(2,1,1)=A*H3*I211+0.5*KX2**2*H*I222-H*CX*CPX
+        T(2,1,2)=H*SPX+2.0D0*A*H3*I212-KX2*H*I212
      >       -H*(CX*SPX+CPX*SX)
-      T(2,1,6)=B*H2*I21+2.0*A*H3*I216-KX2*H2*I222-H*
-     >(CX*DPX+CPX*DX)
-      T(2,2,2)=A*H3*I222+0.5*H*I211-H*SX*SPX
-      T(2,2,6)=B*H2*I22+2.0*A*H3*I226+H2*I212
+        T(2,1,6)=B*H2*I21+2.0*A*H3*I216-KX2*H2*I222-H*
+     >       (CX*DPX+CPX*DX)
+        T(2,2,2)=A*H3*I222+0.5*H*I211-H*SX*SPX
+        T(2,2,6)=B*H2*I22+2.0*A*H3*I226+H2*I212
      >        -H*(SX*DPX+SPX*DX)
-      T(2,3,3)=BETA*H3*I233-0.5*KY2*H*I20
-      T(2,3,4)=2.0*BETA*H3*I234
-      T(2,4,4)=BETA*H3*I244-0.5*H*I20
-      T(2,6,6)=B*H2*I26+A*H3*I266+0.5*H3*I222-H*DX*DPX-H*I20
+        T(2,3,3)=BETA*H3*I233-0.5*KY2*H*I20
+        T(2,3,4)=2.0*BETA*H3*I234
+        T(2,4,4)=BETA*H3*I244-0.5*H*I20
+        T(2,6,6)=B*H2*I26+A*H3*I266+0.5*H3*I222-H*DX*DPX-H*I20
 C
 C     VALUE OF "B" IS CHANGED.
 C
-      B=BETA-FIELDN
+        B=BETA-FIELDN
 C
-      T(3,1,3)=2.0*B*H3*I313+KX2*KY2*H*I324
-      T(3,1,4)=H*SY+2.0D0*B*H3*I314-KX2*H*I323
-      T(3,2,3)=2.0*B*H3*I323-KY2*H*I314
-      T(3,2,4)=2.0*B*H3*I324+H*I313
-      T(3,3,6)=KY2*I33+2.0*B*H3*I336-KY2*H2*I324
-      T(3,4,6)=KY2*I34+2.0*B*H3*I346+H2*I323
+        T(3,1,3)=2.0*B*H3*I313+KX2*KY2*H*I324
+        T(3,1,4)=H*SY+2.0D0*B*H3*I314-KX2*H*I323
+        T(3,2,3)=2.0*B*H3*I323-KY2*H*I314
+        T(3,2,4)=2.0*B*H3*I324+H*I313
+        T(3,3,6)=KY2*I33+2.0*B*H3*I336-KY2*H2*I324
+        T(3,4,6)=KY2*I34+2.0*B*H3*I346+H2*I323
 C
-      T(4,1,3)=2.0*B*H3*I413+KX2*KY2*H*I424-H*CX*CPY
-      T(4,1,4)=H*SPY+2.0*H3*B*I414-KX2*H*I423-H*CX*SPY
-      T(4,2,3)=2.0*B*H3*I423-KY2*H*I414-H*SX*CPY
-      T(4,2,4)=2.0*B*H3*I424+H*I413-H*SX*SPY
-      T(4,3,6)=KY2*I43+2.0*B*H3*I436-KY2*H2*I424-H*DX*CPY
-      T(4,4,6)=KY2*I44+2.0*B*H3*I446+H2*I423-H*DX*SPY
+        T(4,1,3)=2.0*B*H3*I413+KX2*KY2*H*I424-H*CX*CPY
+        T(4,1,4)=H*SPY+2.0*H3*B*I414-KX2*H*I423-H*CX*SPY
+        T(4,2,3)=2.0*B*H3*I423-KY2*H*I414-H*SX*CPY
+        T(4,2,4)=2.0*B*H3*I424+H*I413-H*SX*SPY
+        T(4,3,6)=KY2*I43+2.0*B*H3*I436-KY2*H2*I424-H*DX*CPY
+        T(4,4,6)=KY2*I44+2.0*B*H3*I446+H2*I423-H*DX*SPY
 C
-      T(5,1,1)=H4*(BN1*J1XL-BN2*KX2*J4XL)+.5*KX4*J1L
-      T(5,1,2)=H4*2.0*BN2*J5XL-KX2*J3L+H*DX
-      T(5,1,6)=H5*J11XL+H3*J12XL+H*KX2*J3XL
+        T(5,1,1)=H4*(BN1*J1XL-BN2*KX2*J4XL)+.5*KX4*J1L
+        T(5,1,2)=H4*2.0*BN2*J5XL-KX2*J3L+H*DX
+        T(5,1,6)=H5*J11XL+H3*J12XL+H*KX2*J3XL
      <   +H5*2.0*BN2*J4XL+2.0*BETA*H5*J10XL-H*KX2*J1L
 c Carey eq. 7.45  p.143
-      T(5,1,6)=T(5,1,6)-R(5,1)/sgam2
+        T(5,1,6)=T(5,1,6)-R(5,1)/sgam2
 c
-      T(5,2,2)=.5*(H2*J1XL+H4*2.0*BN2*J4XL+J2L)
-      T(5,2,6)=-2.0*BETA*H5*J13XL+H5*J14XL+H3*J15XL+H*KX2*
+        T(5,2,2)=.5*(H2*J1XL+H4*2.0*BN2*J4XL+J2L)
+        T(5,2,6)=-2.0*BETA*H5*J13XL+H5*J14XL+H3*J15XL+H*KX2*
      <  J2XL+H*J3L
 c Carey eq. 7.45  p.143
-      T(5,2,6)=T(5,2,6)-R(5,2)/sgam2
+        T(5,2,6)=T(5,2,6)-R(5,2)/sgam2
 c
-      T(5,3,3)=.5*(H4*(BN3*J1XL-2.0*BETA*KY2*J7XL)+KY4*J4L)
-      T(5,3,4)=2.0*BETA*H4*J9XL-KY2*J6L
-      T(5,4,4)=BETA*H4*J7XL-.5*(H2*J1XL-J5L)
-      T(5,6,6)=(1.0-BETA)*H6*J16XL+H4*J17XL-H2*J3XL
+        T(5,3,3)=.5*(H4*(BN3*J1XL-2.0*BETA*KY2*J7XL)+KY4*J4L)
+        T(5,3,4)=2.0*BETA*H4*J9XL-KY2*J6L
+        T(5,4,4)=BETA*H4*J7XL-.5*(H2*J1XL-J5L)
+        T(5,6,6)=(1.0-BETA)*H6*J16XL+H4*J17XL-H2*J3XL
      >        +.5*H2*J1L
 c Carey eq. 7.45  p.143
-      T(5,6,6)=T(5,6,6)-R(5,6)/sgam2
-      T(5,6,6)=T(5,6,6)+AL*((1./sgam2)**2+1.5*sbet*sbet/sgam2)
+        T(5,6,6)=T(5,6,6)-R(5,6)/sgam2
+        T(5,6,6)=T(5,6,6)+AL*((1./sgam2)**2+1.5*sbet*sbet/sgam2)
 c Carey eq.7.46 p.143
-      T(5,5,6)=-1./sgam2
-3334  CONTINUE
+        T(5,5,6)=-1./sgam2
+C  ENDIF Second order Matrix T
+      ENDIF
 C     RESTORE H
       H=SAH
       RETURN
       END
-! *******************************************************************
-! SUBROUTINE syrout(ii)
-! SYNCHROTRON RADIATION EXCITATION FOR PARTICLE ii
-! The method is described in 'synchrotron radiation in DYNAC'
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE syrout(ii)
+!! SYNCHROTRON RADIATION EXCITATION FOR PARTICLE ii
+!! The method is described in 'synchrotron radiation in DYNAC'
+!< *******************************************************************
        SUBROUTINE syrout(ii)
        implicit real*8 (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
@@ -20371,11 +20390,11 @@ C       dmo*r(1,6) is given in m and  dmo*r(2,6) in rad, convert in cm and mrad
        f(3,ii)=f(3,ii)+dmo*r(2,6)*1000.
        return
        end
-! *******************************************************************
-! SUBROUTINE syref
-! SYNCHROTRON RADIATION EXCITATION FROM PARTICLE REFERENCE
-! The method is described in 'synchrotron radiation in DYNAC'
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE syref
+!! SYNCHROTRON RADIATION EXCITATION FROM PARTICLE REFERENCE
+!! The method is described in 'synchrotron radiation in DYNAC'
+!< *******************************************************************
        SUBROUTINE syref
        implicit real*8 (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
@@ -20410,11 +20429,11 @@ C   change vref and tref of the reference
      *        '    NEW ENERGY  (MeV):  ',e12.5)
        return
        end
-! *******************************************************************
-! SUBROUTINE sextu(imk2,arg,xlsex,rg)
-! magnetic sextupole
-! space charge at the middle of the lens
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE sextu(imk2,arg,xlsex,rg)
+!! magnetic sextupole
+!! space charge at the middle of the lens
+!< *******************************************************************
        SUBROUTINE sextu(imk2,arg,xlsex,rg)
        implicit real*8 (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
@@ -20602,15 +20621,15 @@ c  returns coordinates to the initial orientation
        CALL STAPL(davtot*10.)
        RETURN
        END
-! *******************************************************************
-! SUBROUTINE qalva(bquad,xlqua,rg)
-! QUADRUPOLE
-! space charge computations at the middle of the lens
-!   BQUAD: field at pole tip (kG)
-!          If BQUAD positive = focalisation in the H-plane (x,z)
-!   XLQUA: EFFECTIVE LENGHT (cm )
-!   RG:    APERTURE RADIUS (cm)
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE qalva(bquad,xlqua,rg)
+!! QUADRUPOLE
+!! space charge computations at the middle of the lens
+!!   BQUAD: field at pole tip (kG)
+!!          If BQUAD positive = focalisation in the H-plane (x,z)
+!!   XLQUA: EFFECTIVE LENGHT (cm )
+!!   RG:    APERTURE RADIUS (cm)
+!< *******************************************************************
        SUBROUTINE qalva(bquad,xlqua,rg)
        implicit real*8 (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
@@ -20811,18 +20830,18 @@ C  envelope
        call stapl(davtot*10.)
        return
        end
-! *******************************************************************
-! SUBROUTINE qasex(iksq,args,argq,xlqua,rg)
-! quadrupole associated sextupole field
-! space charge computation at the middle of the lens
-!   IKSQ: IFLAG (see ARGS and ARGQ)
-!   ARGS: strength of SEXTUPOLE
-!     IKSQ = 0, then ARGS =KS2 (cm-3), otherwise ARGS = FIELD FS(kG)
-!   ARGQ: strength of QUADRUPOLE
-!   If IKSQ = 0, then ARGQ=KQ2 (cm-2), otherwise ARGQ = FIELD FQ(kG)
-!   XLQUA : EFFECTIVE LENGHT OF THE LENS(cm)
-!   RG : APERTURE RADIUS OF THE LENS (cm)
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE qasex(iksq,args,argq,xlqua,rg)
+!! quadrupole associated sextupole field
+!! space charge computation at the middle of the lens
+!!   IKSQ: IFLAG (see ARGS and ARGQ)
+!!   ARGS: strength of SEXTUPOLE
+!!     IKSQ = 0, then ARGS =KS2 (cm-3), otherwise ARGS = FIELD FS(kG)
+!!   ARGQ: strength of QUADRUPOLE
+!!   If IKSQ = 0, then ARGQ=KQ2 (cm-2), otherwise ARGQ = FIELD FQ(kG)
+!!   XLQUA : EFFECTIVE LENGHT OF THE LENS(cm)
+!!   RG : APERTURE RADIUS OF THE LENS (cm)
+!< *******************************************************************
        SUBROUTINE qasex(iksq,args,argq,xlqua,rg)
        implicit real*8 (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
@@ -21037,13 +21056,13 @@ comment       endif
        CALL STAPL(davtot*10.)
        RETURN
        END
-! *******************************************************************
-! SUBROUTINE ELQUA
-! FIRST AND SECOND order TRANSPORT MATRIX R AND T
-!      PURE QUADRUPOLE FIELD, MATRIX R AND T  ARE IN  (M,RD)
-! **** WARNING : IN THIS ROUTINE ALL VARIABLES ARE REAL UNLESS
-!                OTHERWIZE DECLARED *********
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE ELQUA
+!! FIRST AND SECOND order TRANSPORT MATRIX R AND T
+!!      PURE QUADRUPOLE FIELD, MATRIX R AND T  ARE IN  (M,RD)
+!!  **** WARNING : IN THIS ROUTINE ALL VARIABLES ARE REAL UNLESS
+!!                 OTHERWIZE DECLARED *********
+!< *******************************************************************
       SUBROUTINE ELQUA
       IMPLICIT REAL*8(A-Z)
       COMMON/QSEX/L,KQ2,KS2
@@ -21103,13 +21122,13 @@ c      T534=AMAT(19,5)  T544=AMAT(22,5)
       T(5,4,4)=(AL+BC*BSOK)/4.0
       RETURN
       END
-! *******************************************************************
-! SUBROUTINE ELSEX
-! FIRST AND SECOND order TRANSPORT MATRIX R AND T
-!    PURE SEXTUPOLE FIELD, MATRIX R AND T  ARE IN  (M,RD)
-! **** WARNING : IN THIS ROUTINE ALL VARIABLES ARE REAL UNLESS
-!                OTHERWIZE DECLARED *********
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE ELSEX
+!! FIRST AND SECOND order TRANSPORT MATRIX R AND T
+!!    PURE SEXTUPOLE FIELD, MATRIX R AND T  ARE IN  (M,RD)
+!!  **** WARNING : IN THIS ROUTINE ALL VARIABLES ARE REAL UNLESS
+!!                 OTHERWIZE DECLARED *********
+!< *******************************************************************
       SUBROUTINE ELSEX
       IMPLICIT REAL*8(A-Z)
       COMMON/QSEX/L,KQ2,KS2
@@ -21123,8 +21142,7 @@ c      T534=AMAT(19,5)  T544=AMAT(22,5)
         AL=L*1.e-02
       else
         inisk=0
-      endif
-c1000  CONTINUE
+      endif    
       AKL1=AKS2*AL
       AKL2=AKL1*AL
       AKL3=AKL2*AL
@@ -21164,14 +21182,14 @@ C     T413=AMAT(9,4) T414=AMAT( 10,4) T423=AMAT(14,4) T424=AMAT(15,4)
       T(4,2,4)= AKL3*2.0/3.0
       RETURN
       END
-! *******************************************************************
-! SUBROUTINE ELQSEX
-! FIRST AND SECOND order TRANSPORT MATRIX R AND T
-!      QUADRUPOLE FIELD	+ SEXTUPOLE FIELD
-! quadrupole field combined with a sextupole field
-! **** WARNING : IN THIS ROUTINE ALL VARIABLES ARE REAL UNLESS
-!                OTHERWIZE DECLARED *********
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE ELQSEX
+!! FIRST AND SECOND order TRANSPORT MATRIX R AND T
+!!      QUADRUPOLE FIELD	+ SEXTUPOLE FIELD
+!! quadrupole field combined with a sextupole field
+!!  **** WARNING : IN THIS ROUTINE ALL VARIABLES ARE REAL UNLESS
+!!                 OTHERWIZE DECLARED *********
+!< *******************************************************************
       SUBROUTINE ELQSEX
       IMPLICIT REAL*8(A-Z)
       COMMON/QSEX/L,KQ2,KS2
@@ -21276,13 +21294,13 @@ c     T511=AMAT(7,5)  T512=AMAT(8,5) T522=AMAT(13,5) T533=AMAT(18,5)
 c      T534=AMAT(19,5)  T544=AMAT(22,5)
         T(5,3,4)=AKQ2*(BSOK*BSOK)/2.0
         T(5,4,4)=(AL+BC*BSOK)/4.0
-      ENDIF
+      ENDIF  
       RETURN
       END
-! *******************************************************************
-! SUBROUTINE solfield(bcret,intgr)
-! Solenoid with an arbitrary magnetic field
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE solfield(bcret,intgr)
+!! Solenoid with an arbitrary magnetic field
+!< *******************************************************************
        SUBROUTINE solfield(bcret,intgr)
        implicit real*8 (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
@@ -21399,18 +21417,17 @@ c      **********END TEST********************
 c  SPACE CHARGE
          if(.not.iesp) then
            iesp=.true.
-           go to 720
-         endif
-         if(ichaes.and.xlsol.gt.0.) then
-           if(sce10.eq.1.or.sce10.eq.3.) then
-             dscm2=dscm*2.
-             call cesp(dscm2)
-             iesp=.false.
+         else
+           if(ichaes.and.xlsol.gt.0.) then
+             if(sce10.eq.1.or.sce10.eq.3.) then
+               dscm2=dscm*2.
+               call cesp(dscm2)
+               iesp=.false.
 c     dispersion dE/E with respect to the C.O.G of the bunch
-             call disp
+               call disp
+             endif
            endif
          endif
-720      continue
 C  envelope sol
          write(16,*) 'distance',davti,dsol
          davti=davti+dsol*100.
@@ -21441,10 +21458,10 @@ C   plots
        WRITE(16,*) 'particles lost in solenoid',ilost
        RETURN
        END
-! *******************************************************************
-! SUBROUTINE fldsol(dbs,step)
-! solenoidal field
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE fldsol(dbs,step)
+!! solenoidal field
+!< *******************************************************************
        SUBROUTINE fldsol(dbs,step)
        implicit real*8 (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
@@ -21496,15 +21513,15 @@ c  Reshuffles f(i,j) array after window (now done in 'reject')
 c         call shuffle
        return
        end
-! *******************************************************************
-! SUBROUTINE solnoid(imks,arg,xlsol)
-! SOLENOID (fringe-fields are included in the transport matrix)
-!          space charge computations at the middle of the lens
-!     IMKS: IFLAG (see ARG)
-!     ARG:  IMKS = 0 then ARG is K (cm-1), otherwise ARG is the
-!           field BSOL (kG)
-!     XLSOL : EFFECTIVE LENGHT (CM )
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE solnoid(imks,arg,xlsol)
+!! SOLENOID (fringe-fields are included in the transport matrix)
+!!          space charge computations at the middle of the lens
+!!     IMKS: IFLAG (see ARG)
+!!     ARG:  IMKS = 0 then ARG is K (cm-1), otherwise ARG is the 
+!!           field BSOL (kG)
+!!     XLSOL : EFFECTIVE LENGHT (CM )
+!< *******************************************************************
        SUBROUTINE solnoid(imks,arg,xlsol)
        implicit real*8 (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
@@ -21580,9 +21597,9 @@ c   KO = 2 * K (see ELSOL)
        call clear
        call elsol
        xkql=(kl/2.)*57.29578
-c trace3d
+c trace3d       
        kt3t=kt3t+1
-       write(tif,6002) kt3t,kt3t,B*1000.,10.*XLSOL
+       write(tif,6002) kt3t,kt3t,B*1000.,10.*XLSOL       
 6002   format('  nt(',i4,')= 5, a(1,',i4,')= ',f12.5,' , ',f9.5)
        trace3t(kt3t)=tif
 c
@@ -21663,7 +21680,7 @@ c  second half solenoid
        enddo
 c   t.o.f
        TREF=TREF+XLSOL/(VREF*2.)
-       call reject(ilost)
+       call reject(ilost)       
        if(itvol) ttvols=tref
        tcog=0.
        do i=1,ngood
@@ -21688,10 +21705,10 @@ C   plots
        WRITE(16,*) 'particles lost in solenoid',ilost
        RETURN
        END
-! *******************************************************************
-! SUBROUTINE elsol
-! first order and second order R and T solenoid matrix
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE elsol
+!! first order and second order R and T solenoid matrix
+!< *******************************************************************
        SUBROUTINE elsol
        implicit real*8 (a-h,o-z)
        COMMON/SOLE/L,KL,KO
@@ -21727,28 +21744,28 @@ C      convert (cm,rd) ==> (m,rd)
        R(2,1)    =  R(4,3)
 c     see element 16;  3.  in TRANSPORT USER MANUAL for SM (here: SM=0)
 comment       R(5,6) = R(5,6)  +  L * SM**2/(RI**2 + SM**2)
-      IF(.NOT.ISEOR) GO TO 200
-      TEMP = 0.5*KO*L*SN
-      T(1,1,6) = TEMP
-      T(2,2,6) = TEMP
-      T(3,3,6) = TEMP
-      T(4,4,6) = TEMP
-      T(1,2,6) = SN/KO - L*CS
-      T(3,4,6) = T(1,2,6)
-      TEMP = - 0.5*KO*L*CS
-      T(1,3,6) = TEMP
-      T(2,4,6) = TEMP
-      T(4,2,6) = - TEMP
-      T(3,1,6) = - TEMP
-      T(1,4,6) = (1.0 - CS)/KO - L*SN
-      T(3,2,6) = -T(1,4,6)
-      T(2,1,6) = 0.25*KO*(KO*L*CS + SN)
-      T(4,3,6) =T(2,1,6)
-      T(2,3,6) = 0.25*KO*(1.0 - CS + KO*L*SN)
-      T(4,1,6) = - T(2,3,6)
-      T(5,2,2) =  0.5*L
-      T(5,4,4) =  0.5*L
-200   CONTINUE
+      IF(ISEOR) THEN
+        TEMP = 0.5*KO*L*SN
+        T(1,1,6) = TEMP
+        T(2,2,6) = TEMP
+        T(3,3,6) = TEMP
+        T(4,4,6) = TEMP
+        T(1,2,6) = SN/KO - L*CS
+        T(3,4,6) = T(1,2,6)
+        TEMP = - 0.5*KO*L*CS
+        T(1,3,6) = TEMP
+        T(2,4,6) = TEMP
+        T(4,2,6) = - TEMP
+        T(3,1,6) = - TEMP
+        T(1,4,6) = (1.0 - CS)/KO - L*SN
+        T(3,2,6) = -T(1,4,6)
+        T(2,1,6) = 0.25*KO*(KO*L*CS + SN)
+        T(4,3,6) =T(2,1,6)
+        T(2,3,6) = 0.25*KO*(1.0 - CS + KO*L*SN)
+        T(4,1,6) = - T(2,3,6)
+        T(5,2,2) =  0.5*L
+        T(5,4,4) =  0.5*L
+      ENDIF
 C     RESTORE KO AND L
       KO=SAKO
       L=SAL
@@ -21760,10 +21777,10 @@ comment     1 (SM**2 + RI**2)**2
 comment  T(5,5,6) = SM**2/(SM**2 + RI**2)
       RETURN
       END
-! *******************************************************************
-! SUBROUTINE mfordre(rc,ra,rb)
-! Calculates RC=RA*RB
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE mfordre(rc,ra,rb)
+!! Calculates RC=RA*RB
+!< *******************************************************************
       SUBROUTINE mfordre(rc,ra,rb)
        implicit real*8 (a-h,o-z)
        DIMENSION RA(6,6), RB(6,6), RC(6,6)
@@ -21778,24 +21795,24 @@ comment  T(5,5,6) = SM**2/(SM**2 + RI**2)
        ENDDO
        RETURN
        END
-! *******************************************************************
-! SUBROUTINE solquad(iksq,args,argq,xlsol,rg)
-! SOLENOID FIELD ASSOCIATED WITH QUADRUPOLE FIELD
-! space charge computations at the middle of the lens
-! --IKSQ: IFLAG
-! --ARGS: STRENGTH or FIELD OF SOLENOID
-!     If IKSQ = 0 then ARGS is the STRENGTH (cm-1), otherwise ARGS
-!     is the FIELD (kG)
-! --ARGQ: STRENGTH or FIELD of QUADRUPOLE
-!     If IKSQ = 0 then ARGQ is the STRENGTH (cm-2), otherwise ARGQ
-!     is the FIELD (kG)
-!   SIGN CONVENTIONS:
-!     SOLENOID: ARGS positive = rotate the transverse coordinates
-!               about the z-axis in the clockwise direction.
-!     QUADRUPOLE: ARGQ positive = focusing in the plane (x,z)
-! --XLSOL : EFFECTIVE LENGHT OF THE LENS(cm)
-! --RG : APERTURE RADIUS OF THE LENS (cm)
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE solquad(iksq,args,argq,xlsol,rg)
+!! SOLENOID FIELD ASSOCIATED WITH QUADRUPOLE FIELD
+!! space charge computations at the middle of the lens
+!! --IKSQ: IFLAG
+!! --ARGS: STRENGTH or FIELD OF SOLENOID
+!!     If IKSQ = 0 then ARGS is the STRENGTH (cm-1), otherwise ARGS 
+!!     is the FIELD (kG)
+!! --ARGQ: STRENGTH or FIELD of QUADRUPOLE
+!!     If IKSQ = 0 then ARGQ is the STRENGTH (cm-2), otherwise ARGQ
+!!     is the FIELD (kG)
+!!   SIGN CONVENTIONS:
+!!     SOLENOID: ARGS positive = rotate the transverse coordinates 
+!!               about the z-axis in the clockwise direction.
+!!     QUADRUPOLE: ARGQ positive = focusing in the plane (x,z)
+!! --XLSOL : EFFECTIVE LENGHT OF THE LENS(cm)
+!! --RG : APERTURE RADIUS OF THE LENS (cm)
+!< *******************************************************************
        SUBROUTINE solquad(iksq,args,argq,xlsol,rg)
        implicit real*8 (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
@@ -21978,7 +21995,7 @@ C     if KQO is negative set up 90 degree rotation on the beam
        enddo
 c    t.o.f of reference
        TREF=TREF+XLSOL/(VREF*2.)
-       call reject(ilost)
+       call reject(ilost)       
        dav1(idav,36)=ngood
 C   plots
        CALL STAPL(davtot*10.)
@@ -21986,10 +22003,10 @@ C   plots
        WRITE(16,*) 'particles lost in solenoid',ilost
        RETURN
        END
-! *******************************************************************
-! SUBROUTINE rotat(ii)
-! (+-) 90 DEG BEAM ROTATION
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE rotat(ii)
+!! (+-) 90 DEG BEAM ROTATION
+!< *******************************************************************
        SUBROUTINE rotat(ii)
        implicit real*8 (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
@@ -22019,13 +22036,13 @@ C   -90 degree rotation
       ENDIF
        RETURN
        END
-! *******************************************************************
-! SUBROUTINE elsq
-! FIRST AND SECOND order MATRIX R AND T  (m,rd)
-!     quadrupole field combined with a solenoid field
-! **** WARNING : IN THIS ROUTINE ALL VARIABLES ARE REAL UNLESS
-!                OTHERWIZE DECLARED *********
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE elsq
+!! FIRST AND SECOND order MATRIX R AND T  (m,rd)
+!!      quadrupole field combined with a solenoid field
+!!  **** WARNING : IN THIS ROUTINE ALL VARIABLES ARE REAL UNLESS
+!!                OTHERWIZE DECLARED *********
+!< *******************************************************************
       SUBROUTINE elsq
       IMPLICIT REAL*8(A-Z)
       COMMON/RIGID/BORO
@@ -22172,11 +22189,11 @@ comment      AMAT(17,4,MATADR)=-AMAT(21,1,MATADR)
      > +SKM2*AIBS2)+SKM4*AISC2+2.0*SKM2*SKP2*AISCBC+SKP4*AIBC2)
       RETURN
       END
-! *******************************************************************
-! SUBROUTINE fdrift(xl,npart,imit)
-! DIVIDE A DRIFT LENGHT OF :XL CM  IN :NPART PARTIAL DRIFTS
-! This will allow several space charge computations in the drift
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE fdrift(xl,npart,imit)
+!! DIVIDE A DRIFT LENGHT OF :XL CM  IN :NPART PARTIAL DRIFTS
+!! This will allow several space charge computations in the drift
+!< *******************************************************************
        SUBROUTINE fdrift(xl,npart,imit)
        implicit real*8 (a-h,o-z)
        dl=xl/float(npart)
@@ -22186,11 +22203,11 @@ comment      AMAT(17,4,MATADR)=-AMAT(21,1,MATADR)
        enddo
        return
        end
-! *******************************************************************
-! SUBROUTINE drift(dl)
-! DRIFT LENGHT
-! space charge computation at the middle of the drift
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE drift(dl)
+!! DRIFT LENGHT
+!! space charge computation at the middle of the drift
+!< *******************************************************************
        SUBROUTINE drift(dl)
        implicit real*8 (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
@@ -22333,10 +22350,10 @@ C   CLEAR T
       ENDIF
        RETURN
        END
-! *******************************************************************
-! SUBROUTINE cobeam(ii,xl)
-! MATRIX BASED BEAM COMPUTATION
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE cobeam(ii,xl)
+!! MATRIX BASED BEAM COMPUTATION
+!< *******************************************************************
        SUBROUTINE cobeam(ii,xl)
        implicit real*8 (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
@@ -22364,16 +22381,16 @@ C       FIRST order COMPUTATION (M-RD)
          SSF(IA)=R(IA,IB)*SF(IB)+SSF(IA)
         ENDDO
        ENDDO
-       IF(.NOT.ISEOR) GO TO 10
+       IF(ISEOR) THEN
 C    SECOND order COMPUTATION  (M-RD)
-       DO IA=1,6
-        DO IB=1,6
-         DO IC=1,6
-          SSF(IA)=SSF(IA)+T(IA,IB,IC)*SF(IB)*SF(IC)
+         DO IA=1,6
+           DO IB=1,6
+             DO IC=1,6
+               SSF(IA)=SSF(IA)+T(IA,IB,IC)*SF(IB)*SF(IC)
+             ENDDO
+           ENDDO
          ENDDO
-        ENDDO
-       ENDDO
-10     CONTINUE
+       ENDIF
        DO IA=1,4
          F(IA+1,II)=SSF(IA)
        ENDDO
@@ -22389,11 +22406,11 @@ C   CONVERT RD ==> MRD    M ==> CM
        F(6,II)=F(6,II)+TRT
       RETURN
       END
-! *******************************************************************
-! SUBROUTINE disp
-! Compute the dispersion dE/E with respect to the center of
-! gravity of the bunch
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE disp
+!! Compute the dispersion dE/E with respect to the center of 
+!! gravity of the bunch
+!< *******************************************************************
        SUBROUTINE disp
        implicit real*8 (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
@@ -22413,7 +22430,7 @@ C   CONVERT RD ==> MRD    M ==> CM
            bpai=sqrt(1.-1./(gpai*gpai))
          else
            bpai=0.
-         endif
+         endif  
          fd(i)=bpai/bcog * gpai/gcog
        enddo
        return
@@ -22439,13 +22456,13 @@ cold          enddo
 cold         enddo
 cold        return
 cold        end
-! *******************************************************************
-! SUBROUTINE zrotat(zrot)
-! BEAM ROTATION
-!     the transverse coordinates X and Y may be rotated
-!     through an angle about the axis tangent to the
-!     central trajectory at the point in question.
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE zrotat(zrot)
+!! BEAM ROTATION
+!!     the transverse coordinates X and Y may be rotated
+!!     through an angle about the axis tangent to the
+!!     central trajectory at the point in question.
+!< *******************************************************************
       SUBROUTINE zrotat(zrot)
        implicit real*8 (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
@@ -22459,12 +22476,11 @@ cold        end
  100   FORMAT(/,20X,'BEAM ROTATION ',F10.4
      1 ,'  degrees  ABOUT THE POSITIVE Z-AXIS',/)
        if(.not.izrot) then
-        izrot=.true.
-        rzot=zrot
-        go to 500
+         izrot=.true.
+         rzot=zrot
+       else
+         izrot=.false.
        endif
-       if(izrot) izrot=.false.
-500    continue
 c  Daves start
        idav=idav+1
        iitem(idav)=20
@@ -22474,7 +22490,7 @@ c initialize
          DO IB=1,4
            RS(IA,IB)=0.
          ENDDO
-       ENDDO
+       ENDDO    
 C      Conversion DEG ==> RAD
        ZROT=  ZROT*pi/180.
        RS44  =  COS(ZROT)
@@ -22503,16 +22519,15 @@ C      Conversion DEG ==> RAD
          F(4,II)=FC(3)
          F(5,II)=FC(4)
        ENDDO
-c110    continue
        RETURN
        END
-! *******************************************************************
-! SUBROUTINE zrotap(zrot)
-! BEAM ROTATION
-!     the transverse coordinates X and Y may be rotated
-!     through an angle about the axis tangent to the
-!     central trajectory at the point in question.
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE zrotap(zrot)
+!! BEAM ROTATION
+!!     the transverse coordinates X and Y may be rotated
+!!     through an angle about the axis tangent to the
+!!     central trajectory at the point in question.
+!< *******************************************************************
        SUBROUTINE zrotap(zrot)
        implicit real*8 (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
@@ -22555,12 +22570,12 @@ C      Conversion DEG ==> RAD
        ENDDO
        RETURN
        END
-! *******************************************************************
-! SUBROUTINE aliner
-! ALIGNMENT  errors:
-!       HORIZONTAL : XL(cm) XLP(mrad)
-!       VERTICAL   : YL(cm) YLP(mrad)
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE aliner
+!! ALIGNMENT  errors:
+!!       HORIZONTAL : XL(cm) XLP(mrad)
+!!       VERTICAL   : YL(cm) YLP(mrad)
+!< *******************************************************************
        SUBROUTINE aliner
        implicit real*8 (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
@@ -22579,12 +22594,12 @@ C       UNITES  =  CM-MRD
        ENDDO
        RETURN
        END
-! *******************************************************************
-! SUBROUTINE randali
-! RANDOM ALIGNMENT  errors :
-!     HORIZONTAL PLANE : XL(cm) XLP(mrad)
-!     VERTICAL PLANE   : YL(cm) YLP(mrad)
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE randali
+!! RANDOM ALIGNMENT  errors :
+!!     HORIZONTAL PLANE : XL(cm) XLP(mrad)
+!!     VERTICAL PLANE   : YL(cm) YLP(mrad)
+!< *******************************************************************
        SUBROUTINE randali
        implicit real*8 (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
@@ -22627,10 +22642,10 @@ C       UNITES  =  CM-MRD
        enddo
        return
        end
-! *******************************************************************
-! SUBROUTINE matrix
-! print first and second order matrix of a lens
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE matrix
+!! print first and second order matrix of a lens
+!< *******************************************************************
        SUBROUTINE matrix
        implicit real*8 (a-h,o-z)
        COMMON /BLOC11/ R(6,6), T(6,6,6)
@@ -22657,12 +22672,12 @@ C       UNITES  =  CM-MRD
 101   format(' T',3(i1),3x,e12.5)
       RETURN
       END
-! *******************************************************************
-! SUBROUTINE egun(fmult,indp)
-! method:Bode's rule
-! read the axial field of the DC gun field from disk
-!     z (m)   E(z) is normalized
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE egun(fmult,indp)
+!! method:Bode's rule
+!! read the axial field of the DC gun field from disk
+!!     z (m)   E(z) is normalized
+!< *******************************************************************
        SUBROUTINE egun(fmult,indp)
        implicit real*8 (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
@@ -22987,29 +23002,29 @@ C   plots
         call emiprt(0)
         return
         end
-! *******************************************************************
-! SUBROUTINE scheff1_swesson(int)
-! 21-Apr-2014: This routine is NOT used by DYNAC
-! comment       SUBROUTINE scheff1(int)
-!    non relativistic SCHEFF space charge method
-!         SCE(i) (for ISCSP=3 only)
-!         int=0: initiate the arrays
-!      SCE(1)=BEAMC (as above)
-!      SCE(2)=r extension in rms multiples
-!      SCE(3)=z extension in rms multiples
-!      SCE(4)=no. of radial mesh intervals (le 20)
-!      SCE(5)=no. of longitudinal mesh intervals (le 40)
-!      SCE(6)=no. of adjacent bunches, applicable for buncher studies
+!> *******************************************************************
+!! SUBROUTINE scheff1_swesson(int)
+!! 21-Apr-2014: This routine is NOT used by DYNAC
+!! comment       SUBROUTINE scheff1(int)
+!!    non relativistic SCHEFF space charge method 
+!!         SCE(i) (for ISCSP=3 only)
+!!         int=0: initiate the arrays
+!!      SCE(1)=BEAMC (as above)
+!!      SCE(2)=r extension in rms multiples
+!!      SCE(3)=z extension in rms multiples
+!!      SCE(4)=no. of radial mesh intervals (le 20)
+!!      SCE(5)=no. of longitudinal mesh intervals (le 40)
+!!      SCE(6)=no. of adjacent bunches, applicable for buncher studies
 !	     and should be 0 for linac dynamics
-!      SCE(7)=pulse length, if not beta lambda.(transport studies)
+!!      SCE(7)=pulse length, if not beta lambda.(transport studies)
 !	     distance bewteen beam pulses input zero to get default
 !	     "beta lambda"; units are cm
-!      SCE(8)=determines frequency of calculating mesh size. see pard
-!      SCE(9)=option to integrate space charge forces over box
+!!      SCE(8)=determines frequency of calculating mesh size. see pard
+!!      SCE(9)=option to integrate space charge forces over box
 !	     if.eq.0. no integration.  see sub gaus for further
 !	     explanation.
-!      SCE(10)=same meaning as SCE10 above
-! *******************************************************************
+!!      SCE(10)=same meaning as SCE10 above
+!< *******************************************************************
        SUBROUTINE scheff1_swesson(int)
        implicit real*8 (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
@@ -23107,10 +23122,12 @@ c     q=coulombs/point.   (2/pi)*e/(4*pi*epsilon)=572167 cm mev/coul.
            zp=zm(j+1)
            do i=1,nr1
              rp=rm(i)
-             if(opt.eq.0.) call flds(rs(k),zs,er1,ez1)
-             if(opt.eq.0.) go to 35
-             call gaus (rm(k),rm(k+1),zm(1),zm(2),opt,er1,ez1)
-35           l=l+1
+             if(opt.eq.0.) then 
+               call flds(rs(k),zs,er1,ez1)
+             else  
+               call gaus (rm(k),rm(k+1),zm(1),zm(2),opt,er1,ez1)
+             endif
+             l=l+1
              ers(l)=c1*er1/rfac
              ezs(l)=c1*ez1/rfac
            enddo
@@ -23177,16 +23194,16 @@ c          clear and load bins
        do i=1,im1
          aa(i)=0.0
        enddo
-       do 120 np=1,ngood
+       do np=1,ngood
          rsq=(f(2,np)-xbar)**2*epsqi+(f(4,np)-ybar)**2*epsq
 c     i=sqrt(rsq)/dr+1.
          r=sqrt(rsq)
          halfdr=dr*0.5
          i=idint(r/dr+1.0)
-         if (i.gt.nr) go to 120
+         if (i.gt.nr) exit
          zph=f(6,np)*fh
          z=-c2*(zph-phimc)
-         if (abs(z).ge.hl) go to 120
+         if (abs(z).ge.hl) exit
 c------distribute charge among adjacent bins.
          ng=ng+1
          zz=z+hl
@@ -23223,24 +23240,24 @@ c     if (i1.ne.i) a=(rsq-rssq(i1))/(rssq(i)-rssq(i1))
          aa(k)=aa(k)+a*d
          k=k+i1-i
          aa(k)=aa(k)+b*d
-  120  continue
+       enddo
        eng=ng
 c          find ismax for each j
-      do j=1,nz
-       l=(j-1)*nr
-       k=nr
-       do i=1,nr
-        m=l+k
-        if(aa(m).le.0.00) then
-         k=k-1
-         go to 130
-        else
-         go to 140
-        endif
-130     continue
-       enddo
+       do j=1,nz
+         l=(j-1)*nr
+         k=nr
+         do i=1,nr
+           m=l+k
+           if(aa(m).le.0.00) then
+             k=k-1
+             go to 130
+           else
+             go to 140
+           endif
+130        continue
+         enddo
 140       ismax(j)=k
-      enddo
+       enddo
 c        find iemax for each j
          iemax(1)=1+ismax(1)
          do j=2,nz
@@ -23381,40 +23398,40 @@ c     load the entrance beam parameters for cavities or gaps
   270  continue
        RETURN
        END
-! *******************************************************************
-! SUBROUTINE cpardyn(pib)
-! --- make up a list of cell by cell RFQ data based on a file
-!     generated by the external code
+!> *******************************************************************
+!! SUBROUTINE cpardyn(pib)
+!! --- make up a list of cell by cell RFQ data based on a file 
+!!     generated by the external code
 !
-!     nc: cell number
-!     ityp = 0: Standard accelerating cell
-!     ityp = 1: Transition cell of type T
-!     ityp = 2: Transition cell of type E
-!     ityp = 3: Transition cell of type M
-!     ityp = 4: Fringe-field region from the potential function
-!               (after type T, M or accelerating cell)
-!     ityp = 5: Radial matching section based on coefficients
-!     ityp = 6: Radial matching section based on RMS shape defined in
-!               an external file
-!     ityp = 7: Fringe-field region; the profile is defined in an
-!               external file (after type T, M or accelerating cell)
-!     a(1): cell length (cm)
-!     a(2): coefficient A10 (no dimension)
-!     a(3): smallest aperture  a  of vanes (cm)
-!     a(4): modulation factor  m  (no dimension)
-!     a(5): mean aperture ( r0 ) of vanes (middle of cells)   (cm)
-!     a(6): transverse radius of curvature (rh0) of the surface of
-!           electrodes at the vane tip (cm)
-!     a(7): phase (deg) (at the entrance of cells)
-!     a(8): factor FVOLT to be applied at the intervane potential
-!           (only for particles)
-!              VOLT =  (1 + FVOLT )* (intervane voltage)
-!     a(9): intervane-voltage (KV)
+!!     nc: cell number
+!!     ityp = 0: Standard accelerating cell
+!!     ityp = 1: Transition cell of type T
+!!     ityp = 2: Transition cell of type E
+!!     ityp = 3: Transition cell of type M
+!!     ityp = 4: Fringe-field region from the potential function
+!!               (after type T, M or accelerating cell)
+!!     ityp = 5: Radial matching section based on coefficients
+!!     ityp = 6: Radial matching section based on RMS shape defined in
+!!               an external file
+!!     ityp = 7: Fringe-field region; the profile is defined in an 
+!!               external file (after type T, M or accelerating cell)
+!!     a(1): cell length (cm)
+!!     a(2): coefficient A10 (no dimension)
+!!     a(3): smallest aperture  a  of vanes (cm)
+!!     a(4): modulation factor  m  (no dimension)
+!!     a(5): mean aperture ( r0 ) of vanes (middle of cells)   (cm)
+!!     a(6): transverse radius of curvature (rh0) of the surface of
+!!           electrodes at the vane tip (cm)
+!!     a(7): phase (deg) (at the entrance of cells)
+!!     a(8): factor FVOLT to be applied at the intervane potential
+!!           (only for particles)
+!!              VOLT =  (1 + FVOLT )* (intervane voltage)
+!!     a(9): intervane-voltage (KV)
 !
-!     ipar: cell parity (like for PARMTEQ cells)
-! --- Note: the last line in file must be:
-!           0  0  0. 0. 0. 0. 0. 0. 0. 0. 0. 0
-! *******************************************************************
+!!     ipar: cell parity (like for PARMTEQ cells)
+!! --- Note: the last line in file must be:
+!!           0  0  0. 0. 0. 0. 0. 0. 0. 0. 0. 0
+!< *******************************************************************
        SUBROUTINE cpardyn(pib)
        implicit real*8 (a-h,o-z)
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
@@ -23660,7 +23677,6 @@ c  even number standard cell limits
         bby(nc)=(4.*r0-xm*xa-3.*cby(nc))/cl
         ably(nc)=xm*xa/(cl*cl)-bby(nc)/cl-cby(nc)/(cl*cl)
       endif
-c8526  continue
 c   conversion: cm --> m
          cbx(nc)=cbx(nc)*1.e-02
          ablx(nc)=ablx(nc)*1.e02
@@ -23893,7 +23909,7 @@ c    npt is the number of coordinates (z,R(z)
          open(67,file=fprof,status='unknown')
 c         read(67,*)npf
          npf=0
-         do
+         do 
            read(67,*,END=888) xspf(npf+1),yspf(npf+1)
            npf=npf+1
          enddo
@@ -23953,11 +23969,11 @@ c********************************************
        call rfq_parm
        return
        end
-! *******************************************************************
-! function bint(n,z)
-! ---  integral representation of modified Bessel functions
-!      n integer order    z argument
-! *******************************************************************
+!> *******************************************************************
+!! function bint(n,z)
+!! ---  integral representation of modified Bessel functions
+!!      n integer order    z argument
+!< *******************************************************************
        function bint(n,z)
         implicit real*8 (a-h,o-z)
         COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
@@ -23981,11 +23997,11 @@ c   GAUSS n=16 de -1. a 1
         bint=bint/2.
         return
         end
-! *******************************************************************
-! SUBROUTINE accep_rfq(pib)
-! Do so by shifting particles belonging to the same bunch from
-! outside to inside (+/-) pi w.r.t.the synchronous particle
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE accep_rfq(pib)
+!! Do so by shifting particles belonging to the same bunch from
+!! outside to inside (+/-) pi w.r.t.the synchronous particle
+!< *******************************************************************
        SUBROUTINE accep_rfq(pib)
        implicit real*8 (a-h,o-z)
        parameter(iptsz=100002,maxcell=3000,maxcell1=3000)
@@ -24027,87 +24043,87 @@ c       tref=tcog
      *        'bunch: ',e13.7,' deg')
        return
        end
-! *******************************************************************
-! SUBROUTINE rfq_parm
-!  NOTE:
-!      The reference particle and particles may evolve separately or
-!      may be connected
-!      Only the SCHEFF space charge method is available
-!      Space charge computations are automaticaly made at the middle
-!      of each cell
-! -------------------------------------------------------------------
-!  Radial matching section
-!     rfq1(nc): Aq (no dimension)
-!     rfq2(nc): not used
-!     rfq3(nc): RMS length (m)
-!     rfq4(nc): phase RF (deg)
-!     rfq7(nc): mean aperture of the vane r0 (m)
-!     rfq9(nc): factor to be applied at the inter-vane potentiel
-!               (only for particles)
-!     rfq10(nc):intervane voltage applied to the synchronous
-!               particle (KV)
-!     rfq11(nc):intervane voltage applied to the particles (KV)
+!> *******************************************************************
+!! SUBROUTINE rfq_parm
+!!  NOTE:
+!!      The reference particle and particles may evolve separately or
+!!      may be connected
+!!      Only the SCHEFF space charge method is available
+!!      Space charge computations are automaticaly made at the middle
+!!      of each cell
+!! -------------------------------------------------------------------
+!!  Radial matching section
+!!     rfq1(nc): Aq (no dimension)
+!!     rfq2(nc): not used
+!!     rfq3(nc): RMS length (m)
+!!     rfq4(nc): phase RF (deg)
+!!     rfq7(nc): mean aperture of the vane r0 (m)
+!!     rfq9(nc): factor to be applied at the inter-vane potentiel
+!!               (only for particles)
+!!     rfq10(nc):intervane voltage applied to the synchronous 
+!!               particle (KV)
+!!     rfq11(nc):intervane voltage applied to the particles (KV)
 !
-! ---- standard accelerating cells (ityp = 0)
-!     rfq1(nc): A01 ( 1/(m*m) )
-!     rfq2(nc): A10 (no dimensions)
-!     rfq3(nc): cell length (m)
-!     rfq4(nc): phase RF (deg)
-!     rfq6(nc): A12 (no dimension)
-!     rfq7(nc): mean aperture of the vane r0 (m)
-!     rfq8(nc): A03 (1/(m**6)
-!     rfq9(nc): factor F = 1 + a() (only for inter-vane potentiel
-!               of particles)
-!     rfq10(nc):intervane voltage applied to the synchronous
-!               particle (KV)
-!     rfq11(nc):intervane voltage applied to the particles (KV)
-! ---  odds cells have a01 positive, even cells have a01 negative
+!! ---- standard accelerating cells (ityp = 0)
+!!     rfq1(nc): A01 ( 1/(m*m) )
+!!     rfq2(nc): A10 (no dimensions)
+!!     rfq3(nc): cell length (m)
+!!     rfq4(nc): phase RF (deg)
+!!     rfq6(nc): A12 (no dimension)
+!!     rfq7(nc): mean aperture of the vane r0 (m)
+!!     rfq8(nc): A03 (1/(m**6)
+!!     rfq9(nc): factor F = 1 + a() (only for inter-vane potentiel
+!!               of particles)
+!!     rfq10(nc):intervane voltage applied to the synchronous 
+!!               particle (KV)
+!!     rfq11(nc):intervane voltage applied to the particles (KV)
+!! ---  odds cells have a01 positive, even cells have a01 negative
 !
-! ----  transition T-cell and E-cell
-!     rfq1(nc): A30 (no dimensions)
-!     rfq2(nc): A10 (no dimensions)
-!     rfq3(nc): cell length (m)
-!     rfq4(nc): phase RF (deg)
-!     rfq7(nc): mean aperture of the vane r0 (m)
-!     rfq9(nc): factor F = 1 + a(8)
-!     rfq10(nc):intervane voltage applied to the synchronous
-!               particle (KV)
-!     rfq11(nc):intervane voltage applied to the particles (KV)
+!! ----  transition T-cell and E-cell
+!!     rfq1(nc): A30 (no dimensions)
+!!     rfq2(nc): A10 (no dimensions)
+!!     rfq3(nc): cell length (m)
+!!     rfq4(nc): phase RF (deg)
+!!     rfq7(nc): mean aperture of the vane r0 (m)
+!!     rfq9(nc): factor F = 1 + a(8)
+!!     rfq10(nc):intervane voltage applied to the synchronous 
+!!               particle (KV)
+!!     rfq11(nc):intervane voltage applied to the particles (KV)
 !
-! ----  M-cell
-!     rfq1(nc): A30 = 0
-!     rfq2(nc): A10 = 0
-!     rfq3(nc): cell length (m)
-!     rfq4(nc): phase RF (deg)
-!     rfq7(nc): mean aperture of the vane r0 (m)
-!     rfq9(nc): factor F = 1 + a(8)
-!     rfq10(nc):intervane voltage applied to the synchronous
-!               particle (KV)
-!     rfq11(nc):intervane voltage applied to the particles (KV)
+!! ----  M-cell
+!!     rfq1(nc): A30 = 0
+!!     rfq2(nc): A10 = 0
+!!     rfq3(nc): cell length (m)
+!!     rfq4(nc): phase RF (deg)
+!!     rfq7(nc): mean aperture of the vane r0 (m)
+!!     rfq9(nc): factor F = 1 + a(8)
+!!     rfq10(nc):intervane voltage applied to the synchronous
+!!               particle (KV)
+!!     rfq11(nc):intervane voltage applied to the particles (KV)
 !
-! ---- Fringe-field region from the potential function (F-cell)
-!     rfq1(nc): A01 ( 1/(m*m) )
-!     rfq2(nc): A10 (no dimensions)
-!     rfq3(nc): cell length (m)
-!     rfq4(nc): phase RF (deg)
-!     rfq7(nc): mean aperture of the vane r0 (m)
-!     rfq9(nc): factor F = 1 + a(8)
-!     rfq10(nc):intervane voltage applied to the synchronous
-!               particle (KV)
-!     rfq11(nc):intervane voltage applied to the particles (KV)
+!! ---- Fringe-field region from the potential function (F-cell)
+!!     rfq1(nc): A01 ( 1/(m*m) )
+!!     rfq2(nc): A10 (no dimensions)
+!!     rfq3(nc): cell length (m)
+!!     rfq4(nc): phase RF (deg)
+!!     rfq7(nc): mean aperture of the vane r0 (m)
+!!     rfq9(nc): factor F = 1 + a(8)
+!!     rfq10(nc):intervane voltage applied to the synchronous 
+!!               particle (KV)
+!!     rfq11(nc):intervane voltage applied to the particles (KV)
 !
-! ---- Fringe-field region the profil is read on the disk (F-cell)
-!     rfq1(nc): not used
-!     rfq2(nc): not used
-!     rfq3(nc): cell length (m)
-!     rfq4(nc): phase RF (deg)
-!     rfq7(nc): mean aperture of the vane r0 (m) (not used)
-!     rfq9(nc): factor F = 1 + a(8)
-!     rfq10(nc):intervane voltage applied to the synchronous
-!               particle (KV)
-!     rfq11(nc):intervane voltage applied to the particles (KV)
+!! ---- Fringe-field region the profil is read on the disk (F-cell)
+!!     rfq1(nc): not used
+!!     rfq2(nc): not used
+!!     rfq3(nc): cell length (m)
+!!     rfq4(nc): phase RF (deg)
+!!     rfq7(nc): mean aperture of the vane r0 (m) (not used)
+!!     rfq9(nc): factor F = 1 + a(8)
+!!     rfq10(nc):intervane voltage applied to the synchronous 
+!!               particle (KV)
+!!     rfq11(nc):intervane voltage applied to the particles (KV)
 !
-! *******************************************************************
+!< *******************************************************************
        SUBROUTINE rfq_parm
        implicit real*8 (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
@@ -24477,12 +24493,12 @@ c remove from the bunch particles that have energy < 0
              if(gi.lt.1.) then
                 f(8,ip)=0.
                 ilost=ilost+1
-c needs to be on energy
+c needs to be on energy                
                 write(49,*) ' particle lost: ',i,' W: ',ww,
      *             ' MeV'
                 iflag=.true.
                 go to 6525
-             endif
+             endif                
              bi=sqrt(1.-1./(gi*gi))
              bgi=bi*gi
 c move particles back in the bunch if they have abs(phi) > pi
@@ -24691,7 +24707,7 @@ cold             if(rm.ne.6.*0.) bi13p=bi13/rm
              pavolt=rfq11(ncell)
              rpv=pavolt*rfq9(ncell)
              erf=-rpv/(r0*r0)*c2t*rm
-c*et*2015-07-07*s
+c*et*2015-07-07*s             
 c            erf=erf+0.5*cay*(av10b*bi1*skz+3.*a31vb*bi13*skz3)
              erf=erf+0.5*cay*(a10vb*bi1*skz+3.*a31vb*bi13*skz3)
 c*et*2015-07-07*e
@@ -24838,12 +24854,12 @@ c ----  WAV: energy at the middle of the element
            if(ga.le.0.) then
              f(8,ip)=0.
              ilost=ilost+1
-c needs to be on energy
+c needs to be on energy                
              write(49,*) ' particle lost: ',i,' W: ',wav,
      *           ' MeV'
              iflag=.true.
              go to 6525
-           endif
+           endif                
            BGAV=SQRT(GA*(2.+GA))
            GAV=1.+GA
            BAV=BGAV/GAV
@@ -24854,12 +24870,12 @@ c ---- energy over step xl
            if(gam.le.1.) then
              f(8,ip)=0.
              ilost=ilost+1
-c needs to be on energy
+c needs to be on energy                
              write(49,*) ' particle lost: ',i,' W: ',ww,
      *           ' MeV'
              iflag=.true.
              go to 6525
-           endif
+           endif                
            BG=SQRT(GA*(2.+GA))
            beta=sqrt(1.-1/(gam*gam))
 cold jump of phase (sec) of particles (only for standard accelerating cells)
@@ -24873,16 +24889,17 @@ cold           endif
            cc=qq*xl*sp/(bgfac*er)
 c********************************************
            if(itype(ncell).ne.4) then
-              if(itype(ncell).eq.6) go to 9766
-              if(itype(ncell).eq.7) go to 9766
-              rr1=cc*ex
-              rr2=cc*ey
-9766         continue
-              xpm=xpi*amort+rr1
-              ypm=ypi*amort+rr2
-              xf=xm+xpm*hl
-              yf=ym+ypm*hl
-            endif
+             if(itype(ncell).ne.6) then
+               if(itype(ncell).ne.7) then
+                 rr1=cc*ex
+                 rr2=cc*ey
+               endif
+             endif
+             xpm=xpi*amort+rr1
+             ypm=ypi*amort+rr2
+             xf=xm+xpm*hl
+             yf=ym+ypm*hl
+           endif
 c********************************************
 c ------- Fringe-field region (itype = 4)
            if(itype(ncell).eq.4) then
@@ -24934,7 +24951,7 @@ c   tof over the length xl
               f(6,ip)=f(6,ip)+hl/(bi*vlm)
             else
               f(6,ip)=f(6,ip)+hl/(bi*vlm)+hl/(beta*vlm)
-            endif
+            endif  
             f(7,ip)=ww+er
 6525        continue
 c --- end do ip (particle loop)
@@ -25087,13 +25104,13 @@ c --- end do ncell
        call emiprt(0)
 c v28/04/2015
        ifcont=.false.
-       WRITE(16,*) 'After RFQ, bunched beam assumed'
+       WRITE(16,*) 'After RFQ, bunched beam assumed'       
        RETURN
        END
-! *******************************************************************
-! SUBROUTINE stripp
-! --- solid stripper foils for 'slow' hadron particles
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE stripp
+!! --- solid stripper foils for 'slow' hadron particles
+!< *******************************************************************
         SUBROUTINE stripp
         implicit real*8 (a-h,o-z)
         parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
@@ -25362,14 +25379,14 @@ c         v : nombre aléatoire selon la loi normale
         v=(a-12.)*s+am
         return
         end
-! *******************************************************************
-! SUBROUTINE qelec(volt,xlqua,rs)
-! electrostatic quadrupole
-! space charge computation at the middle of the lens
-!       VOLT: electric voltage at pole tip (kV)
-!       XLQUA: effective length  (cm)
-!       RS: radial distance of pole tip from axis (cm)
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE qelec(volt,xlqua,rs)
+!! electrostatic quadrupole
+!! space charge computation at the middle of the lens
+!!       VOLT: electric voltage at pole tip (kV)
+!!       XLQUA: effective length  (cm)
+!!       RS: radial distance of pole tip from axis (cm)
+!< *******************************************************************
        SUBROUTINE qelec(volt,xlqua,rs)
        implicit real*8 (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
@@ -25571,16 +25588,16 @@ c  envelope
        call stapl(davtot*10.)
        return
        end
-! *******************************************************************
-! SUBROUTINE qfk (ityqu,arg,xlqua,rs)
-! electrostatic or magnetic quadrupole based on the strength K2
-! space charge computation at the middle of the lens
-!       ITYQU: ITYQU = 0 electric quadrupole, otherwise magnetic
-!              quadrupole
-!       ARG: strength K (cm-2)
-!       XLQUA: effective length  (cm)
-!       RS: radial distance of pole tip from the axis (cm)
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE qfk (ityqu,arg,xlqua,rs)
+!! electrostatic or magnetic quadrupole based on the strength K2
+!! space charge computation at the middle of the lens
+!!       ITYQU: ITYQU = 0 electric quadrupole, otherwise magnetic
+!!              quadrupole
+!!       ARG: strength K (cm-2)
+!!       XLQUA: effective length  (cm)
+!!       RS: radial distance of pole tip from the axis (cm)
+!< *******************************************************************
        SUBROUTINE qfk (ityqu,arg,xlqua,rs)
        implicit real*8 (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
@@ -25846,13 +25863,13 @@ c  envelope
        call stapl(davtot*10.)
        return
        end
-! *******************************************************************
-! SUBROUTINE cavnum
-! numerical computations of the dynamic in cavities or gap
-! the field can be read on the disk on the form: (z,E(z)
-! or it can be read in the command list on the form of a Fourier
-! series expansion
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE cavnum
+!! numerical computations of the dynamic in cavities or gap
+!! the field can be read on the disk on the form: (z,E(z)
+!! or it can be read in the command list on the form of a Fourier
+!! series expansion
+!< *******************************************************************
        SUBROUTINE cavnum
        implicit real*8 (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
@@ -25903,7 +25920,7 @@ c   SV 09/09/2015
        common/xposi/xpost(10),xlce(2),xpax(2),iscx(2)
        common/kcell/avrg(15)
 c ****************************************************************
-C*ET*2015*Jul*S
+C*ET*2015*Jul*S       
 c********************************************
 c reservation for TRACE3D related stuff
        common/trace3d/trace3h(100),trace3t(maxcell1),tif,kt3h,kt3t,fid
@@ -25915,7 +25932,7 @@ c       character*128 trace3h,trace3t,tif,tifa,tifb
 c********************************************
        common/xitrd3/bcour1(15),bcour2(15),tr3dw(15),tr3ph(15),
      *  t0tr3d(15)
-C*ET*2015*Jul*E
+C*ET*2015*Jul*E       
        logical iesp,ichaes,irstay,iavp,ispcel,ifield,iemgrw
        LOGICAL SHIFT,CHASIT,ITVOL,IMAMIN,DAVE,JELEC
        CHARACTER*1 cr
@@ -26081,37 +26098,37 @@ c   phase at the entrance of the cavity
 c --- compute energy and TOF of reference
 c ******************************************
        call dwref(phi0,gams,ts)
-c ********************************************
+c ********************************************       
        enrs=gams*xmat
        ddw=enrs-enref
        if(t3d) then
          do klm=1,ncel
-
+            
            trphase=tr3ph(klm)
            tre0tl=t0tr3d(klm)/aqst
 cc split cell into drif-gap-drift
-cc debugging to be done: include q/m !!! protons assumed for now
+cc debugging to be done: include q/m !! !! protons assumed for now
            kt3t=kt3t+1
-c drift
+c drift           
            write(tif,6001) kt3t,kt3t,10.*fldctr(klm)
 6001       format('  nt(',i4,')= 1, a(1,',i4,')=',f12.6)
            trace3t(kt3t)=tif
-c
+c       
            kt3t=kt3t+1
-c gap
+c gap           
            write(tif,6005) kt3t,kt3t,tre0tl,trphase,fid
 6005       format('  nt(',i4,')=10, a(1,',i4,')=',f9.5,' , ',f9.2,
      &        ', 0., 1.,',f5.3,',')
            trace3t(kt3t)=tif
-c
+c 
            kt3t=kt3t+1
 c drift
            write(tif,6001) kt3t,kt3t,10.*zend(klm)
            trace3t(kt3t)=tif
          enddo
        endif
-c end trace3d drift-gap-drift
-c
+c end trace3d drift-gap-drift       
+c       
        trefs=ts+tref
        bets=sqrt(gams*gams-1.)/gams
 cold       bets=b5
@@ -26265,11 +26282,11 @@ C       new magnetic rigidity of the reference
        call emiprt(0)
        return
        end
-! *******************************************************************
-! SUBROUTINE phcrest(phi0,ylg,ncell,zcrest)
-! REFERENCE:
-! average k (cm-1)
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE phcrest(phi0,ylg,ncell,zcrest)
+!! REFERENCE:
+!! average k (cm-1)
+!< *******************************************************************
        SUBROUTINE phcrest(phi0,ylg,ncell,zcrest)
        implicit real*8 (a-h,o-z)
        common/cavnum1/xnh,xpas,fmult,npt
@@ -26295,52 +26312,51 @@ c   8 steps over a cell
        gam0=1./sqrt(1.-b0*b0)
        xnh=0.
        estop=xpas/10.
-20      continue
-ccc        if(xnh*xpas.ge.ylg) go to 10
-        xpat=xnh*xpas
+20     continue
+       xpat=xnh*xpas
        if(xpat.lt.(ylg-estop)) then
-        call fposb
+         call fposb
 c ---  enegy gain over the step
 c   predictor of energy gain
-       b1=b0
-       b2=b0
-       b3=b0
-       b4=b0
-       b5=b0
-       dgam=xi1(phi0,t0,t5)*qst/e0
-       gam5=gam0+dgam
+         b1=b0
+         b2=b0
+         b3=b0
+         b4=b0
+         b5=b0
+         dgam=xi1(phi0,t0,t5)*qst/e0
+         gam5=gam0+dgam
 c   corrector of energy gain
-        xpas2=xpas*xpas
-        dgdz=qst/e0 * tspl0
-        d2gdz2=dgam/xpas2-dgdz/xpas
-        d2gdz2=2.*d2gdz2
-        gam1=gam0+dgdz*xpas/5.+d2gdz2*xpas2/50.
-        gam2=gam0+dgdz*xpas*2./5.+d2gdz2*xpas2*4./50.
-        gam3=gam0+dgdz*xpas*3./5.+d2gdz2*xpas2*9./50.
-        gam4=gam0+dgdz*xpas*4./5.+d2gdz2*xpas2*16./50.
-        b1=sqrt(gam1*gam1-1.)/gam1
-        b2=sqrt(gam2*gam2-1.)/gam2
-        b3=sqrt(gam3*gam3-1.)/gam3
-        b4=sqrt(gam4*gam4-1.)/gam4
-        b5=sqrt(gam5*gam5-1.)/gam5
-        dgam=xi1(phi0,t0,t5)*qst/e0
-        gam5=gam0+dgam
-        b5=sqrt(gam5*gam5-1.)/gam5
-        b0=b5
-        t0=t5
-        gam0=gam5
-        xnh=xnh+1.
-        go to 20
+         xpas2=xpas*xpas
+         dgdz=qst/e0 * tspl0
+         d2gdz2=dgam/xpas2-dgdz/xpas
+         d2gdz2=2.*d2gdz2
+         gam1=gam0+dgdz*xpas/5.+d2gdz2*xpas2/50.
+         gam2=gam0+dgdz*xpas*2./5.+d2gdz2*xpas2*4./50.
+         gam3=gam0+dgdz*xpas*3./5.+d2gdz2*xpas2*9./50.
+         gam4=gam0+dgdz*xpas*4./5.+d2gdz2*xpas2*16./50.
+         b1=sqrt(gam1*gam1-1.)/gam1
+         b2=sqrt(gam2*gam2-1.)/gam2
+         b3=sqrt(gam3*gam3-1.)/gam3
+         b4=sqrt(gam4*gam4-1.)/gam4
+         b5=sqrt(gam5*gam5-1.)/gam5
+         dgam=xi1(phi0,t0,t5)*qst/e0
+         gam5=gam0+dgam
+         b5=sqrt(gam5*gam5-1.)/gam5
+         b0=b5
+         t0=t5
+         gam0=gam5
+         xnh=xnh+1.
+         go to 20
        endif
 c   compute an average k: zcrest
        zcrest=fh*t5/ylg
        return
        end
-! *******************************************************************
-! SUBROUTINE phcrest1(phi0,ylg,ncell)
-! REFERENCE:
-! computation of the phase giving the maximum energy gain)
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE phcrest1(phi0,ylg,ncell)
+!! REFERENCE:
+!! computation of the phase giving the maximum energy gain)
+!< *******************************************************************
        SUBROUTINE phcrest1(phi0,ylg,ncell)
        implicit real*8 (a-h,o-z)
        common/cavnum1/xnh,xpas,fmult,npt
@@ -26378,41 +26394,41 @@ c   ylg(cm) length of cavity, xpas(cm): step length
        gam0=1./sqrt(1.-b0*b0)
        wwref=(gam0-1.)*e0
        xnh=0.
-20      continue
-        if(xnh*xpas.ge.ylg) go to 10
-        call fposb
+20     continue
+       if(xnh*xpas.lt.ylg) then
+         call fposb
 c ---  enegy gain over the step
 c   predictor of energy gain
-       b1=b0
-       b2=b0
-       b3=b0
-       b4=b0
-       b5=b0
-       dgam=xi1(phi,t0,t5)*qst/e0
-       gam5=gam0+dgam
+         b1=b0
+         b2=b0
+         b3=b0
+         b4=b0
+         b5=b0
+         dgam=xi1(phi,t0,t5)*qst/e0
+         gam5=gam0+dgam
 c   corrector
-        xpas2=xpas*xpas
-        dgdz=qst/e0 * tspl0
-        d2gdz2=dgam/(xpas2)-dgdz/xpas
-        d2gdz2=2.*d2gdz2
-        gam1=gam0+dgdz*xpas/5.+d2gdz2*xpas2/50.
-        gam2=gam0+dgdz*xpas*2./5.+d2gdz2*xpas2*4./50.
-        gam3=gam0+dgdz*xpas*3./5.+d2gdz2*xpas2*9./50.
-        gam4=gam0+dgdz*xpas*4./5.+d2gdz2*xpas2*16./50.
-        b1=sqrt(gam1*gam1-1.)/gam1
-        b2=sqrt(gam2*gam2-1.)/gam2
-        b3=sqrt(gam3*gam3-1.)/gam3
-        b4=sqrt(gam4*gam4-1.)/gam4
-        b5=sqrt(gam5*gam5-1.)/gam5
-        dgam=xi1(phi,t0,t5)*qst/e0
-        gam5=gam0+dgam
-        b5=sqrt(gam5*gam5-1.)/gam5
-        b0=b5
-        t0=t5
-        gam0=gam5
-        xnh=xnh+1.
-        go to 20
-10     continue
+         xpas2=xpas*xpas
+         dgdz=qst/e0 * tspl0
+         d2gdz2=dgam/(xpas2)-dgdz/xpas
+         d2gdz2=2.*d2gdz2
+         gam1=gam0+dgdz*xpas/5.+d2gdz2*xpas2/50.
+         gam2=gam0+dgdz*xpas*2./5.+d2gdz2*xpas2*4./50.
+         gam3=gam0+dgdz*xpas*3./5.+d2gdz2*xpas2*9./50.
+         gam4=gam0+dgdz*xpas*4./5.+d2gdz2*xpas2*16./50.
+         b1=sqrt(gam1*gam1-1.)/gam1
+         b2=sqrt(gam2*gam2-1.)/gam2
+         b3=sqrt(gam3*gam3-1.)/gam3
+         b4=sqrt(gam4*gam4-1.)/gam4
+         b5=sqrt(gam5*gam5-1.)/gam5
+         dgam=xi1(phi,t0,t5)*qst/e0
+         gam5=gam0+dgam
+         b5=sqrt(gam5*gam5-1.)/gam5
+         b0=b5
+         t0=t5
+         gam0=gam5
+         xnh=xnh+1.
+         go to 20
+       endif
        wwpcr=(gam0-1.)*e0
        dwcpr=wwpcr-wwref
        wph(ibcl)=dwcpr
@@ -26464,12 +26480,12 @@ c     restore spline areas (partial save)
       enddo
       return
       end
-! *******************************************************************
-! SUBROUTINE dwref(phi0,gam5,t5)
-! compute the energy gain and the time of flight of the reference
-! over the cavity(gap) at the exit of the cavity(gap):
-! gam4 = relativistic gamma,  t4 = tof (cavity)
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE dwref(phi0,gam5,t5)
+!! compute the energy gain and the time of flight of the reference
+!! over the cavity(gap) at the exit of the cavity(gap): 
+!! gam4 = relativistic gamma,  t4 = tof (cavity)
+!< *******************************************************************
        SUBROUTINE dwref(phi0,gam5,t5)
        implicit real*8 (a-h,o-z)
        common/cavnum1/xnh,xpas,fmult,npt
@@ -26580,9 +26596,9 @@ c restore  xpas
        xpas=xpcel
        return
        end
-! *******************************************************************
-! SUBROUTINE itrd3
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE itrd3
+!< *******************************************************************
        SUBROUTINE itrd3
        implicit real*8 (a-h,o-z)
        common/cell/yf(10000),xf(10000),xlim(15),flength,fhc,att,
@@ -26591,7 +26607,7 @@ c restore  xpas
        common/xitrd3/bcour1(15),bcour2(15),tr3dw(15),tr3ph(15),
      *  t0tr3d(15)
        common/cavnum1/xnh,xpas,ffield,npt
-       common/sphi/tcour1(15),tcour2(15)
+       common/sphi/tcour1(15),tcour2(15)       
        common/kcell/avrg(15)
        common/ttfc/tk,t1k,t2k,sk,s1k,s2k,fh
        dimension ttr3d(15),str3d(15)
@@ -26626,11 +26642,11 @@ c         if(tph.ge.pcrest) atr3d=-atr3d
        enddo
        return
        end
-! *******************************************************************
-! SUBROUTINE fposbbb(xlcum,fposs,jx)
-! electric field at the 6 Bode's positions in the step (see routine
-! dwref)
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE fposbbb(xlcum,fposs,jx)
+!! electric field at the 6 Bode's positions in the step (see routine
+!! dwref)
+!< *******************************************************************
        SUBROUTINE fposbbb(xlcum,fposs,jx)
        implicit real*8 (a-h,o-z)
        common/cavnum1/xnh,xpas,fmult,npt
@@ -26641,23 +26657,23 @@ c         if(tph.ge.pcrest) atr3d=-atr3d
        common/xposi/xpost(10),xlce(2),xpax(2),iscx(2)
        logical ifield
        if(fposs.eq.0.) then
-        fpos0=xnh*xpas+xlcum+fposs
-        fpos1=(xnh+0.20)*xpas+xlcum+fposs
-        fpos2=(xnh+0.40)*xpas+xlcum+fposs
-        fpos3=(xnh+0.60)*xpas+xlcum+fposs
-        fpos4=(xnh+0.80)*xpas+xlcum+fposs
-        fpos5=(xnh+1.0)*xpas+xlcum+fposs
+         fpos0=xnh*xpas+xlcum+fposs
+         fpos1=(xnh+0.20)*xpas+xlcum+fposs
+         fpos2=(xnh+0.40)*xpas+xlcum+fposs
+         fpos3=(xnh+0.60)*xpas+xlcum+fposs
+         fpos4=(xnh+0.80)*xpas+xlcum+fposs
+         fpos5=(xnh+1.0)*xpas+xlcum+fposs
        else
-        fpos0=xnh*xpas+fposs
-        fpos1=(xnh+0.20)*xpas+fposs
-        fpos2=(xnh+0.40)*xpas+fposs
-        fpos3=(xnh+0.60)*xpas+fposs
-        fpos4=(xnh+0.80)*xpas+fposs
-        fpos5=(xnh+1.0)*xpas+fposs
+         fpos0=xnh*xpas+fposs
+         fpos1=(xnh+0.20)*xpas+fposs
+         fpos2=(xnh+0.40)*xpas+fposs
+         fpos3=(xnh+0.60)*xpas+fposs
+         fpos4=(xnh+0.80)*xpas+fposs
+         fpos5=(xnh+1.0)*xpas+fposs
        endif
        if(jx.eq.1)then
-        xnh1=xnh+1
-        if(xnh1.eq.float(iscx(jx))) fposs=fpos5
+         xnh1=xnh+1
+         if(xnh1.eq.float(iscx(jx))) fposs=fpos5
        endif
        if(ifield) then
 c --- the field is read from disk in MV/cm
@@ -26677,8 +26693,7 @@ c         write(13,700) xnh,fpos4,tspl4
 c         write(13,700) xnh,fpos5,tspl5,xpas,fposs
 c700      format(5(2x,e12.5))
 c ***********************************
-         go to 10
-      else
+       else
 c ++++ THIS OPTION IS NOT AVAILABLE IN THE CODE +++++++++++++
 c the field (MV/cm) is given in the form of a Fourier series
          tspl0=fone(fpos0)*fmult
@@ -26697,14 +26712,13 @@ cc         write(70,700) fpos4,tspl4
 cold         write(70,700) fpos5,tspl5
 c ***********************************
        endif
-10     continue
        return
        end
-! *******************************************************************
-! SUBROUTINE fposbb(xlcum)
-! electric field at the 6 Bode's positions in the step  (see routine
-! dwref1)
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE fposbb(xlcum)
+!! electric field at the 6 Bode's positions in the step  (see routine
+!! dwref1)
+!< *******************************************************************
        SUBROUTINE fposbb(xlcum)
        implicit real*8 (a-h,o-z)
        common/cavnum1/xnh,xpas,fmult,npt
@@ -26738,8 +26752,7 @@ c         write(13,700) xnh,fpos4,tspl4
 c         write(13,700) xnh,fpos5,tspl5,xpas
 c700      format(4(2x,e12.5))
 c ***********************************
-         go to 10
-      else
+       else
 c the field (MV/cm) is given in the form of a Fourier series
          tspl0=fone(fpos0)*fmult
          tspl1=fone(fpos1)*fmult
@@ -26757,13 +26770,12 @@ cc         write(70,700) fpos4,tspl4
 cold         write(70,700) fpos5,tspl5
 c ***********************************
        endif
-10     continue
        return
-       end
-! *******************************************************************
-! SUBROUTINE fposb
-! electric field at the 6 Bode's positions in the step
-! *******************************************************************
+       end       
+!> *******************************************************************
+!! SUBROUTINE fposb
+!! electric field at the 6 Bode's positions in the step
+!< *******************************************************************
        SUBROUTINE fposb
        implicit real*8 (a-h,o-z)
        common/cavnum1/xnh,xpas,fmult,npt
@@ -26796,8 +26808,7 @@ cc         write(13,700) xnh,fpos4,tspl4
 cc         write(13,700) xnh,fpos5,tspl5
 cc700      format(3(2x,e12.5))
 c ***********************************
-         go to 10
-      else
+       else
 c the field (MV/cm) is given in the form of a Fourier series
          tspl0=fone(fpos0)*fmult
          tspl1=fone(fpos1)*fmult
@@ -26815,14 +26826,13 @@ cc         write(70,700) fpos4,tspl4
 cold         write(70,700) fpos5,tspl5
 c ***********************************
        endif
-10     continue
        return
        end
-! *******************************************************************
-! SUBROUTINE sposb
-! derivative of electric field at the 6 Bode's positions in the step
-! not used in the code
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE sposb
+!! derivative of electric field at the 6 Bode's positions in the step
+!! not used in the code
+!< *******************************************************************
        SUBROUTINE sposb
        implicit real*8 (a-h,o-z)
        common/cavnum1/xnh,xpas,fmult,npt
@@ -26856,8 +26866,7 @@ ccc         write(13,700) xnh,fpos4,sspl4
 ccc         write(13,700) xnh,fpos5,sspl5
 ccc700      format(3(2x,e12.5))
 c ***********************************
-         go to 10
-      else
+       else
 c the field (MV/cm) is given in the form of a Fourier series
          tspl0=fone(fpos0)*fmult
          tspl1=fone(fpos1)*fmult
@@ -26875,13 +26884,12 @@ cc         write(70,700) fpos4,tspl4
 cold         write(70,700) fpos5,tspl5
 c ***********************************
        endif
-10     continue
        return
        end
-! *******************************************************************
-! FUNCTION xi1(phi0,t0,t5)
-! energy gain over the step
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION xi1(phi0,t0,t5)
+!! energy gain over the step
+!< *******************************************************************
        FUNCTION xi1(phi0,t0,t5)
        implicit real*8 (a-h,o-z)
        common/cavnum1/xnh,xpas,fmult,npt
@@ -26911,10 +26919,10 @@ c ***********************************
        xi1=xpas/288. * tspl
        return
        end
-! *******************************************************************
-! FUNCTION xi2(phi0,t0)
-! coupling terms in R and R' (energy gain)
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION xi2(phi0,t0)
+!! coupling terms in R and R' (energy gain)
+!< *******************************************************************
        FUNCTION xi2(phi0,t0)
        implicit real*8 (a-h,o-z)
        common/cavnum1/xnh,xpas,fmult,npt
@@ -26942,10 +26950,10 @@ cold       xspl0=cos(fh*t0+phi0)*tspl0
        xi2=xpas*xpas/288. * tspl
        return
        end
-! *******************************************************************
-! FUNCTION xj1(phi0,t0)
-! transverse motion field dE/dt
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION xj1(phi0,t0)
+!! transverse motion field dE/dt
+!< *******************************************************************
        FUNCTION xj1(phi0,t0)
        implicit real*8 (a-h,o-z)
        common/cavnum1/xnh,xpas,fmult,npt
@@ -26977,10 +26985,10 @@ c --- the field is read on the disk
        xj1=xpas/288. * tspl
        return
        end
-! *******************************************************************
-! FUNCTION xj2(phi0,t0)
-! transverse motion field dE/dt
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION xj2(phi0,t0)
+!! transverse motion field dE/dt
+!< *******************************************************************
        FUNCTION xj2(phi0,t0)
        implicit real*8 (a-h,o-z)
        common/cavnum1/xnh,xpas,fmult,npt
@@ -27010,10 +27018,10 @@ c --- the field is read on the disk
        xj2=xpas*xpas/288. * tspl
        return
        end
-! *******************************************************************
-! FUNCTION xe21(phi0,t0)
-! transverse motion field E*E
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION xe21(phi0,t0)
+!! transverse motion field E*E
+!< *******************************************************************
        FUNCTION xe21(phi0,t0)
        implicit real*8 (a-h,o-z)
        common/cavnum1/xnh,xpas,fmult,npt
@@ -27050,10 +27058,10 @@ c --- the field is read on the disk
        xe21=xpas/288. * tspl
        return
        end
-! *******************************************************************
-! FUNCTION xe22(phi0,t0)
-! transverse motion for field E*E
-! *******************************************************************
+!> *******************************************************************
+!! FUNCTION xe22(phi0,t0)
+!! transverse motion for field E*E
+!< *******************************************************************
        FUNCTION xe22(phi0,t0)
        implicit real*8 (a-h,o-z)
        common/cavnum1/xnh,xpas,fmult,npt
@@ -27092,10 +27100,10 @@ c --- the field is read on the disk
        xe22=xpas*xpas/288. * tspl
        return
        end
-! *******************************************************************
-! SUBROUTINE bcnum(phref,ylg,ncell)
-! dynamics of the bunch
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE bcnum(phref,ylg,ncell)
+!! dynamics of the bunch
+!< *******************************************************************
        SUBROUTINE bcnum(phref,ylg,ncell)
        implicit real*8 (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
@@ -27118,7 +27126,7 @@ c --- the field is read on the disk
        dimension tcour(iptsz),phi(iptsz)
        logical ifield,flgsc,ichaes,iesp,jelec
 c   ylg(cm) length of cavity, xpas(cm): step length
-c   8 steps over a cell (a voir!!!)
+c   8 steps over a cell (a voir!! !)
        BEREF=VREF/VL
        GAMREF=1./SQRT(1.-(BEREF*BEREF))
        ENREF=XMAT*GAMREF
@@ -27297,14 +27305,14 @@ c     Change the dispersion dE/E with respect to the C.O.G of the bunch
       enddo
       return
       end
-! *******************************************************************
-! SUBROUTINE reject(ilost)
-! reject particles outside window set by REJECT card
-! ---- ifw = 0  ===> wdisp = dW/W relative to cog
-! ---- ifw = 1  ===> wdisp = dW (MeV) relative to cog
-! ---- ifw = 10 ===> wdisp = dW/W relative to REF
-! ---- ifw = 11 ===> wdisp = dW (MeV) relative to REF
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE reject(ilost)
+!! reject particles outside window set by REJECT card
+!! ---- ifw = 0  ===> wdisp = dW/W relative to cog
+!! ---- ifw = 1  ===> wdisp = dW (MeV) relative to cog
+!! ---- ifw = 10 ===> wdisp = dW/W relative to REF
+!! ---- ifw = 11 ===> wdisp = dW (MeV) relative to REF              
+!< *******************************************************************
        SUBROUTINE reject(ilost)
        implicit real*8 (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
@@ -27353,7 +27361,7 @@ c ---- ifw = 1 ===> wdisp = dW (MeV)
            dispr=gcour*gcour*wdisp/(gcour*(gcour+1.)*wcg)
          endif
        else
-C Relative to REF
+C Relative to REF       
          write(16,3901)
          bref=VREF/VL
          gref=1./sqrt(1.-bref*bref)
@@ -27439,37 +27447,37 @@ ccccc       cstat=1
 4030   FORMAT('Charge state(s): ',20(f5.1,1x))
        RETURN
        END
-! *******************************************************************
-! SUBROUTINE aimalv (ANGL,RMO,BAIM,XN,XB,EK1,EK2,PENT1,RAB1,
-!                    SK1,SK2,PENT2,RAB2)
-! FIRST AND SECOND order Bending Magnet
-! WEDGE BENDING MAGNET
-!   ANGL : DEG  bend angle of the central trajectory
-!   RMO  : CM   radius of curvature of the central trajectory
-!   BAIM : KG   field of the bending magnet
-!     BAIM = 0  the field is computed from the momentum of the
-!               reference; otherwise the momentum is computed from
-!               the field
-!   XN   :      FIELD GRADIENT (dimensionless,TRANSPORT: n)
-!   XB   :      NORMALIZED SECOND DERIVATIVE OF B (TRANSPORT : beta)
-!   AP(1) = AP(2) CM vertical half aperture (only if IPOLE = 0)
-! ENTRANCE FACE
-!  PENT1 EK1 EK2 RAB1
-!   PENT1: DEG   angle of pole face rotation  (deg)
-!   RAB1 : CM    radius of curvature
-!   EK1  :       integral related to the extent of the fringing field
-!                (TRANSPORT K1)
-!   EK2  :       integral related to the extent of the fringing field
-!                (TRANSPORT K2)
-!   AP(1) : CM   vertical half aperture
-! EXIT FACE
-!  PENT2 SK1 SK2  RAB2
-!   PENT2: DEG   angle of pole face rotation
-!   RAB2 : CM  radius of curvature
-!   SK1  :     integral related to the extent of the fringing field
-!   SK2  :     integral related to the extent of the fringing field
-!   AP(2) : CM   vertical half aperture
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE aimalv (ANGL,RMO,BAIM,XN,XB,EK1,EK2,PENT1,RAB1,
+!!                    SK1,SK2,PENT2,RAB2)
+!! FIRST AND SECOND order Bending Magnet 
+!! WEDGE BENDING MAGNET
+!!   ANGL : DEG  bend angle of the central trajectory
+!!   RMO  : CM   radius of curvature of the central trajectory
+!!   BAIM : KG   field of the bending magnet
+!!     BAIM = 0  the field is computed from the momentum of the 
+!!               reference; otherwise the momentum is computed from
+!!               the field
+!!   XN   :      FIELD GRADIENT (dimensionless,TRANSPORT: n)
+!!   XB   :      NORMALIZED SECOND DERIVATIVE OF B (TRANSPORT : beta)
+!!   AP(1) = AP(2) CM vertical half aperture (only if IPOLE = 0)
+!! ENTRANCE FACE
+!!  PENT1 EK1 EK2 RAB1
+!!   PENT1: DEG   angle of pole face rotation  (deg)
+!!   RAB1 : CM    radius of curvature
+!!   EK1  :       integral related to the extent of the fringing field
+!!                (TRANSPORT K1)
+!!   EK2  :       integral related to the extent of the fringing field
+!!                (TRANSPORT K2)
+!!   AP(1) : CM   vertical half aperture
+!! EXIT FACE
+!!  PENT2 SK1 SK2  RAB2
+!!   PENT2: DEG   angle of pole face rotation
+!!   RAB2 : CM  radius of curvature
+!!   SK1  :     integral related to the extent of the fringing field
+!!   SK2  :     integral related to the extent of the fringing field
+!!   AP(2) : CM   vertical half aperture
+!< *******************************************************************
        SUBROUTINE aimalv (ANGL,RMO,BAIM,XN,XB,EK1,EK2,PENT1,RAB1,
      *                   SK1,SK2,PENT2,RAB2)
        implicit real*8 (a-h,o-z)
@@ -27907,14 +27915,17 @@ c --- Test window after the bending magnet
 c devtot: total angle of the bending magnet(computation of tref)
        devi=devtot
        ailong=devi*rmo
-       IF(IRAYSH.and.xmat.eq.0.511) go to 2561
-       TREF=TREF+AILONG/VREF
+       IF(IRAYSH.and.xmat.eq.0.511) then
+c electrons with synchrotron radiation      
+       ELSE
+c ions       
+         TREF=TREF+AILONG/VREF
 c    ----- window control
-       call reject(ilost)
+         call reject(ilost)
 c ---------------------------------------------------
-       dav1(idav,37)=ngood
-       if(itvol) ttvols=tref
-2561   continue
+         dav1(idav,37)=ngood
+         if(itvol) ttvols=tref
+       ENDIF  
        BEREF=VREF/VL
        GAMREF=1./SQRT(1.-BEREF*BEREF)
        XMCO=XMAT*BEREF*GAMREF
@@ -27931,17 +27942,17 @@ c ---------------------------------------------------
 cold       CALL STAPL(davtot*10.)
        RETURN
        END
-! *******************************************************************
-! SUBROUTINE deflect(fdtot)
-! Electrostatic deflector: Transport matrix
-! first order transport matrix (M,RD)
-!     drad: horizontal deflector radius (cm)
-!     l: length of the central trajectory (cm)
-!     kx2, ky2: matrix terms arguments (cm-2)
-!     avb: average relativistic beta
-!        in this routine drad, l kx2, ky2 are converted to m
-! With matrix elements from F.Hinterberger to Triumf note TRI-DN-05-7
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE deflect(fdtot)
+!! Electrostatic deflector: Transport matrix
+!! first order transport matrix (M,RD)
+!!     drad: horizontal deflector radius (cm)
+!!     l: length of the central trajectory (cm)
+!!     kx2, ky2: matrix terms arguments (cm-2)
+!!     avb: average relativistic beta
+!!        in this routine drad, l kx2, ky2 are converted to m
+!! With matrix elements from F.Hinterberger to Triumf note TRI-DN-05-7
+!< *******************************************************************
       SUBROUTINE deflect(fdtot)
       IMPLICIT REAL*8(A-Z)
       COMMON /BLOC11/ R(6,6), T(6,6,6)
@@ -28048,19 +28059,19 @@ c  ky2 = 0
       ENDIF
       return
       end
-! *******************************************************************
-! SUBROUTINE e_deflec
-! characteristics of the deflector (central trajectory)
-! input parameters
-!   nsector: nombre of sectors in the deflector
-!   rm0: radial radius (cm)
-!   devtot: bend angle (deg)
-!   radii: vertical (radial) radii of curvature (cm)
-!   elecf: nominal electric field
-!   characteristics of the synchronous particle
-!   wt0 :total energy (MeV)
-!   qst: electric charge
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE e_deflec
+!! characteristics of the deflector (central trajectory)
+!! input parameters
+!!   nsector: nombre of sectors in the deflector
+!!   rm0: radial radius (cm)
+!!   devtot: bend angle (deg)
+!!   radii: vertical (radial) radii of curvature (cm)
+!!   elecf: nominal electric field
+!!   characteristics of the synchronous particle
+!!   wt0 :total energy (MeV)
+!!   qst: electric charge
+!< *******************************************************************
        SUBROUTINE e_deflec
        implicit real*8 (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
@@ -28166,7 +28177,7 @@ c     scl is the path length of the C.T. over two following sectors
        do ist=1,ncstat
         rmoy(ist)=0.
         rig(ist)=0.
-        alp(ist)=devi
+        alp(ist)=devi        
        enddo
 c -------------------
 c ---- nsector: number of sectors in the deflector
@@ -28342,10 +28353,10 @@ c  ---- restore iseor (from sseor)
         iseor=sseor
        RETURN
        END
-! *******************************************************************
-! SUBROUTINE cesp(xlqua)
-! select the space charge method (optical lenses)
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE cesp(xlqua)
+!! select the space charge method (optical lenses)
+!< *******************************************************************
        SUBROUTINE cesp(xlqua)
        implicit real*8 (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
@@ -28395,10 +28406,10 @@ c isepa = false call usual scheff ----> scheff1(1)
        endif
        RETURN
        END
-! *******************************************************************
-! SUBROUTINE sizer(ist,xrms,yrms,zrms)
-! partial R.M.S. (called by SCHEFF_sep)
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE sizer(ist,xrms,yrms,zrms)
+!! partial R.M.S. (called by SCHEFF_sep)
+!< *******************************************************************
        SUBROUTINE sizer(ist,xrms,yrms,zrms)
        implicit real*8 (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
@@ -28435,13 +28446,13 @@ c isepa = false call usual scheff ----> scheff1(1)
        zrms=SQRT(zsqsum-zsum*zsum)
        RETURN
        END
-! *******************************************************************
-! SUBROUTINE pintim1(ist)
-! Shifts particle coordinates to a single point in time. Uses
-! a linear shift
-! Divide by 100. to convert from cm to meters
-! called by SCHEFF or SCHERM
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE pintim1(ist)
+!! Shifts particle coordinates to a single point in time. Uses
+!! a linear shift
+!! Divide by 100. to convert from cm to meters
+!! called by SCHEFF or SCHERM
+!< *******************************************************************
        SUBROUTINE pintim1(ist)
        implicit real*8 (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
@@ -28535,10 +28546,10 @@ c  coordinate origin to (0,0,0)
        enddo
        return
        end
-! *******************************************************************
-! SUBROUTINE b_sep(isepa)
-! check if the bunches in the beam are separated or not
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE b_sep(isepa)
+!! check if the bunches in the beam are separated or not
+!< *******************************************************************
        SUBROUTINE b_sep(isepa)
        implicit real*8 (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
@@ -28631,35 +28642,35 @@ cold       write(6,*) ' ************************************'
 c ***************************************************************
        RETURN
        END
-! *******************************************************************
-! SUBROUTINE schefini
-! Set up field tables for SCHEFF1 and SCHEFF_sep
-! input data
-!         sce(2)=radial extension in rms multiples
-!         sce(3)=longitudinal extension in rms multiples
-!         sce(4)=no. of radial mesh intervals (le 20)
-!         sce(5)=no. of longitudinal mesh intervals (le 40)
-!         sce(6)=no. of adjacent bunches, applicable for buncher
-!                studies and should be 0 for linac dynamics
-!         sce(7)=distance between adjacent beam pulses in cm
-!                (transport studies); input zero to get (beta*lambda)
-!                default
-!         sce(8)=desactived
-!         sce(9)=option to integrate space charge forces over box
-!                  if.eq.0. no integration  see sub gaus for further
-!                  explanation.
-!         sce(10) =1 : call in quads,solenoids,accelarating elements
-!         sce(10) =2 : call in drifts,accelarating elements
-!         sce(10) =3 : call at both
-!  standard SCHEFF parameters (see user guide)
-!         sce(2)=4
-!         sce(3)=4
-!         sce(4)=20
-!         sce(5)=40
-!         sce(6)=0
-!         sce(7)=0
-!         sce(9)=0
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE schefini
+!! Set up field tables for SCHEFF1 and SCHEFF_sep
+!! input data
+!!         sce(2)=radial extension in rms multiples
+!!         sce(3)=longitudinal extension in rms multiples
+!!         sce(4)=no. of radial mesh intervals (le 20)
+!!         sce(5)=no. of longitudinal mesh intervals (le 40)
+!!         sce(6)=no. of adjacent bunches, applicable for buncher
+!!                studies and should be 0 for linac dynamics
+!!         sce(7)=distance between adjacent beam pulses in cm
+!!                (transport studies); input zero to get (beta*lambda)
+!!                default
+!!         sce(8)=desactived
+!!         sce(9)=option to integrate space charge forces over box
+!!                  if.eq.0. no integration  see sub gaus for further
+!!                  explanation.
+!!         sce(10) =1 : call in quads,solenoids,accelarating elements
+!!         sce(10) =2 : call in drifts,accelarating elements
+!!         sce(10) =3 : call at both
+!!  standard SCHEFF parameters (see user guide)
+!!         sce(2)=4
+!!         sce(3)=4
+!!         sce(4)=20
+!!         sce(5)=40
+!!         sce(6)=0
+!!         sce(7)=0
+!!         sce(9)=0
+!< *******************************************************************
        SUBROUTINE schefini
        implicit real*8 (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
@@ -28706,42 +28717,42 @@ c         sce(7)=pulse length, if not beta lambda.(transport studies), units are
          nq=nb-na+1
          return
          end
-! *******************************************************************
-! SUBROUTINE scheff1(idum)
-! SCHEFF space charge method
-! remark: In this version int is a dummy parameter
-! This version of SCHEFF, starting from Swesson version, has
-! modifications made to include corrections for relativistic beams.
-! The dynamics have been modified to transform to the beam rest
-! frame, calculate the space-charge kicks in this frame, and then
-! transform back to the lab frame.
-!     input data
-!         sce(1)=beam current in ma.
-!         sce(2)=radial extension in rms multiples
-!         sce(3)=longitudinal extension in rms multiples
-!         sce(4)=no. of radial mesh intervals (le 20)
-!         sce(5)=no. of longitudinal mesh intervals (le 40)
-!         sce(6)=no. of adjacent bunches, applicable for buncher
-!                studies and should be 0 for linac dynamics
-!         sce(7)=distance between adjacent beam pulses in cm
-!                (transport studies); input zero to get (beta*lambda)
-!                default
-!         sce(8)=desactived
-!         sce(9)=option to integrate space charge forces over box
-!                  if.eq.0. no integration  see sub gaus for further
-!                  explanation.
-!         sce(10) =1 : call in quads,solenoids,accelarating elements
-!         sce(10) =2 : call in drifts,accelarating elements
-!         sce(10) =3 : call at both
-!  standard SCHEFF parameters (see sub schfdyn and user guide)
-!         sce(2)=4
-!         sce(3)=4
-!         sce(4)=20
-!         sce(5)=40
-!         sce(6)=0
-!         sce(7)=0
-!         sce(9)=0
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE scheff1(idum)
+!! SCHEFF space charge method
+!! remark: In this version int is a dummy parameter
+!! This version of SCHEFF, starting from Swesson version, has
+!! modifications made to include corrections for relativistic beams.
+!! The dynamics have been modified to transform to the beam rest
+!! frame, calculate the space-charge kicks in this frame, and then
+!! transform back to the lab frame.
+!!     input data
+!!         sce(1)=beam current in ma.
+!!         sce(2)=radial extension in rms multiples
+!!         sce(3)=longitudinal extension in rms multiples
+!!         sce(4)=no. of radial mesh intervals (le 20)
+!!         sce(5)=no. of longitudinal mesh intervals (le 40)
+!!         sce(6)=no. of adjacent bunches, applicable for buncher
+!!                studies and should be 0 for linac dynamics
+!!         sce(7)=distance between adjacent beam pulses in cm 
+!!                (transport studies); input zero to get (beta*lambda)
+!!                default
+!!         sce(8)=desactived
+!!         sce(9)=option to integrate space charge forces over box
+!!                  if.eq.0. no integration  see sub gaus for further
+!!                  explanation.
+!!         sce(10) =1 : call in quads,solenoids,accelarating elements
+!!         sce(10) =2 : call in drifts,accelarating elements
+!!         sce(10) =3 : call at both
+!!  standard SCHEFF parameters (see sub schfdyn and user guide)
+!!         sce(2)=4
+!!         sce(3)=4
+!!         sce(4)=20
+!!         sce(5)=40
+!!         sce(6)=0
+!!         sce(7)=0
+!!         sce(9)=0
+!< *******************************************************************
        SUBROUTINE scheff1(idum)
        implicit real*8 (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
@@ -28838,10 +28849,12 @@ c     q=coulombs/point.   (2/pi)*e/(4*pi*epsilon)=572167 cm mev/coul.
        zp=zm(j+1)
        do 40 i=1,nr1
        rp=rm(i)
-       if(opt.eq.0.) call flds(rs(k),zs,er1,ez1)
-       if(opt.eq.0.) go to 35
-       call gaus (rm(k),rm(k+1),zm(1),zm(2),opt,er1,ez1)
- 35    l=l+1
+       if(opt.eq.0.) then
+         call flds(rs(k),zs,er1,ez1)
+       else
+         call gaus (rm(k),rm(k+1),zm(1),zm(2),opt,er1,ez1)
+       endif
+       l=l+1
        ers(l)=c1*er1/rfac
 ccc       write(16,*) ' ersl ',ers(l),' er1 ',er1,' l ',l
 ccc       write(16,*) ' rsk ',rs(k),' k ',k,' zs ',zs
@@ -29164,41 +29177,41 @@ c   correction of xp and yp ( in rad)
        enddo
        return
        end
-! *******************************************************************
-! SUBROUTINE scheff_sep
-! SCHEFF_sep special space charge method
-! This version of SCHEFF, starting from Swesson version, has
-! modifications made to include corrections for relativistic beams.
-! The dynamics have been modified to transform to the beam rest
-! frame, calculate the space-charge kicks in this frame, and then
-! transform back to the lab frame.
-!     input data
-!         sce(1)=beam current in ma.
-!         sce(2)=radial extension in rms multiples
-!         sce(3)=longitudinal extension in rms multiples
-!         sce(4)=no. of radial mesh intervals (le 20)
-!         sce(5)=no. of longitudinal mesh intervals (le 40)
-!         sce(6)=no. of adjacent bunches, applicable for buncher
-!                studies and should be 0 for linac dynamics
-!         sce(7)=distance between adjacent beam pulses in cm
-!                (transport studies); input zero to get (beta*lambda)
-!                default
-!         sce(8)=desactived
-!         sce(9)=option to integrate space charge forces over box
-!                  if.eq.0. no integration  see sub gaus for further
-!                  explanation.
-!         sce(10) =1 : call in quads,solenoids,accelarating elements
-!         sce(10) =2 : call in drifts,accelarating elements
-!         sce(10) =3 : call at both
-!  standard SCHEFF parameters (see sub schfdyn and user guide)
-!         sce(2)=4
-!         sce(3)=4
-!         sce(4)=20
-!         sce(5)=40
-!         sce(6)=0
-!         sce(7)=0
-!         sce(9)=0
-! *******************************************************************
+!> *******************************************************************
+!! SUBROUTINE scheff_sep
+!! SCHEFF_sep special space charge method
+!! This version of SCHEFF, starting from Swesson version, has 
+!! modifications made to include corrections for relativistic beams.
+!! The dynamics have been modified to transform to the beam rest
+!! frame, calculate the space-charge kicks in this frame, and then
+!! transform back to the lab frame.
+!!     input data
+!!         sce(1)=beam current in ma.
+!!         sce(2)=radial extension in rms multiples
+!!         sce(3)=longitudinal extension in rms multiples
+!!         sce(4)=no. of radial mesh intervals (le 20)
+!!         sce(5)=no. of longitudinal mesh intervals (le 40)
+!!         sce(6)=no. of adjacent bunches, applicable for buncher
+!!                studies and should be 0 for linac dynamics
+!!         sce(7)=distance between adjacent beam pulses in cm
+!!                (transport studies); input zero to get (beta*lambda)
+!!                default
+!!         sce(8)=desactived
+!!         sce(9)=option to integrate space charge forces over box
+!!                  if.eq.0. no integration  see sub gaus for further
+!!                  explanation.
+!!         sce(10) =1 : call in quads,solenoids,accelarating elements
+!!         sce(10) =2 : call in drifts,accelarating elements
+!!         sce(10) =3 : call at both
+!!  standard SCHEFF parameters (see sub schfdyn and user guide)
+!!         sce(2)=4
+!!         sce(3)=4
+!!         sce(4)=20
+!!         sce(5)=40
+!!         sce(6)=0
+!!         sce(7)=0
+!!         sce(9)=0
+!< *******************************************************************
        SUBROUTINE scheff_sep
        implicit real*8 (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
@@ -29290,10 +29303,12 @@ c     q=coulombs/point.   (2/pi)*e/(4*pi*epsilon)=572167 cm mev/coul.
              zp=zm(j+1)
              do 40 i=1,nr1
                rp=rm(i)
-               if(opt.eq.0.) call flds(rs(k),zs,er1,ez1)
-               if(opt.eq.0.) go to 35
-               call gaus(rm(k),rm(k+1),zm(1),zm(2),opt,er1,ez1)
- 35            l=l+1
+               if(opt.eq.0.) then
+                 call flds(rs(k),zs,er1,ez1)
+               else
+                 call gaus(rm(k),rm(k+1),zm(1),zm(2),opt,er1,ez1)
+               endif
+               l=l+1
                ers(l)=c1*er1/rfac
    40    ezs(l)=c1*ez1/rfac
          dz1=scdist/100.
@@ -29602,25 +29617,25 @@ c big enddo of isp
       enddo
       return
       end
-! *******************************************************************
-! SUBROUTINE rfkick(v,dp,harm,nvf)
-! RFKICK  (NO SPACE CHARGE EFFECT)
+!> *******************************************************************
+!! SUBROUTINE rfkick(v,dp,harm,nvf)
+!! RFKICK  (NO SPACE CHARGE EFFECT)
 !
-! Contributing Author: Daniel Alt, NSCL/MSU, East Lansing,  MI, USA
-! Date: 23-May-2014
+!! Contributing Author: Daniel Alt, NSCL/MSU, East Lansing,  MI, USA
+!! Date: 23-May-2014
 !
-! Electric RF kicker.  Simulates a sine wave chopper consisting
-! of two plates deflecting the beam in the transverse direction.
-! This is a zero length element.
+!! Electric RF kicker.  Simulates a sine wave chopper consisting
+!! of two plates deflecting the beam in the transverse direction.
+!! This is a zero length element.
 !
-! V:    Voltage Factor.  Consists of plate voltage in kV, times
-!       the electrode length divided by the gap between them.
-! DP:   RF phase offset in radians
-! Harm: Kicker harmonic number relative to current reference
-!       frequency
-! NVF:  Kicker axis: 0 = horziontal, 1= vertical (use negative
-!       voltage for negative deflection)
-! *******************************************************************
+!! V:    Voltage Factor.  Consists of plate voltage in kV, times
+!!       the electrode length divided by the gap between them.
+!! DP:   RF phase offset in radians
+!! Harm: Kicker harmonic number relative to current reference
+!!       frequency
+!! NVF:  Kicker axis: 0 = horziontal, 1= vertical (use negative
+!!       voltage for negative deflection)
+!< *******************************************************************
        SUBROUTINE rfkick(v,dp,harm,nvf)
        implicit real*8 (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
@@ -29756,3 +29771,4 @@ c dave start for kicker
        call emiprt(0)
        return
        end
+       
