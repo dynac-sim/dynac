@@ -23,8 +23,17 @@ set(CMAKE_Fortran_FLAGS_DEBUG "-O0 -g -pedantic -fcheck=bounds -Wall -Wextra -ff
 set(CMAKE_Fortran_FLAGS_DEBUGCOVERAGE "${CMAKE_Fortran_FLAGS_DEBUG} -fprofile-arcs -ftest-coverage")
 set(LINK_FLAGS_DEBUGCOVERAGE "${LINK_FLAGS_DEBUG} -fprofile-arcs -ftest-coverage")
 
+# Tests setup..
+if(CMAKE_Fortran_COMPILER_ID MATCHES "unknown")
+    string(REGEX REPLACE ".*/([^ ])" "\\1" _fcomp_ "${CMAKE_Fortran_COMPILER}" )
+else()
+    set(_fcomp_ "${CMAKE_Fortran_COMPILER_ID}-${CMAKE_Fortran_COMPILER_VERSION}")
+endif()
+set(BUILDNAME "Dynac-${DYNAC_VERSION}_${_fcomp_}" CACHE STRING "Name of build on the dashboard")
+mark_as_advanced(BUILDNAME)
 enable_testing()
 include(CTest)
+
 
 add_subdirectory(source)
 add_subdirectory(plot)
