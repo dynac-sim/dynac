@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8)
 
 project(dynac Fortran)
 
-set(DYNAC_VERSION 6.0.R15.rc2)
+set(DYNAC_VERSION 6.0.R15.rc3)
 message(STATUS "Dynac version ${DYNAC_VERSION}")
 
 # Figure out platform..

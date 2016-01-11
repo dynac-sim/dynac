@@ -40,8 +40,6 @@
 !xx     *        -.23183581,.85333907e-01,-.23354050e-01,
 !xx     *        .46284273e-02,-.64840101e-03,.62211306e-04,
 !xx     *        -.38752189e-05,.14087289e-06,-.22650639e-08/
-       common/const/pi2,sqpi,pwtpi,sqpi2,sq2pi
-!   pi2=pi*pi, sqpi=(pi/2)**3/2 , pwtpi=(2*pi)**3/2 ,sqpi2=sqrt(pi/2.)
        data kmax/7/
        END
 !> *******************************************************************
@@ -49,7 +47,7 @@
 !! THIS SOFTWARE WAS ORIGINALLY PRODUCED BY CERN/PS, CEN/SACLAY
 !!
 !! @version 6.0R15
-!! @date 09-Jan-2016
+!! @date 10-Jan-2016
 !!
 !! @author P. LAPOSTOLLE  CONSULTANT (Paris, France)
 !! @author E. TANKE       ESS (Lund, Sweden)
@@ -341,9 +339,10 @@
 !   pi2=pi*pi, sqpi=(pi/2)**3/2 , pwtpi=(2*pi)**3/2 ,sqpi2=sqrt(pi/2.)
        PI=4.*ATAN(1.)
        pi2=pi*pi
-       sqpi=(pi/2)**3/2
-       pwtpi=(2*pi)**3/2
+       sqpi=(pi/2.)**(3./2.)
+       pwtpi=(2.*pi)**(3./2.)
        sqpi2=sqrt(pi/2.)
+       sq2pi=sqrt(2.*pi)
 ! initialize the number of charge states to 1
        ncstat=1
 ! initialize the # of zones (see ZONES card) to zero
@@ -454,7 +453,7 @@
        WRITE(6,3101)
        WRITE(16,3101)
        WRITE(12,3101)
-3101   FORMAT('****** DYNAC V6.0R15 (Beta test), 09-Jan-2015 *******')
+3101   FORMAT('****** DYNAC V6.0R15 (Beta test), 10-Jan-2015 *******')
        if (gfortran) then
          write(16,*) 'Input file: ',infiln
          write(12,*) 'Input file: ',infiln
@@ -5671,13 +5670,13 @@
            it2=mc/2
            it1=(nc-1)/2
            if(s3.ne.0.) then
-!	  it=2*(it1+it2+it3)+1
+!     it=2*(it1+it2+it3)+1
              it=lc+mc+nc
              pwas3=as3**it
            endif
            ex=eipi(it1,it2,it3)
            ey=epii(it1,it2,it3)
-!        z-direction
+!     z-direction
            it1=(nc+1)/2
            if(s3.ne.0.)pwas3=pwas3*s32
 !     it=2*(it1+it2+it3)+1
@@ -5695,7 +5694,7 @@
            it2=(mc-1)/2
            it1=nc/2
            if(s3.ne.0.) then
-!	 it=2*(it1+it2+it3)+1
+!     it=2*(it1+it2+it3)+1
              it=lc+mc+nc
              apwas3=as3**it
              pwas3=apwas3
@@ -5728,7 +5727,7 @@
            it2=(mc-1)/2
            it1=(nc-1)/2
            if(s3.ne.0.) then
-!	it=2*(it1+it2+it3)+1
+!    it=2*(it1+it2+it3)+1
              it=lc+mc+nc-1
              pwas3=as3**it
            endif
@@ -5758,7 +5757,7 @@
            it2=mc/2
            it1=nc/2
            if(s3.ne.0.) then
-!	it=2*(it1+it2+it3)+1
+!       it=2*(it1+it2+it3)+1
              it=lc+mc+nc
              apwas3=as3**it
              pwas3=apwas3*s32
@@ -5792,7 +5791,7 @@
            it2=mc/2
            it1=(nc-1)/2
            if(s3.ne.0.) then
-!	it=2*(it1+it2+it3)+1
+!      it=2*(it1+it2+it3)+1
              it=lc+mc+nc-1
              apwas3=as3**it
              pwas3=apwas3*s32
@@ -5827,7 +5826,7 @@
            it2=(mc-1)/2
            it1=nc/2
            if(s3.ne.0.) then
-!  	it=2*(it1+it2+it3)+1
+!      it=2*(it1+it2+it3)+1
              it=lc+mc+nc-1
              apwas3=as3**it
              pwas3=apwas3*s32
@@ -5891,7 +5890,7 @@
            it2=nc/2
            it1=lc/2
            if(s3.ne.0.) then
-! 	it=2*(it1+it2+it3)+1
+!      it=2*(it1+it2+it3)+1
              it=mc+nc+lc+1
              pwas3=as3**it
            endif
@@ -5911,7 +5910,7 @@
            it2=(nc-1)/2
            it1=lc/2
            if(s3.ne.0) then
-!	it=2*(it1+it2+it3)+1
+!      it=2*(it1+it2+it3)+1
              it=mc+nc+lc
              pwas3=as3**it
            endif
@@ -7125,7 +7124,7 @@
            do j1=1,km1,2
              j1km=km1-2*jm1-1
 !     j1km must be always greather or equal to zero
-             if(j1km.ge.0) go to 100
+             if(j1km.lt.0) go to 100
 !    T(2t3,2t2,2t1,j1) in table 41
              it3j1=it3+jm1
              tt=0.
@@ -7753,7 +7752,7 @@
          do j1=1,k
            jm1=j1-1
            j1km=km1-2*jm1
-           if(j1km.lt.0) exit
+           if(j1km.lt.0) go to 100
 !     j1km must be always greather or equal to zero
 !      Gauss quadrature in table 70-a
            i1123j1=it1+it2+it3+jm1
@@ -7776,6 +7775,7 @@
 !  enddo from  j1
            jj1=jj1+1
          enddo
+100      continue
          sppp=sppp+tt1*ck(k)
 !  enddo from k (k=1,kmax+1)
           kk=kk+1
@@ -7816,7 +7816,7 @@
          do j1=1,k
            jm1=j1-1
            j1km=km1-2*jm1
-           if(j1km.lt.0) exit
+           if(j1km.lt.0) go to 100
 !     j1km must be always greather or equal to zero
 !      Gauss quadrature in table 70-a
            i1123j1=it1+it2+it3+jm1
@@ -7839,6 +7839,7 @@
 !  enddo from  j1
            jj1=jj1+1
          enddo
+100      continue
          spip=spip+tt1*ck(k)
          kk=kk+1
 !  enddo from k (k=1,kmax+1)
@@ -7880,7 +7881,7 @@
            jm1=j1-1
            j1km=km1-2*jm1
 !     j1km must be always greather or equal to zero
-           if(j1km.lt.0) exit
+           if(j1km.lt.0) go to 100
 !      Gauss quadrature in table 70-a
            i1123j1=it1+it2+it3+jm1
            i2123j1=2*i1123j1+1
@@ -7902,6 +7903,7 @@
 !  enddo from  j1
            jj1=jj1+1
          enddo
+100      continue
          sppi=sppi+tt1*ck(k)
 !  enddo from k (k=1,kmax+1)
          kk=kk+1
@@ -7942,7 +7944,7 @@
          do j1=1,k
            jm1=j1-1
            j1km=km1-2*jm1
-           if(j1km.lt.0) exit
+           if(j1km.lt.0) go to 100
 !     j1km must be always greather or equal to zero
 !      Gauss quadrature in table 70-a
            i1123j1=it1+it2+it3+jm1
@@ -7965,6 +7967,7 @@
 !  enddo from  j1
            jj1=jj1+1
          enddo
+100      continue
          spii=spii+tt1*ck(k)
          kk=kk+1
 !  enddo from k (k=1,kmax+1)
@@ -11416,23 +11419,20 @@
        tofini=tofini*pi/(180.*fh)
        gdep=enedep/xmat+1.
        bdep=sqrt(1.-1./(gdep*gdep))
-!
-       tracebi(6)=tracebi(6)*sqrt(atm)
+! trace3d stuff start
        write(tif,901) (tracebi(i),i=1,6)
 901    format(' BEAMI(1)= ',5(f12.6,1x),f12.4)
        kt3h=kt3h+1
        trace3h(kt3h)=tif
-       traceei(3)=traceei(3)/sqrt(atm)
        write(tif,902) (traceei(i),i=1,3)
 902    format(' EMITI(1)= ',f12.6,1x,f12.6,1x,f12.4)
        kt3h=kt3h+1
        trace3h(kt3h)=tif
-!
-       write(tif,903) uem*atm/qst,fhinit/2./pi/1.E6
-903    format(' ER= ',E16.7,', Q=1 FREQ= ',E14.7)
+       write(tif,903) uem*atm,int(qst),fhinit/2./pi/1.E6
+903    format(' ER= ',E16.7,', Q=',I3,', FREQ= ',E14.7)
        kt3h=kt3h+1
        trace3h(kt3h)=tif
-       write(tif,7001) enedep/qst
+       write(tif,7001) enedep
 7001   format(' W= ',f12.4)
        kt3h=kt3h+1
        trace3h(kt3h)=tif
@@ -12517,21 +12517,19 @@
        endif
        call intfac(tofini)
        if(T3D) then
-         tracebi(6)=tracebi(6)*sqrt(atm)
          write(tif,901) (tracebi(i),i=1,6)
 901      format(' BEAMI(1)= ',5(f12.6,1x),f12.4)
          kt3h=kt3h+1
          trace3h(kt3h)=tif
-         traceei(3)=traceei(3)/sqrt(atm)
          write(tif,902) (traceei(i),i=1,3)
 902      format(' EMITI(1)= ',f12.6,1x,f12.6,1x,f12.4)
          kt3h=kt3h+1
          trace3h(kt3h)=tif
-         write(tif,903) uem*atm/qst,fhinit/2./pi/1.E6
-903      format(' ER= ',E16.7,', Q=1 FREQ= ',E14.7)
+         write(tif,903) uem*atm,int(qst),fhinit/2./pi/1.E6
+903      format(' ER= ',E16.7,', Q=',i3,' FREQ= ',E14.7)
          kt3h=kt3h+1
          trace3h(kt3h)=tif
-         write(tif,7001) enedep/qst
+         write(tif,7001) enedep
 7001     format(' W= ',f12.4)
          kt3h=kt3h+1
          trace3h(kt3h)=tif
@@ -23019,14 +23017,14 @@
 !!      SCE(4)=no. of radial mesh intervals (le 20)
 !!      SCE(5)=no. of longitudinal mesh intervals (le 40)
 !!      SCE(6)=no. of adjacent bunches, applicable for buncher studies
-!!	     and should be 0 for linac dynamics
+!!       and should be 0 for linac dynamics
 !!      SCE(7)=pulse length, if not beta lambda.(transport studies)
-!!	     distance bewteen beam pulses input zero to get default
-!!	     "beta lambda"; units are cm
+!!       distance bewteen beam pulses input zero to get default
+!!       "beta lambda"; units are cm
 !!      SCE(8)=determines frequency of calculating mesh size. see pard
 !!      SCE(9)=option to integrate space charge forces over box
-!!	     if.eq.0. no integration.  see sub gaus for further
-!!	     explanation.
+!!       if.eq.0. no integration.  see sub gaus for further
+!!       explanation.
 !!      SCE(10)=same meaning as SCE10 above
 !< *******************************************************************
        SUBROUTINE scheff1_swesson(int)
