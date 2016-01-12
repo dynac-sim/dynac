@@ -109,11 +109,11 @@
        common/zones/frms(6),nzone
        LOGICAL CHASIT,SHIFT,ITVOL,IMAMIN
        LOGICAL ICHAES,IESP,ifield,ialin,itwist,iemgrw
-       character*80 cara,cmnt,text,patitl,ofeldf,ofelds
-       character*80 davprt(maxcell1)
-       character*8 KLE(ncards),kley
-       character*12 fdrft
-       character*160 titre
+       character cara*80,cmnt*80,text*80,patitl*80,ofeldf*80,ofelds*80
+       character davprt(maxcell1)*80
+       character KLE(ncards)*8,kley*8
+       character fdrft*12
+       character titre*160
        character iitime*30
        COMMON/CESPCH/NCHGE,ICHSP,NPPI
        logical ichsp
@@ -145,7 +145,7 @@
        common/trace3d/trace3h(100),trace3t(maxcell1),tif,kt3h,kt3t,fid
        common/t3dfld/fldctr(15),zend(15),T3D
        logical T3D,xiset
-       character*128 trace3h,trace3t,tif,tifa,tifb
+       character trace3h*128,trace3t*128,tif*128,tifa*128,tifb*128
 !********************************************
        COMMON/ELQ/inisk
        INTEGER inisk
@@ -165,8 +165,9 @@
      *          'QUAELEC','QUAFK','CAVNUM','EDFLEC','EMITL',
      *          'RFKICK','FIRORD','DCBEAM','T3D'/
        integer narg,i
-       character*80 inarg,myarg(10),myfile,wfile,infiln,shortl
-       character*10 plane
+       character inarg*80,myarg(10)*80,myfile*80,wfile*80,infiln*80,
+     *           shortl*80
+       character plane*10
        logical g77,gfortran
 ! if mg=.true., use MINGW on windows, which has a different result for
 ! ctime function than standard gfortran
@@ -4395,7 +4396,7 @@
        common/posc/xpsc
        common/cgtof/charm(20),cgtdv(20),nbch(20),netac
        common/drfq/p(9)
-       character*1 cr
+       character cr*1
        COMMON/AZLIST/ICONT,IPRIN
        common/trfq/icour,ncell
        logical iesp,ichaes,shift,iemgrw,iflag
@@ -12915,7 +12916,7 @@
 ! *****     PHRFS(rad):phase RF
 ! *****       common/parmrf/DWRFS,SPHRFS,PHRFS,ngdrf
        logical iesp,irstay,iavp,ispcel,iemgrw
-       CHARACTER*1 cr
+       character cr*1
 !         SHIFT =TRUE: cog and synchronous particle are independent
 !         SHIFT =FALSE: cog and synchronous particle are coinciding
        LOGICAL SHIFT,CHASIT,ITVOL,IMAMIN,DAVE,ICHAES
@@ -14424,7 +14425,7 @@
        common/tofev/ttvols
        common/fcont/ifcont
        logical ifcont
-       character*1 cr
+       character cr*1
        dimension vecx(1)
        LOGICAL chasit,itvol,imamin,shift
 !      ENVELOPE
@@ -14786,7 +14787,7 @@
      X               SPRFP(3000),SPRNG(3000),IPRF
        COMMON/DAVCOM/dav1(maxcell1,40),davtot,iitem(maxcell1),idav
        COMMON/COMPT/NRRES,NRTRE,NRBUNC,NRDBUN
-       character*1 cr
+       character cr*1
        logical iesp,ichaes
 ! print out on terminal of transport element # on one and the same line
        NRTRE=NRTRE+1
@@ -16513,7 +16514,7 @@
 ! ****       common/parmrf/DWRFS,SPHRFS,PHRFS,ngdrf
        logical iesp,ichaes,irstay,iavp,ispcel,ifield,iemgrw
        LOGICAL SHIFT,CHASIT,ITVOL,IMAMIN,DAVE
-       CHARACTER*1 cr
+       character cr*1
 !************************************************************
 !    XESLN : NEGATIVE LENGHT OF THE DRIFT FOLLOWING THE GAP
 !    IF XESLN N.E.0 THEN THE CHARGE SPACE EFFECT IMPLIES THE
@@ -20467,7 +20468,7 @@
        common/cgtof/charm(20),cgtdv(20),nbch(20),netac
        COMMON/QSEX/L,KQ2,KS2
        real(8) L,KQ2,KS2
-       character*1 cr
+       character cr*1
        dimension trans(2)
        ilost=0
        write(16,*) ' ******SEXTUPOLE*********'
@@ -20667,7 +20668,7 @@
        logical itvol,imamin
        real(8) L,KQ2,KS2
        dimension trans(1)
-       character*1 cr
+       character cr*1
 ! print out on terminal of transport element # on one and the same line
        NRTRE=NRTRE+1
        cr=char(13)
@@ -20875,7 +20876,7 @@
        common/cgtof/charm(20),cgtdv(20),nbch(20),netac
        COMMON/QSEX/L,KQ2,KS2
        real(8) L,KQ2,KS2
-       character*1 cr
+       character cr*1
 ! print out on terminal of transport element # on one and the same line
        NRTRE=NRTRE+1
        cr=char(13)
@@ -21329,7 +21330,7 @@
        COMMON /BLOC11/ R(6,6), T(6,6,6)
        dimension rs(6,6),rcul(6,6)
        logical iesp,ichaes,shift,ialin,iemgrw
-       character*1 cr
+       character cr*1
 !    print out on terminal of transport element # on one and the same line
        NRTRE=NRTRE+1
        cr=char(13)
@@ -21554,7 +21555,7 @@
        logical itvol,imamin
 !       dimension rs(6,6),rcul(6,6)
        logical iesp,ichaes,shift,ialin,iemgrw
-       character*1 cr
+       character cr*1
        COMMON/SOLE/L,KL,KO
        real(8) L,KL,KO
 ! print out on terminal of transport element # on one and the same line
@@ -21839,7 +21840,7 @@
        COMMON/SC3/BEAMC,SCDIST,SCE10,CPLM,ECT,APL,ICHAES,ISCSP
        LOGICAL ICHAES
        logical iesp,shift,ialin,iemgrw
-       character*1 cr
+       character cr*1
        COMMON/SLQ/L,KSO,KQO
        real(8) L,KSO,KQO
 ! print out on terminal of transport element # on one and the same line
@@ -22702,7 +22703,7 @@
        common/dcspa/iesp
        common/spl/xspl(4000),yspl(4000),s(5000),p(5000),q(5000)
        dimension gam(3000),xe(3000),xpe(3000),ye(3000),ype(3000)
-       character*1 cr
+       character cr*1
        logical flgsc,iesp,ichaes,iemgrw
 !    print out on terminal of transport element # on one and the same line
        nrres=nrres+1
@@ -24181,7 +24182,7 @@
 !       logical irfqp,evens,evenr,evenf
        logical irfqp,evens,evenr
        dimension rfqdmp(500,10)
-       character*1 cr
+       character cr*1
 ! allow for print out on terminal of cell# on one and the same line
        cr=char(13)
        irfqp=.true.
@@ -25136,7 +25137,7 @@
         dimension pc(20),npcent(20)
         common/cgtof/charm(20),cgtdv(20),nbch(20),netac
 !                       dimension charge(6),pcent(6),charm(6),pc(6),eoff(6)
-        character*1 cr
+        character cr*1
         dimension xeast(21),yeast(21),vecx(1)
 ! --- Eastham curve (reduced half angle over reduced thickness)
 ! ---- xeast: reduced thickness
@@ -25431,7 +25432,7 @@
        logical itvol,imamin
        real(8) L,KQ2,KS2
        dimension trans(1)
-       character*1 cr
+       character cr*1
        ilost=0
 !      statistics
        IF(IPRF.EQ.1) CALL STAPL(davtot*10.)
@@ -25643,7 +25644,7 @@
        logical itvol,imamin,ityq
        real(8) L,KQ2,KS2
        dimension trans(1)
-       character*1 cr
+       character cr*1
        ilost=0
        if(ityqu.eq.0) ityq=.true.
        if(ityqu.ne.0) ityq=.false.
@@ -25944,7 +25945,7 @@
 !*ET*2015*Jul*E
        logical iesp,ichaes,irstay,iavp,ispcel,ifield,iemgrw
        LOGICAL SHIFT,CHASIT,ITVOL,IMAMIN,DAVE,JELEC
-       CHARACTER*1 cr
+       character cr*1
 !************************************************************
 !    XESLN : NEGATIVE LENGHT OF THE DRIFT FOLLOWING THE GAP
 !    IF XESLN N.E.0 THEN THE CHARGE SPACE EFFECT IMPLIES THE
@@ -27526,7 +27527,7 @@
        common/isector/nsector,nsprint
 ! --------------------------------------
        logical itvol,imamin,ichaes
-       character*1 cr
+       character cr*1
        logical ialin
        dimension xmoy(20),ymoy(20),rmoy(20),rig(20),ncs(20)
        dimension xpmoy(20),ypmoy(20)
@@ -28111,7 +28112,7 @@
        LOGICAL ISEOR,sseor
        common/mcs/imcs,ncstat,cstat(20)
        logical itvol,imamin,ichaes
-       character*1 cr
+       character cr*1
        logical ialin
        dimension xmoy(20),ymoy(20),rmoy(20),rig(20),ncs(20)
        dimension xpmoy(20),ypmoy(20),avbt(20),charge(20),alp(20)
@@ -29664,7 +29665,7 @@
        COMMON/COMPT/NRRES,NRTRE,NRBUNC,NRDBUN
        COMMON/SHIF/DTIPH,SHIFT
        common/tofev/ttvols
-       character*1 cr
+       character cr*1
 !       dimension vecx(1)
        LOGICAL chasit,itvol,imamin,shift
 !      ENVELOPE
