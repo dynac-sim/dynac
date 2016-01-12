@@ -1670,7 +1670,7 @@
        SUBROUTINE mytime(iitime)
        implicit real(8) (a-h,o-z)
        character iitime*30
-       integer*8 inttim
+       integer(8) inttim
        inttim=time8()
        iitime=ctime(inttim)
        return
