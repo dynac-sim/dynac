@@ -17,6 +17,7 @@ else()
 endif()
 
 # Default compiler flags..
+set(CMAKE_Fortran_FLAGS "-fno-automatic ${CMAKE_Fortran_FLAGS}")
 set(CMAKE_Fortran_FLAGS_DEBUG "-O0 -g -pedantic -fcheck=bounds -Wall -Wextra -ffpe-trap=invalid,overflow,underflow -fbacktrace")
 
 # Build type for Coverage checks:
