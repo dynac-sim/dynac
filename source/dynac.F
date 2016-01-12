@@ -1,5 +1,5 @@
        BLOCK DATA
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
        COMMON/gaus13/H(13),T(13)
        common/gaus17/H1(17),T1(17)
@@ -58,7 +58,7 @@
 !! - VALERO Saby
 !< *******************************************************************
        PROGRAM dynac
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter(ncards=64,iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/ITVOLE/ITVOL,IMAMIN
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
@@ -79,7 +79,7 @@
        COMMON/SHIF/DTIPH,SHIFT
        COMMON/TILT/TIPHA,TIX,TIY,SHIFW,SHIFP
        COMMON /BLOC21/ BE, APB(2), LAYL, LAYX, RABT
-       real*8 LAYL, LAYX
+       real(8) LAYL, LAYX
        COMMON/PORO/IROT1,IROT2
        LOGICAL IROT1,IROT2
        common/etchas/fractx,fracty,fractl
@@ -1667,7 +1667,7 @@
 !! get system time and convert it to an ascii string
 !< *******************************************************************
        SUBROUTINE mytime(iitime)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        character iitime*30
        integer*8 inttim
        inttim=time8()
@@ -1693,7 +1693,7 @@
 !! - icor (<>) 0 => imamin = true
 !< *******************************************************************
        SUBROUTINE rmami
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter (maxcell1=3000)
        common/tapes/in,ifile,meta
        common/dyn/tref,vref
@@ -1730,7 +1730,7 @@
 !! 2015 now obsolete (?) see subroutine aliner
 !< *******************************************************************
 !       SUBROUTINE kick
-!       implicit real*8 (a-h,o-z)
+!       implicit real(8) (a-h,o-z)
 !C     ..................................
 !C     ALIGNMENT DEFAULTS :
 !C       HORIZONTAL : XL(cm)
@@ -1759,7 +1759,7 @@
 !! the stack.  The number of "good" particles (ngood) is passed back.
 !< *******************************************************************
        SUBROUTINE shuffle
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        common/faisc/f(10,iptsz),imax,ngood
        common/mcs/imcs,ncstat,cstat(20)
@@ -1819,7 +1819,7 @@
 !! called by RESTAY and ETGAP  dynamics computations
 !< *******************************************************************
        FUNCTION xitl0(GAMI,GAMS,BETR,SAPHI,QQC)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
        COMMON/TTFC/TK,T1K,T2K,SK,S1K,S2K,FH
        COMMON/BEDYCP/PHSLIP,EQVL,ASDL,PEQVL,PAVPH,XKP1,XKP2,
@@ -1879,7 +1879,7 @@
 !! PHASE JUMP
 !< *******************************************************************
        FUNCTION xitl2(GAMI,GAMS,BETR,SAPHI,QQC)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
        COMMON/TTFC/TK,T1K,T2K,SK,S1K,S2K,FH
        COMMON/BEDYCP/PHSLIP,EQVL,ASDL,PEQVL,PAVPH,XKP1,XKP2,
@@ -1927,7 +1927,7 @@
 !! PHASE AND ENERGY AT THE MIDDLE OF THE GAP
 !< *******************************************************************
        FUNCTION xitl3(GAMI,GAMS,BETR,NIT,SAPHI,QQC)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
        COMMON/TTFC/TK,T1K,T2K,SK,S1K,S2K,FH
        COMMON/BEDYCP/PHSLIP,EQVL,ASDL,PEQVL,PAVPH,XKP1,XKP2,
@@ -1978,7 +1978,7 @@
 !! ZB = Z+ASDL
 !< *******************************************************************
        SUBROUTINE xtypl2(GAMI,SAPHI,QSC,DCG)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
        COMMON/TTFC/TK,T1K,T2K,SK,S1K,S2K,FH
        COMMON/BEDYCP/PHSLIP,EQVL,ASDL,PEQVL,PAVPH,XKP1,XKP2,
@@ -2168,7 +2168,7 @@
 !! zb = z+ASDL
 !< *******************************************************************
        SUBROUTINE xtyplp1(GAMI,SAPHI,QSC,DCG)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
        COMMON/JACOB/GAKS,GAPS
        COMMON/TTFC/TK,T1K,T2K,SK,S1K,S2K,FH
@@ -2316,7 +2316,7 @@
 !! zb = z+ASDL
 !< *******************************************************************
        SUBROUTINE xtylpk(GAMI,SAPHI,QSC,DCG)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
        COMMON/TTFC/TK,T1K,T2K,SK,S1K,S2K,FH
        COMMON/BEDYCP/PHSLIP,EQVL,ASDL,PEQVL,PAVPH,XKP1,XKP2,
@@ -2428,7 +2428,7 @@
 !! INTEGRALS of g(G)*Ez(**2) *z**n   n=0,1,2
 !< *******************************************************************
        SUBROUTINE xtypj(GAMI,SAPHI,QSC,DCG)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
        COMMON/TTFC/TK,T1K,T2K,SK,S1K,S2K,FH
        COMMON/BEDYCP/PHSLIP,EQVL,ASDL,PEQVL,PAVPH,XKP1,XKP2,
@@ -2561,7 +2561,7 @@
 !! INTEGRALS of g(G)*z**n  with n=0,1,2
 !< *******************************************************************
        SUBROUTINE xtypm(GAMI,SAPHI,QSC,DCG)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
        COMMON/TTFC/TK,T1K,T2K,SK,S1K,S2K,FH
        COMMON/BEDYCP/PHSLIP,EQVL,ASDL,PEQVL,PAVPH,XKP1,XKP2,
@@ -2666,7 +2666,7 @@
 !! CURRENT GAMMA VALUE (the POSITION IS GIVEN BY IST)
 !< *******************************************************************
        FUNCTION gamci(PHI,PCRESI,GAMI,IST,QSC)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
        COMMON/TTFC/TK,T1K,T2K,SK,S1K,S2K,FH
        COMMON/BEDYCP/PHSLIP,EQVL,ASDL,PEQVL,PAVPH,XKP1,XKP2,
@@ -2696,7 +2696,7 @@
 !! SCHERM) Gauss quadrature
 !< *******************************************************************
        SUBROUTINE intga(npt,ireca)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
        COMMON/TTFC/TK,T1K,T2K,SK,S1K,S2K,FH
@@ -2807,7 +2807,7 @@
 !! computation
 !< *******************************************************************
        SUBROUTINE sizcor(ect,xrms,yrms,zrms,imaxd)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/part/xc(iptsz),yc(iptsz),zc(iptsz)
        COMMON/CGRMS/xsum,ysum,zsum
@@ -2854,7 +2854,7 @@
 !! partial R.M.S. (called by SCHERM)
 !< *******************************************************************
        SUBROUTINE sizrms(imaxd,xrms,yrms,zrms,zmin)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/part/xc(iptsz),yc(iptsz),zc(iptsz)
        COMMON/CGRMS/xsum,ysum,zsum
@@ -2896,7 +2896,7 @@
 !! specific function called by SCHERM
 !< *******************************************************************
        FUNCTION snzt(CC,DD)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        COMMON/DEGHERM/NMAZ,NMAZR,NMAXY
        COMMON/SIZT/XRMS,YRMS,ZRMS
        COMMON/SIZP/XRMS1,YRMS1,ZRMS1,XRMS2,YRMS2,ZRMS2,IMAXD
@@ -2916,7 +2916,7 @@
 !! specific function called by SCHERM
 !< *******************************************************************
        FUNCTION snzd(cc,dd)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        COMMON/DEGHERM/NMAZ,NMAZR,NMAXY
        COMMON/SIZT/XRMS,YRMS,ZRMS
        COMMON/SIZP/XRMS1,YRMS1,ZRMS1,XRMS2,YRMS2,ZRMS2,IMAXD
@@ -2937,7 +2937,7 @@
 !! specific function called by SCHERM
 !< *******************************************************************
        FUNCTION vaprz(CC,DD)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        COMMON/DEGHERM/NMAZ,NMAZR,NMAXY
        COMMON/SIZT/XRMS,YRMS,ZRMS
        COMMON/SIZP/XRMS1,YRMS1,ZRMS1,XRMS2,YRMS2,ZRMS2,IMAXD
@@ -2961,7 +2961,7 @@
 !! specific function called by SCHERM
 !< *******************************************************************
        FUNCTION prinz(CC,DD,KAP,ZRMSS1)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        COMMON/DEGHERM/NMAZ,NMAZR,NMAXY
        COMMON/SIZT/XRMS,YRMS,ZRMS
        COMMON/SIZP/XRMS1,YRMS1,ZRMS1,XRMS2,YRMS2,ZRMS2,IMAXD
@@ -2985,7 +2985,7 @@
 !! Look for the top of the partial distributions
 !< *******************************************************************
        SUBROUTINE rchsom(ZI,ZF,NMAZ)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        XPZ=ABS((ZF-ZI))/400.
 1      CONTINUE
        ZTEST=ABS(ZF-ZI)
@@ -3006,7 +3006,7 @@
 !! Look for the top of the partial distributions
 !< *******************************************************************
        SUBROUTINE rchsor(AA,BB,CC,DD,ZS)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        ZI=AA
        ZF=CC
        XPZ=ABS((ZF-ZI))/400.
@@ -3031,7 +3031,7 @@
 !! Hermite polynomials
 !< *******************************************************************
        FUNCTION herm(M,X)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        DIMENSION HE(30)
        IF(M.EQ.0) THEN
          HERM=1.
@@ -3056,7 +3056,7 @@
 !! Look for the distribution in z position
 !< *******************************************************************
        FUNCTION densz(M,Z,IRECA)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        COMMON/HERMT/AFXT(22),AFYT(22),AFZT(22)
        COMMON/HERMD/AFXM(20),AFYM(20),AFZM(20)
        COMMON/HERMR/AFXR(20),AFYR(20),AFZR(20)
@@ -3077,7 +3077,7 @@
 !! specific function called by SCHERM
 !< *******************************************************************
        FUNCTION codsy(BB,CC,DD,EE,KAP)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        COMMON/DEGHERM/NMAZ,NMAZR,NMAXY
        COMMON/SIZT/XRMS,YRMS,ZRMS
        COMMON/SIZP/XRMS1,YRMS1,ZRMS1,XRMS2,YRMS2,ZRMS2,IMAXD
@@ -3115,7 +3115,7 @@
 !! specific function called by SCHERM
 !< *******************************************************************
        FUNCTION codif(BB,CC,DD,EE,EE1,KAP)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        COMMON/DEGHERM/NMAZ,NMAZR,NMAXY
        COMMON/SIZT/XRMS,YRMS,ZRMS
        COMMON/SIZP/XRMS1,YRMS1,ZRMS1,XRMS2,YRMS2,ZRMS2,IMAXD
@@ -3152,7 +3152,7 @@
 !! specific function called by SCHERM
 !< *******************************************************************
        FUNCTION varia(BB,CC,DD,EE)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        COMMON/DEGHERM/NMAZ,NMAZR,NMAXY
        COMMON/SIZT/XRMS,YRMS,ZRMS
        COMMON/SIZP/XRMS1,YRMS1,ZRMS1,XRMS2,YRMS2,ZRMS2,IMAXD
@@ -3190,7 +3190,7 @@
 !! specific function called by SCHERM
 !< *******************************************************************
        FUNCTION variz(BB,CC,DD,EE,EE1)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        COMMON/DEGHERM/NMAZ,NMAZR,NMAXY
        COMMON/SIZT/XRMS,YRMS,ZRMS
        COMMON/SIZP/XRMS1,YRMS1,ZRMS1,XRMS2,YRMS2,ZRMS2,IMAXD
@@ -3226,7 +3226,7 @@
 !! specific function called by SCHERM
 !< *******************************************************************
        FUNCTION grz(AA,BB,CC,DD,EE)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        COMMON/DEGHERM/NMAZ,NMAZR,NMAXY
        COMMON/SIZT/XRMS,YRMS,ZRMS
        COMMON/SIZP/XRMS1,YRMS1,ZRMS1,XRMS2,YRMS2,ZRMS2,IMAXD
@@ -3251,7 +3251,7 @@
 !! Calculate the value (nt(z)-nm(z))
 !< *******************************************************************
        FUNCTION dendir(Z,AA,BB,CC,DD,EE)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        COMMON/DEGHERM/NMAZ,NMAZR,NMAXY
        DENDIR=0.
        FF=2.*EE-CC
@@ -3275,7 +3275,7 @@
 !! Calculate the value (nt(z)-nm(z))
 !< *******************************************************************
        FUNCTION dendif(Z,AA,BB,CC,DD)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        COMMON/DEGHERM/NMAZ,NMAZR,NMAXY
        DENDIF=0.
        IF(Z.LT.AA)DENDIF=0.
@@ -3293,7 +3293,7 @@
 !! Represents the distribution:(n(x)+n(y)+n(z))/3
 !< *******************************************************************
        FUNCTION denpd(XYZ,NMAXY,NMAZ)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        DENPD=(DENSX(NMAXY,XYZ,1)+DENSY(NMAXY,XYZ,1)+
      X        DENSZ(NMAZ,XYZ,2))/3.
        RETURN
@@ -3307,7 +3307,7 @@
 !!      IRECA=2 : for the third ellipse
 !< *******************************************************************
        FUNCTION drxyz(M,XYZ,IRECA)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        COMMON/HERMT/AFXT(22),AFYT(22),AFZT(22)
        COMMON/HERMD/AFXM(20),AFYM(20),AFZM(20)
        COMMON/HERMR/AFXR(20),AFYR(20),AFZR(20)
@@ -3373,7 +3373,7 @@
 !! Specific Hermite polynomials called by the function DRXYZ
 !< *******************************************************************
        FUNCTION hers(M,X)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        DIMENSION HE(30)
        IF(M.EQ.1) THEN
          HERS=1.
@@ -3399,7 +3399,7 @@
 !! Calculate the Hermite coefficients for :(n(x)+n(y)+n(z))/3.
 !< *******************************************************************
        FUNCTION copdr(XI,XF,KAP)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        COMMON/DEGHERM/NMAZ,NMAZR,NMAXY
        COMMON/gaus13/H(13),T(13)
        COPDR=0.
@@ -3418,7 +3418,7 @@
 !! Calculate the distribution :(n(x)+n(y)+n(z))/3. at the x position
 !< *******************************************************************
        FUNCTION densx(M,X,IRECA)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        COMMON/HERMT/AFXT(22),AFYT(22),AFZT(22)
        COMMON/HERMD/AFXM(20),AFYM(20),AFZM(20)
        COMMON/HERMR/AFXR(20),AFYR(20),AFZR(20)
@@ -3438,7 +3438,7 @@
 !! Calculate the distribution :(n(x)+n(y)+n(z))/3. at the y position
 !< *******************************************************************
        FUNCTION densy(M,Y,IRECA)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        COMMON/HERMT/AFXT(22),AFYT(22),AFZT(22)
        COMMON/HERMD/AFXM(20),AFYM(20),AFZM(20)
        COMMON/HERMR/AFXR(20),AFYR(20),AFZR(20)
@@ -3459,7 +3459,7 @@
 !! ellipse
 !< *******************************************************************
        FUNCTION denrs(XYZ)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        COMMON/DEGHERM/NMAZ,NMAZR,NMAXY
        SP1=(DENSX(NMAXY,XYZ,0)+DENSY(NMAXY,XYZ,0))/3.
        SP2=(DENSX(NMAXY,XYZ,1)+DENSY(NMAXY,XYZ,1))/3.
@@ -3472,7 +3472,7 @@
 !! Calculate the c.o.g in the x-direction for the third ellipse
 !< *******************************************************************
        FUNCTION scgx(XI,XF)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        COMMON/DEGHERM/NMAZ,NMAZR,NMAXY
        COMMON/gaus13/H(13),T(13)
        CGX=0.
@@ -3494,7 +3494,7 @@
 !! Calculate the c.o.g in the y-direction for the third ellipse
 !< *******************************************************************
        FUNCTION scgy(XI,XF)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        COMMON/DEGHERM/NMAZ,NMAZR,NMAXY
        COMMON/gaus13/H(13),T(13)
        CGY=0.
@@ -3516,7 +3516,7 @@
 !! Calculate the Hermite coefficients for the third ellipse
 !< *******************************************************************
        FUNCTION corxy(XI,XF,KAP,IK,XYRMS)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        COMMON/DEGHERM/NMAZ,NMAZR,NMAXY
        COMMON/gaus13/H(13),T(13)
         CORXY=0.
@@ -3541,7 +3541,7 @@
 !! bunch
 !< *******************************************************************
        FUNCTION varxy(XI,XF,IK)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        COMMON/gaus13/H(13),T(13)
        COMMON/DEGHERM/NMAZ,NMAZR,NMAXY
         VARXY=0.
@@ -3565,7 +3565,7 @@
 !! Calculate the rms sizes of th residual part of the bunch
 !< *******************************************************************
        FUNCTION varzr(EE,CC,NMAZR)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        VARZR=0.
        SMT=DENSZ(NMAZR,0.0d0,3)/2.
        if(smt.gt.0.) then
@@ -3603,7 +3603,7 @@
 !!      cog(7) : yp(mrd)
 !< *******************************************************************
        SUBROUTINE cdg(IDCH)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        common/faisc/f(10,iptsz),imax,ngood
        common/etcha1/dav2(maxcell1,33),ichas(iptsz),chasit
@@ -3680,7 +3680,7 @@
 !!      exten(17): Sum( (dp/p)*(dp/p) )  compared to p of COG
 !< *******************************************************************
        SUBROUTINE ext2d(IDCH)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
        COMMON/TTFC/TK,T1K,T2K,SK,S1K,S2K,FH
@@ -3822,7 +3822,7 @@
 !!      exten(17): Sum( (dp/p)*(dp/p) )  compared to p of COG
 !< *******************************************************************
        SUBROUTINE ext2(IDCH)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
        COMMON/TTFC/TK,T1K,T2K,SK,S1K,S2K,FH
@@ -3940,7 +3940,7 @@
 !!    A    : ROTATION ABOUT THE vertical AXIS         (DEG)
 !< *******************************************************************
        SUBROUTINE chrefe
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
        common/faisc/f(10,iptsz),imax,ngood
@@ -3983,7 +3983,7 @@
 !!     ix           : RANDOM NUMBER GENERATOR
 !< *******************************************************************
        SUBROUTINE etac
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
        common/faisc/f(10,iptsz),imax,ngood
@@ -4132,7 +4132,7 @@
 !! iterative method
 !< *******************************************************************
        SUBROUTINE crest(betr,eqvl,xpos,bkcr,ffield)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        COMMON/TTFC/TK,T1K,T2K,SK,S1K,S2K,FH
        COMMON/FUNC/A(200),YLG,ATTE,NCEL,NHARM
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
@@ -4201,7 +4201,7 @@
 !! if opt.lt.0, use 2 x 2 point array regardless of rat
 !< *******************************************************************
        SUBROUTINE gaus(r1,r2,z1,z2,opt,er,ez)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        dimension r(6),z(6),wr(6),wz(6),xx(3,3),wx(3,3)
        data ((xx(i,j),i=1,3),j=1,3)/.2113248654,0.0,0.0,
@@ -4264,7 +4264,7 @@
 !! er=(pi/2)*r/d**3.     ez=(pi/2)*z/d**3.
 !< *******************************************************************
        SUBROUTINE flds(r,z,er,ez)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        common/fldcom/ rp, zp,pl,opt,nip
        r1=rp
@@ -4306,7 +4306,7 @@
 !! evaluate elliptic integrals  ( called by SCHEFF)
 !< *******************************************************************
        SUBROUTINE eint(a,ee,ek)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        b=1.0-a
        c=log(b)
@@ -4320,7 +4320,7 @@
 !! Skew the right ellipse generated by GEBEAM in the phase plane (x,z)
 !< *******************************************************************
        SUBROUTINE tiltz(tilta)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
        common/faisc/f(10,iptsz),imax,ngood
@@ -4374,7 +4374,7 @@
 !!     3, FRINGE FIELD, ACCELERATION
 !< *******************************************************************
        SUBROUTINE rfq_o3
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/RIGID/BORO
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
@@ -4797,7 +4797,7 @@
 !!   ireca=1 : for the second ellipse
 !< *******************************************************************
        SUBROUTINE tdens(m,ireca,iacc)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        COMMON/HERMT/AFXT(22),AFYT(22),AFZT(22)
        COMMON/HERMD/AFXM(20),AFYM(20),AFZM(20)
        COMMON/HERMR/AFXR(20),AFYR(20),AFZR(20)
@@ -4840,7 +4840,7 @@
 !!          explanation.
 !< *******************************************************************
        SUBROUTINE schfdyn
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/tapes/in,ifile,meta
        common/rcshef/sce(20)
        read(in,*) iread
@@ -4869,7 +4869,7 @@
 !! Gauss method
 !< *******************************************************************
        SUBROUTINE intg3(npt)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
        COMMON/TTFC/TK,T1K,T2K,SK,S1K,S2K,FH
@@ -4948,7 +4948,7 @@
 !! PRINT OF PARTICLE COORDINATES
 !< *******************************************************************
        SUBROUTINE compress(pib)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter(iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
        common/faisc/f(10,iptsz),imax,ngood
@@ -4998,7 +4998,7 @@
 !! PRINT OF PARTICLE COORDINATES
 !< *******************************************************************
        SUBROUTINE prbeam(iflg,wfile)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter(iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
        common/faisc/f(10,iptsz),imax,ngood
@@ -5150,7 +5150,7 @@
 !! GAUSS method
 !< *******************************************************************
        SUBROUTINE gausse
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/gauss1/absg(40),wg(40),igaus
        common/randu/ck(15),kmax
        dimension ui(40),u9(9),u10(10),u12(12)
@@ -5206,7 +5206,7 @@
 !! coefficients A(l,m,n)
 !< *******************************************************************
        SUBROUTINE table(lbmax,mbmax,nbmax)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/gauss1/absg(40),wg(40),igaus
        common/circu/co(40,50),sn(40,50),blam(40,100)
        common/expmod/ragp(40,100),ragm1(40,40)
@@ -5279,7 +5279,7 @@
 !! Factorial function called by HERSC
 !< *******************************************************************
        FUNCTION fpar(i,j)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/factor/fpir(40,40),fect(30)
        ii=i+1
        jj=j+1
@@ -5292,7 +5292,7 @@
 !! i*(i-1)*(i-2)*...(i-j+1)/(1.2....j)
 !< *******************************************************************
        FUNCTION fper(i,j)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        faci=1.
        facj=1.
        fper=1.
@@ -5314,7 +5314,7 @@
 !! called by HERSC
 !< *******************************************************************
        FUNCTION hermint(s,ihd)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        dimension he(100)
        hermint=0.
        if(ihd.eq.0) then
@@ -5339,7 +5339,7 @@
 !! FACTORIAL of M
 !< *******************************************************************
        FUNCTION fact(m)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        FACT=1.
        IF(M.EQ.0) RETURN
        DO  K=1,M
@@ -5352,7 +5352,7 @@
 !! Calculate of (-1)**m *(2m-1)!!
 !< *******************************************************************
        FUNCTION factd(m)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        dimension he(100)
        factd=1.
        if(m.eq.0) factd=1.
@@ -5377,7 +5377,7 @@
 !! coefficients
 !< *******************************************************************
        SUBROUTINE bhdist
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/coef/a(30,30,30),xa,xb,xc
        common/ind/lmax,mmax,nmax
        common/indin/lmaxi,mmaxi,nmaxxi
@@ -5410,7 +5410,7 @@
 !!     isucc=3: order of succesion z-->x-->y
 !< *******************************************************************
        SUBROUTINE trms(isucc)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/consta/vl,pi,xmat,rpel,qst
        common/coef/a(30,30,30),xa,xb,xc
        common/ind/lmax,mmax,nmax
@@ -5485,7 +5485,7 @@
 !! storage of the variables depending only of the coordinate s3
 !< *******************************************************************
        SUBROUTINE uvrms
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
        common/rms/rms(3,50),s1,s2,s3
        common/gauss1/absg(40),wg(40),igaus
@@ -5591,7 +5591,7 @@
 !! analytical equations
 !< *******************************************************************
        SUBROUTINE fielde(lc,mc,nc,isucc)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/rms/rms(3,50),s1,s2,s3
        common/partcl/x,y,z
        common/const/pi2,sqpi,pwtpi,sqpi2,sq2pi
@@ -6360,7 +6360,7 @@
 !! E(2it3,2it2,2it1)   table 77-a-1
 !< *******************************************************************
        FUNCTION eppp(it1,it2,it3)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/rms/rms(3,50),s1,s2,s3
        common/partcl/x,y,z
        common/const/pi2,sqpi,pwtpi,sqpi2,sq2pi
@@ -6409,7 +6409,7 @@
 !! E(2it3,2it2+1,2it1)  table 77-a-2
 !< *******************************************************************
        FUNCTION epip(it1,it2,it3)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/rms/rms(3,50),s1,s2,s3
        common/partcl/x,y,z
        common/const/pi2,sqpi,pwtpi,sqpi2,sq2pi
@@ -6459,7 +6459,7 @@
 !! E(2it3,2it2,2it1+1) table 77-a-2
 !< *******************************************************************
        FUNCTION eppi(it1,it2,it3)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/rms/rms(3,50),s1,s2,s3
        common/partcl/x,y,z
        common/const/pi2,sqpi,pwtpi,sqpi2,sq2pi
@@ -6509,7 +6509,7 @@
 !! E(2*it3,2*it2+1,2*it1+1) table 77-a-1
 !< *******************************************************************
        FUNCTION epii(it1,it2,it3)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/rms/rms(3,50),s1,s2,s3
        common/partcl/x,y,z
        common/const/pi2,sqpi,pwtpi,sqpi2,sq2pi
@@ -6559,7 +6559,7 @@
 !! E(2it3+1,2it2,2it1) table 77-b-2
 !< *******************************************************************
        FUNCTION eipp(it1,it2,it3)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/rms/rms(3,50),s1,s2,s3
        common/partcl/x,y,z
        common/const/pi2,sqpi,pwtpi,sqpi2,sq2pi
@@ -6609,7 +6609,7 @@
 !! E(2it3+1,2it2+1,2it1)  table 77-b-1
 !< *******************************************************************
        FUNCTION eiip(it1,it2,it3)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/rms/rms(3,50),s1,s2,s3
        common/partcl/x,y,z
        common/const/pi2,sqpi,pwtpi,sqpi2,sq2pi
@@ -6659,7 +6659,7 @@
 !! E(2*it3+1,2*it2,2*it1+1)  table 77-b-1
 !< *******************************************************************
        FUNCTION eipi(it1,it2,it3)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/rms/rms(3,50),s1,s2,s3
        common/partcl/x,y,z
        common/const/pi2,sqpi,pwtpi,sqpi2,sq2pi
@@ -6709,7 +6709,7 @@
 !! E(2*it3+1,2*it2+1,2*it1+1) table 77-b-2
 !< *******************************************************************
        FUNCTION eiii(it1,it2,it3)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/rms/rms(3,50),s1,s2,s3
        common/partcl/x,y,z
        common/const/pi2,sqpi,pwtpi,sqpi2,sq2pi
@@ -6760,7 +6760,7 @@
 !! with T(2t3+1,2t2,2t1,j1)    table 41
 !< *******************************************************************
        FUNCTION tipp(it1,it2,it3)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/randu/ck(15),kmax
        common/gauss1/absg(40),wg(40),igaus
        common/circu/co(40,50),sn(40,50),blam(40,100)
@@ -6845,7 +6845,7 @@
 !! with  T(2t3+1,2t2+1,2t1,j1)   table 41
 !< *******************************************************************
        FUNCTION tiip(it1,it2,it3)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/randu/ck(15),kmax
        common/gauss1/absg(40),wg(40),igaus
        common/circu/co(40,50),sn(40,50),blam(40,100)
@@ -6929,7 +6929,7 @@
 !! with T(2t3+1,2t2,2t1+1,j1)   in table 41
 !< *******************************************************************
        FUNCTION tipi(it1,it2,it3)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/randu/ck(15),kmax
        common/gauss1/absg(40),wg(40),igaus
        common/circu/co(40,50),sn(40,50),blam(40,100)
@@ -7014,7 +7014,7 @@
 !! with T(2t3+1,2t2+1,2t1+1,j1)   in table 41
 !< *******************************************************************
        FUNCTION tiii(it1,it2,it3)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/randu/ck(15),kmax
        common/gauss1/absg(40),wg(40),igaus
        common/circu/co(40,50),sn(40,50),blam(40,100)
@@ -7099,7 +7099,7 @@
 !! with  T(2t3,2t2,2t1,j1)  in table 41
 !< *******************************************************************
        FUNCTION tppp(it1,it2,it3)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/randu/ck(15),kmax
        common/gauss1/absg(40),wg(40),igaus
        common/circu/co(40,50),sn(40,50),blam(40,100)
@@ -7190,7 +7190,7 @@
 !! with T(2t3,2t2,2t1+1,j1)       in table 41
 !< *******************************************************************
        FUNCTION tpip(it1,it2,it3)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/randu/ck(15),kmax
        common/gauss1/absg(40),wg(40),igaus
        common/circu/co(40,50),sn(40,50),blam(40,100)
@@ -7281,7 +7281,7 @@
 !! with T(2t3,2t2,2t1+1,j1)   in table 41
 !< *******************************************************************
        FUNCTION tppi(it1,it2,it3)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/randu/ck(15),kmax
        common/gauss1/absg(40),wg(40),igaus
        common/circu/co(40,50),sn(40,50),blam(40,100)
@@ -7372,7 +7372,7 @@
 !! with T(2t3,2t2+1,2t1+1,j1)   in table 41
 !< *******************************************************************
        FUNCTION tpii(it1,it2,it3)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/randu/ck(15),kmax
        common/gauss1/absg(40),wg(40),igaus
        common/circu/co(40,50),sn(40,50),blam(40,100)
@@ -7463,7 +7463,7 @@
 !! with S(2t3+1,2t2,2t1,j1)  in table 70-b
 !< *******************************************************************
        FUNCTION sipp(it1,it2,it3)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/consta/vl,pi,xmat,rpel,qst
        common/randu/ck(15),kmax
        common/gauss1/absg(40),wg(40),igaus
@@ -7531,7 +7531,7 @@
 !! with S(2t3+1,2t2+1,2t1,j1) in table 70-b
 !< *******************************************************************
        FUNCTION siip(it1,it2,it3)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/consta/vl,pi,xmat,rpel,qst
        common/randu/ck(15),kmax
        common/gauss1/absg(40),wg(40),igaus
@@ -7596,7 +7596,7 @@
 !! with S(2t3+1,2t2,2t1+1,j1) given in table 70-b
 !< *******************************************************************
        FUNCTION sipi(it1,it2,it3)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/consta/vl,pi,xmat,rpel,qst
        common/randu/ck(15),kmax
        common/gauss1/absg(40),wg(40),igaus
@@ -7661,7 +7661,7 @@
 !! with S(2t3+1,2t2+1,2t1+1,j1)   in table 70-b
 !< *******************************************************************
        FUNCTION siii(it1,it2,it3)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/consta/vl,pi,xmat,rpel,qst
        common/randu/ck(15),kmax
        common/gauss1/absg(40),wg(40),igaus
@@ -7726,7 +7726,7 @@
 !! with S(2t3,2t2,2t1,j1) given in table 70-a
 !< *******************************************************************
        FUNCTION sppp(it1,it2,it3)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/consta/vl,pi,xmat,rpel,qst
        common/randu/ck(15),kmax
        common/gauss1/absg(40),wg(40),igaus
@@ -7790,7 +7790,7 @@
 !! with S(2t3,2t2,2t1+1,j1) given in table 70-a
 !< *******************************************************************
        FUNCTION spip(it1,it2,it3)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/consta/vl,pi,xmat,rpel,qst
        common/randu/ck(15),kmax
        common/gauss1/absg(40),wg(40),igaus
@@ -7854,7 +7854,7 @@
 !! with S(2t3,2t2,2t1+1,j1) given in table 70-a
 !< *******************************************************************
        FUNCTION sppi(it1,it2,it3)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/consta/vl,pi,xmat,rpel,qst
        common/randu/ck(15),kmax
        common/gauss1/absg(40),wg(40),igaus
@@ -7918,7 +7918,7 @@
 !! with S(2t3,2t2+1,2t1+1,j1) given in table 70-a
 !< *******************************************************************
        FUNCTION spii(it1,it2,it3)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/consta/vl,pi,xmat,rpel,qst
        common/randu/ck(15),kmax
        common/gauss1/absg(40),wg(40),igaus
@@ -7989,7 +7989,7 @@
 !! in E(2t3,2t2,2t1)           in table 77-a-1
 !< *******************************************************************
        FUNCTION sgppp(it1,it2,it3)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/rms/rms(3,50),s1,s2,s3
        common/herfun/hs1(60),hs2(60),hs3(60)
        common/cars3/exs3,exs2,exs1,as3,sgns3,s32,pwas3,pw3as3
@@ -8041,7 +8041,7 @@
 !! is in E(2t3,2t2+1,2t1) given in table 77-a-2
 !< *******************************************************************
        FUNCTION sgpip(it1,it2,it3)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/rms/rms(3,50),s1,s2,s3
        common/herfun/hs1(60),hs2(60),hs3(60)
        common/cars3/exs3,exs2,exs1,as3,sgns3,s32,pwas3,pw3as3
@@ -8094,7 +8094,7 @@
 !! is in E(2t3,2t2,2t1+1)        in table 77-a-2
 !< *******************************************************************
        FUNCTION sgppi(it1,it2,it3)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/rms/rms(3,50),s1,s2,s3
        common/herfun/hs1(60),hs2(60),hs3(60)
        common/cars3/exs3,exs2,exs1,as3,sgns3,s32,pwas3,pw3as3
@@ -8146,7 +8146,7 @@
 !! correspond to E(2t3,2t2+1,2t1+1) in table 77-a-1
 !< *******************************************************************
        FUNCTION sgpii(it1,it2,it3)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/rms/rms(3,50),s1,s2,s3
        common/herfun/hs1(60),hs2(60),hs3(60)
        common/cars3/exs3,exs2,exs1,as3,sgns3,s32,pwas3,pw3as3
@@ -8198,7 +8198,7 @@
 !! E(2t3+1,2t2,2t1)     is given in table 77-b-2
 !< *******************************************************************
        FUNCTION sgipp(it1,it2,it3)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/rms/rms(3,50),s1,s2,s3
        common/herfun/hs1(60),hs2(60),hs3(60)
        common/cars3/exs3,exs2,exs1,as3,sgns3,s32,pwas3,pw3as3
@@ -8250,7 +8250,7 @@
 !! inside E(2t3+1,2t2+1,2t1) given in table 77-b-1
 !< *******************************************************************
        FUNCTION sgiip(it1,it2,it3)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/rms/rms(3,50),s1,s2,s3
        common/herfun/hs1(60),hs2(60),hs3(60)
        common/cars3/exs3,exs2,exs1,as3,sgns3,s32,pwas3,pw3as3
@@ -8302,7 +8302,7 @@
 !! in E(2t3+1,2t2,2t1+1)            in table 77-b-1
 !< *******************************************************************
        FUNCTION sgipi(it1,it2,it3)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/rms/rms(3,50),s1,s2,s3
        common/herfun/hs1(60),hs2(60),hs3(60)
        common/cars3/exs3,exs2,exs1,as3,sgns3,s32,pwas3,pw3as3
@@ -8354,7 +8354,7 @@
 !! in E(2t3+1,2t2+1,2t1+1)           in table 77-b-2
 !< *******************************************************************
        FUNCTION sgiii(it1,it2,it3)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/rms/rms(3,50),s1,s2,s3
        common/herfun/hs1(60),hs2(60),hs3(60)
        common/cars3/exs3,exs2,exs1,as3,sgns3,s32,pwas3,pw3as3
@@ -8413,7 +8413,7 @@
 !! table 77-a-1
 !< *******************************************************************
        FUNCTION uppp(it1,it2,it3)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/rms/rms(3,50),s1,s2,s3
        common/gauss1/absg(40),wg(40),igaus
        common/circu/co(40,50),sn(40,50),blam(40,100)
@@ -8444,7 +8444,7 @@
 !! table 77-a-2
 !< *******************************************************************
        FUNCTION upip(it1,it2,it3)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/rms/rms(3,50),s1,s2,s3
        common/gauss1/absg(40),wg(40),igaus
        common/circu/co(40,50),sn(40,50),blam(40,100)
@@ -8475,7 +8475,7 @@
 !! table 77-a-2
 !< *******************************************************************
        FUNCTION uppi(it1,it2,it3)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/rms/rms(3,50),s1,s2,s3
        common/gauss1/absg(40),wg(40),igaus
        common/circu/co(40,50),sn(40,50),blam(40,100)
@@ -8506,7 +8506,7 @@
 !! table 77-a-1
 !< *******************************************************************
       FUNCTION upii(it1,it2,it3)
-      implicit real*8 (a-h,o-z)
+      implicit real(8) (a-h,o-z)
        common/rms/rms(3,50),s1,s2,s3
        common/gauss1/absg(40),wg(40),igaus
        common/circu/co(40,50),sn(40,50),blam(40,100)
@@ -8537,7 +8537,7 @@
 !! table 77-b-2
 !< *******************************************************************
        FUNCTION uipp(it1,it2,it3)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/rms/rms(3,50),s1,s2,s3
        common/gauss1/absg(40),wg(40),igaus
        common/circu/co(40,50),sn(40,50),blam(40,100)
@@ -8567,7 +8567,7 @@
 !! summation over cos(thet)**2*t1,cos(thet)**(2*t2+1) table 77-b-1
 !< *******************************************************************
        FUNCTION uiip(it1,it2,it3)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/rms/rms(3,50),s1,s2,s3
        common/gauss1/absg(40),wg(40),igaus
        common/circu/co(40,50),sn(40,50),blam(40,100)
@@ -8597,7 +8597,7 @@
 !! summation over cos(thet)**(2*t1+1),cos(thet)**2*t2  table 77-b-1
 !< *******************************************************************
        FUNCTION uipi(it1,it2,it3)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/rms/rms(3,50),s1,s2,s3
        common/gauss1/absg(40),wg(40),igaus
        common/circu/co(40,50),sn(40,50),blam(40,100)
@@ -8628,7 +8628,7 @@
 !! (see table 77-b-2)
 !< *******************************************************************
        FUNCTION uiii(it1,it2,it3)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/rms/rms(3,50),s1,s2,s3
        common/gauss1/absg(40),wg(40),igaus
        common/circu/co(40,50),sn(40,50),blam(40,100)
@@ -8658,7 +8658,7 @@
 !! sum with cos(thet)**2*t1,cos(thet)**2*t2 (see table 77-a-1)
 !< *******************************************************************
        FUNCTION vppp(k)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/rms/rms(3,50),s1,s2,s3
        common/gauss1/absg(40),wg(40),igaus
        common/circu/co(40,50),sn(40,50),blam(40,100)
@@ -8683,7 +8683,7 @@
 !! sum with cos(thet)**2*t1,cos(thet)**(2*t2+1) (table 77-a-2)
 !< *******************************************************************
        FUNCTION vpip(k)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/rms/rms(3,50),s1,s2,s3
        common/gauss1/absg(40),wg(40),igaus
        common/circu/co(40,50),sn(40,50),blam(40,100)
@@ -8708,7 +8708,7 @@
 !! sum wih cos(thet)**2*t1,cos(thet)**(2*t2+1) (table 77-a-2)
 !< *******************************************************************
        FUNCTION vppi(k)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/rms/rms(3,50),s1,s2,s3
        common/gauss1/absg(40),wg(40),igaus
        common/circu/co(40,50),sn(40,50),blam(40,100)
@@ -8733,7 +8733,7 @@
 !! sum with cos(thet)**(2*t1+1),cos(thet)**(2*t2+1) (table 77-a-1)
 !< *******************************************************************
        FUNCTION vpii(k)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/rms/rms(3,50),s1,s2,s3
        common/gauss1/absg(40),wg(40),igaus
        common/circu/co(40,50),sn(40,50),blam(40,100)
@@ -8758,7 +8758,7 @@
 !! sum with cos(thet)**2*t1,cos(thet)**2*t2 ( table 77-b-2)
 !< *******************************************************************
        FUNCTION vipp(k)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/rms/rms(3,50),s1,s2,s3
        common/gauss1/absg(40),wg(40),igaus
        common/circu/co(40,50),sn(40,50),blam(40,100)
@@ -8783,7 +8783,7 @@
 !! sum with cos(thet)**2*t1,cos(thet)**(2*t2+1) (table 77-b-1)
 !< *******************************************************************
        FUNCTION viip(k)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/rms/rms(3,50),s1,s2,s3
        common/gauss1/absg(40),wg(40),igaus
        common/circu/co(40,50),sn(40,50),blam(40,100)
@@ -8808,7 +8808,7 @@
 !! sum with cos(thet)**(2*t1+1),cos(thet)**2*t2 (table 77-b-1)
 !< *******************************************************************
        FUNCTION vipi(k)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/rms/rms(3,50),s1,s2,s3
        common/gauss1/absg(40),wg(40),igaus
        common/circu/co(40,50),sn(40,50),blam(40,100)
@@ -8833,7 +8833,7 @@
 !! sum with cos(thet)**(2*t1+1),cos(thet)**(2*t2+1) (table 77-b-2)
 !< *******************************************************************
        FUNCTION viii(k)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/rms/rms(3,50),s1,s2,s3
        common/gauss1/absg(40),wg(40),igaus
        common/circu/co(40,50),sn(40,50),blam(40,100)
@@ -8858,7 +8858,7 @@
 !! for the Almn computations with HERSC
 !< *******************************************************************
        SUBROUTINE pintfast
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        common/faisc/f(10,iptsz),imax,ngood
        common/consta/vl,pi,xmat,rpel,qst
@@ -8966,7 +8966,7 @@
 !! the significant Hermite coefficients (called by HERSC)
 !< *******************************************************************
        SUBROUTINE hcoef
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        common/faisc/f(10,iptsz),imax,ngood
        common/consta/vl,pi,xmat,rpel,qst
@@ -9255,7 +9255,7 @@
 !! space charge method: HERSC
 !< *******************************************************************
        SUBROUTINE hersc(ini)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        common/faisc/f(10,iptsz),imax,ngood
        common/consta/vl,pi,xmat,rpel,qst
@@ -9791,7 +9791,7 @@
 !! INTEGRALS OF THE FIRST DERIVATIVES OF HA0(Z) et HB0(Z)
 !< *******************************************************************
        SUBROUTINE xtypl1(GAMI,SAPHI,QSC,DCG)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
        COMMON/POSI/IST
        COMMON/JACOB/GAKS,GAPS
@@ -10082,7 +10082,7 @@
 !! z-direction
 !< *******************************************************************
        SUBROUTINE chasel
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/TTFC/TK,T1K,T2K,SK,S1K,S2K,FH
        COMMON/FENE/WDISP,WPHAS,WX,WY,RLIM,IFW
@@ -10221,7 +10221,7 @@
 !! x-direction
 !< *******************************************************************
        SUBROUTINE chasex
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/TTFC/TK,T1K,T2K,SK,S1K,S2K,FH
        COMMON/FENE/WDISP,WPHAS,WX,WY,RLIM,IFW
@@ -10363,7 +10363,7 @@
 !! read the parameters and print them out
 !< *******************************************************************
        SUBROUTINE chase
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        common/tapes/in,ifile,meta
        common/etchas/fractx,fracty,fractl
@@ -10388,7 +10388,7 @@
 !! y-direction
 !< *******************************************************************
        SUBROUTINE chasey
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/TTFC/TK,T1K,T2K,SK,S1K,S2K,FH
        COMMON/FENE/WDISP,WPHAS,WX,WY,RLIM,IFW
@@ -10528,7 +10528,7 @@
 !! correction over the beam generated by MONTE
 !< *******************************************************************
        SUBROUTINE corre(n,nall)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON /COM4/CORD(IPTSZ,6)
        DIMENSION A(6,6),B(6,6),C(6,6),D(6),E(6),F(6),G(6)
@@ -10647,7 +10647,7 @@
 !! called by SCHEFF or SCHERM
 !< *******************************************************************
        SUBROUTINE pintim
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        common/faisc/f(10,iptsz),imax,ngood
        COMMON/QMOYEN/QMOY
@@ -10735,7 +10735,7 @@
 !! by a simple ellipse in the longitudinal direction
 !< *******************************************************************
        SUBROUTINE schermi1
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/TTFC/TK,T1K,T2K,SK,S1K,S2K,FH
        COMMON/HERMT/AFXT(22),AFYT(22),AFZT(22)
@@ -10960,7 +10960,7 @@
 !! See NIM A 309(1996) 21-40
 !< *******************************************************************
        SUBROUTINE schermi
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/TTFC/TK,T1K,T2K,SK,S1K,S2K,FH
        COMMON/HERMT/AFXT(22),AFYT(22),AFZT(22)
@@ -11374,7 +11374,7 @@
 !!   REMARK : After INPUT the reference coincides with the c.o.g.
 !< *******************************************************************
        SUBROUTINE entre
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
        common/speda/dave,idave
@@ -11551,7 +11551,7 @@
 !! the CERN library)
 !< *******************************************************************
        SUBROUTINE monte
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/DCSPA/IESP
        COMMON/TTFC/TK,T1K,T2K,SK,S1K,S2K,FH
@@ -11940,7 +11940,7 @@
 !! called by subroutine MONTE
 !< *******************************************************************
         subroutine rgaus2(sigma,y1,y2,y3,y4)
-        implicit real*8 (a-h,o-z)
+        implicit real(8) (a-h,o-z)
         dimension vecx(1)
         len=1
         do while ((w1.ge.1.0).or.(w1.eq.0.))
@@ -12016,7 +12016,7 @@
 !!      ISVEC must be dimensioned 25 in the calling program        ++
 !< *******************************************************************
        SUBROUTINE rlux(RVEC,LENV)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        DIMENSION RVEC(LENV)
 !       DIMENSION SEEDS(24), ISEEDS(24), ISDEXT(25)
        DIMENSION SEEDS(24), ISEEDS(24)
@@ -12134,7 +12134,7 @@
 !!      ISVEC must be dimensioned 25 in the calling program        ++
 !< *******************************************************************
        SUBROUTINE RLUXIN(ISDEXT)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        DIMENSION SEEDS(24), ISDEXT(25)
        PARAMETER (MAXLEV=4, LXDFLT=3)
        DIMENSION NDSKIP(0:MAXLEV)
@@ -12205,7 +12205,7 @@
 !!      ISVEC must be dimensioned 25 in the calling program        ++
 !< *******************************************************************
        SUBROUTINE RLUXUT(ISDEXT)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        DIMENSION SEEDS(24), ISDEXT(25)
        PARAMETER (MAXLEV=4, LXDFLT=3)
        DIMENSION NDSKIP(0:MAXLEV)
@@ -12247,7 +12247,7 @@
 !!      ISVEC must be dimensioned 25 in the calling program        ++
 !< *******************************************************************
        SUBROUTINE RLUXAT(LOUT,INOUT,K1,K2)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        PARAMETER (MAXLEV=4, LXDFLT=3)
        SAVE NOTYET, LUXLEV
        SAVE IN24, KOUNT, MKOUNT, INSEED
@@ -12275,7 +12275,7 @@
 !!      ISVEC must be dimensioned 25 in the calling program        ++
 !< *******************************************************************
        SUBROUTINE RLUXGO(LUX,INS,K1,K2)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        DIMENSION SEEDS(24), ISEEDS(24)
        PARAMETER (MAXLEV=4, LXDFLT=3)
        DIMENSION NDSKIP(0:MAXLEV)
@@ -12397,7 +12397,7 @@
 !!        v : nombre aléatoire selon la loi normale
 !< *******************************************************************
        SUBROUTINE gcern(len,s,am,v)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/ragau/ntir
        dimension vecx(1)
        a=0.
@@ -12414,7 +12414,7 @@
 !! read the coordinates of particles from file
 !< *******************************************************************
        SUBROUTINE adjrfq
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
        COMMON/DAVCOM/dav1(maxcell1,40),davtot,iitem(maxcell1),idav
@@ -12541,7 +12541,7 @@
 !! convert the particles coordinates to DYNAC units
 !< *******************************************************************
        SUBROUTINE intfac(tofini)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        common/etcom/cog(8),exten(17),fd(iptsz)
        COMMON/SHIF/DTIPH,SHIFT
@@ -12702,7 +12702,7 @@
 !!   eprny(mm.mrad): normalized emittance in y-direction
 !< *******************************************************************
        SUBROUTINE stapl(zpos)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        common/pltprf/sprfx(3000),sprfy(3000),sprfl(3000),sprfw(3000),
      *               sprfp(3000),SPRNG(3000),iprf
@@ -12810,7 +12810,7 @@
 !! This routine writes the dynac.print file
 !< *******************************************************************
        SUBROUTINE eugwrt
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/pltprf/sprfx(3000),sprfy(3000),sprfl(3000),sprfw(3000),
      *               sprfp(3000),SPRNG(3000),iprf
        common/pltprf1/sprww(3000),eprfw(3000),eprnx(3000),eprny(3000),
@@ -12861,7 +12861,7 @@
 !!   etcell(15)=frequency (MHz), etcell(16)=field factor
 !< *******************************************************************
        SUBROUTINE etgap
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/TTFS/DYNT(MAXCELL),DYNTP(MAXCELL),DYNTPP(MAXCELL),
      *   DYNE0(MAXCELL),DYNPH(MAXCELL),DYNLG(MAXCELL),FHPAR,NC
@@ -13368,7 +13368,7 @@
 !! dynamics in the accelerating element
 !< *******************************************************************
        SUBROUTINE gap(GAMREF,SAPHI,GAMS,DELPHR)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/TTFS/DYNT(MAXCELL),DYNTP(MAXCELL),DYNTPP(MAXCELL),
      *   DYNE0(MAXCELL),DYNPH(MAXCELL),DYNLG(MAXCELL),FHPAR,NC
@@ -13628,7 +13628,7 @@
 !! COG of TOF with respect to the various charge states
 !< *******************************************************************
        SUBROUTINE cogetc
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        common/faisc/f(10,iptsz),imax,ngood
        common/cgtof/charm(20),cgtdv(20),nbch(20),netac
@@ -13675,7 +13675,7 @@
 !! compute the dynamics of the fictitiuos reference and of particles
 !< *******************************************************************
        SUBROUTINE boucle(ipas,gamref,saphi,dcum,delphr)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/POSI/IST
        COMMON/MIDGAP/ENMIL,VAPMI
@@ -14404,7 +14404,7 @@
 !! BUNCHER  (NO SPACE CHARGE EFFECT)
 !< *******************************************************************
        SUBROUTINE bunparm(v,dp,harm,prlim)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/RIGID/BORO
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
@@ -14644,7 +14644,7 @@
 !!                              kinetic energy of the c.o.g.
 !< *******************************************************************
        SUBROUTINE refer
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/TTFC/TK,T1K,T2K,SK,S1K,S2K,FH
        COMMON/DYN/TREF,VREF
@@ -14769,7 +14769,7 @@
 !!  -----ANGULAR DISPLACEMENTS DUE TO STEERING
 !< *******************************************************************
        SUBROUTINE steer(fld,nvf)
-       IMPLICIT REAL*8 (A-H,O-Z)
+       implicit real(8) (A-H,O-Z)
 !     4/15/14 - Daniel Alt: Added electrostatic steerers.
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/TTFC/TK,T1K,T2K,SK,S1K,S2K,FH
@@ -14868,7 +14868,7 @@
 !!  exten(9) : Sum( y*yp )   cm*mrad
 !< *******************************************************************
        SUBROUTINE emiprt(L)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        common/etchas/fractx,fracty,fractl
        common/dyn/tref,vref
@@ -15184,7 +15184,7 @@
 !! get beam data following RDBEAM for TRACE3D file
 !< *******************************************************************
        SUBROUTINE emit3d
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        common/dyn/tref,vref
        common/faisc/f(10,iptsz),imax,ngood
@@ -15267,7 +15267,7 @@
 !!  exten(9) : Sum( y(i)*yp(i) )   cm*mrad
 !< *******************************************************************
        SUBROUTINE statis
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/DYN/TREF,VREF
        COMMON/TTFC/TK,T1K,T2K,SK,S1K,S2K,FH
@@ -15364,7 +15364,7 @@
 !!      ICG  :. NE. 0 VREF ET TREF are the ones of the c. of g.
 !< *******************************************************************
        SUBROUTINE tiltbm(icg)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
        COMMON/DAVCOM/dav1(maxcell1,40),davtot,iitem(maxcell1),idav
@@ -15555,7 +15555,7 @@
 !!      ICG  :. NE. 0 VREF ET TREF are the ones of the c. of g.
 !< *******************************************************************
        SUBROUTINE tiltbm_bis(icg)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
        COMMON/DAVCOM/dav1(maxcell1,40),davtot,iitem(maxcell1),idav
@@ -15747,7 +15747,7 @@
 !! computes a physical beam acceptance at the entrance of the machine
 !< *******************************************************************
        SUBROUTINE accept
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter(iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/TTFC/TK,T1K,T2K,SK,S1K,S2K,FH
        COMMON/TAPES/IN,IFILE,META
@@ -15872,7 +15872,7 @@
 !! STORAGE OF PARTICLE COORDINATES FOR PLOTS
 !< *******************************************************************
        SUBROUTINE ytzp
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter(iptsz=100002,maxcell=3000,maxcell1=3000)
        CHARACTER*80 TEXT,PATITL
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
@@ -16245,7 +16245,7 @@
 !! routine for plots
 !< *******************************************************************
        SUBROUTINE grcomp(text,iskale)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter(iptsz=100002,maxcell=3000,maxcell1=3000)
        CHARACTER*80 TEXT,PATITL
        COMMON/TTFC/TK,T1K,T2K,SK,S1K,S2K,FH
@@ -16457,7 +16457,7 @@
 !! listed in the form of a Fourier series expansion
 !< *******************************************************************
        SUBROUTINE restay
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
 !      ****************************************************
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/TTFS/DYNT(MAXCELL),DYNTP(MAXCELL),DYNTPP(MAXCELL),
@@ -17025,7 +17025,7 @@
 !! converted to: z(cm)  E(z) (MVolt/cm)
 !< *******************************************************************
        SUBROUTINE fieldcav(atte)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/consta/vl,pi,xmat,rpel,qst
        common/rfield/ifield
        common/cell/yf(10000),xf(10000),xlim(15),flength,fhc,att,
@@ -17114,7 +17114,7 @@
 !! average position in the cell
 !< *******************************************************************
        SUBROUTINE celint
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/cavnum1/xnh,xpas,fmult,npt
        common/consta/vl,pi,xmat,rpel,qst
        common/spl/xspl(4000),yspl(4000),s(5000),p(5000),q(5000)
@@ -17191,7 +17191,7 @@
 !! electromagnetic field  at the position xc
 !< *******************************************************************
        FUNCTION fcav(xc,nrc)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/cell/yf(10000),xf(10000),xlim(15),flength,fhc,att,
      *             npoint(15),ncell
        common/fcv/jsav
@@ -17223,7 +17223,7 @@
 !! Transit time factor t(k) (single cell)
 !< *******************************************************************
        FUNCTION ta0(betr,nrc)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/consta/vl,pi,xmat,rpel,qst
        common/cell/yf(10000),xf(10000),xlim(15),flength,fhc,att,
      *             npoint(15),ncell
@@ -17247,7 +17247,7 @@
 !! Transit time factor t(k) (multi-cells)
 !< *******************************************************************
        FUNCTION tta0(betr)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/cell/yf(10000),xf(10000),xlim(15),flength,fhc,att,
      *             npoint(15),ncell
        common/consta/vl,pi,xmat,rpel,qst
@@ -17296,7 +17296,7 @@
 !! Transit time factor dT(k)/dk (single cell)
 !< *******************************************************************
        FUNCTION ta1(betr,nrc)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/cell/yf(10000),xf(10000),xlim(15),flength,fhc,att,
      *             npoint(15),ncell
        common/consta/vl,pi,xmat,rpel,qst
@@ -17319,7 +17319,7 @@
 !! Transit time factor dT(k)/dk (multi-cells)
 !< *******************************************************************
        FUNCTION tta1(BETR)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/cell/yf(10000),xf(10000),xlim(15),flength,fhc,att,
      *             npoint(15),ncell
        common/consta/vl,pi,xmat,rpel,qst
@@ -17368,7 +17368,7 @@
 !! Transit time factor d2T(k)/dk2 (single cell)
 !< *******************************************************************
        FUNCTION ta2(betr,nrc)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/cell/yf(10000),xf(10000),xlim(15),flength,fhc,att,
      *             npoint(15),ncell
        common/consta/vl,pi,xmat,rpel,qst
@@ -17391,7 +17391,7 @@
 !! Transit time factor d2T(k)/dk2 (multi-cells)
 !< *******************************************************************
        FUNCTION tta2(BETR)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/cell/yf(10000),xf(10000),xlim(15),flength,fhc,att,
      *             npoint(15),ncell
        common/consta/vl,pi,xmat,rpel,qst
@@ -17440,7 +17440,7 @@
 !! Transit time factor d3T(k)/dk3 (single cell)
 !< *******************************************************************
        FUNCTION ta3(betr,nrc)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/cell/yf(10000),xf(10000),xlim(15),flength,fhc,att,
      *             npoint(15),ncell
        common/consta/vl,pi,xmat,rpel,qst
@@ -17463,7 +17463,7 @@
 !! Transit time factor d3T(k)/dk2 (multi-cells)
 !< *******************************************************************
        FUNCTION tta3(BETR)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/cell/yf(10000),xf(10000),xlim(15),flength,fhc,att,
      *             npoint(15),ncell
        common/consta/vl,pi,xmat,rpel,qst
@@ -17512,7 +17512,7 @@
 !! Transit time factor d4T(k)/dk4 (single cell)
 !< *******************************************************************
        FUNCTION ta4(betr,nrc)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/cell/yf(10000),xf(10000),xlim(15),flength,fhc,att,
      *             npoint(15),ncell
        common/consta/vl,pi,xmat,rpel,qst
@@ -17535,7 +17535,7 @@
 !! Transit time factor d4T(k)/dk4 (multi-cells)
 !< *******************************************************************
        FUNCTION tta4(BETR)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/cell/yf(10000),xf(10000),xlim(15),flength,fhc,att,
      *             npoint(15),ncell
        common/consta/vl,pi,xmat,rpel,qst
@@ -17584,7 +17584,7 @@
 !! Transit time factor d5T(k)/dk5 (single cell)
 !< *******************************************************************
        FUNCTION ta5(betr,nrc)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/cell/yf(10000),xf(10000),xlim(15),flength,fhc,att,
      *             npoint(15),ncell
        common/consta/vl,pi,xmat,rpel,qst
@@ -17607,7 +17607,7 @@
 !! Transit time factor d5T(k)/dk5 (multi-cells)
 !< *******************************************************************
        FUNCTION tta5(BETR)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/cell/yf(10000),xf(10000),xlim(15),flength,fhc,att,
      *             npoint(15),ncell
        common/consta/vl,pi,xmat,rpel,qst
@@ -17656,7 +17656,7 @@
 !! Transit time factor s(k) (single cell)
 !< *******************************************************************
        FUNCTION sb0(BETR,nrc)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/cell/yf(10000),xf(10000),xlim(15),flength,fhc,att,
      *             npoint(15),ncell
        common/consta/vl,pi,xmat,rpel,qst
@@ -17679,7 +17679,7 @@
 !! Transit time factor s(k) (multi-cells)
 !< *******************************************************************
        FUNCTION tsb0(BETR)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/cell/yf(10000),xf(10000),xlim(15),flength,fhc,att,
      *             npoint(15),ncell
        common/consta/vl,pi,xmat,rpel,qst
@@ -17728,7 +17728,7 @@
 !! Transit time factor dS(k)/dk (single cell)
 !< *******************************************************************
        FUNCTION sb1(BETR,nrc)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/cell/yf(10000),xf(10000),xlim(15),flength,fhc,att,
      *             npoint(15),ncell
        common/consta/vl,pi,xmat,rpel,qst
@@ -17751,7 +17751,7 @@
 !! Transit time factor ds(k)/dk (multi-cells)
 !< *******************************************************************
        FUNCTION tsb1(BETR)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/cell/yf(10000),xf(10000),xlim(15),flength,fhc,att,
      *             npoint(15),ncell
        common/consta/vl,pi,xmat,rpel,qst
@@ -17800,7 +17800,7 @@
 !! Transit time factor d2S(k)/dk2 (single cell)
 !< *******************************************************************
        FUNCTION sb2(BETR,nrc)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/cell/yf(10000),xf(10000),xlim(15),flength,fhc,att,
      *             npoint(15),ncell
        common/consta/vl,pi,xmat,rpel,qst
@@ -17823,7 +17823,7 @@
 !! Transit time factor d2S(k)/dk2 (multi-cells)
 !< *******************************************************************
        FUNCTION tsb2(BETR)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/cell/yf(10000),xf(10000),xlim(15),flength,fhc,att,
      *             npoint(15),ncell
        common/consta/vl,pi,xmat,rpel,qst
@@ -17872,7 +17872,7 @@
 !! Transit time factor d3S(k)/dk3 (single cell)
 !< *******************************************************************
        FUNCTION sb3(BETR,nrc)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/cell/yf(10000),xf(10000),xlim(15),flength,fhc,att,
      *             npoint(15),ncell
        common/consta/vl,pi,xmat,rpel,qst
@@ -17895,7 +17895,7 @@
 !! Transit time factor d3S(k)/dk3 (multi-cells)
 !< *******************************************************************
        FUNCTION tsb3(BETR)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/cell/yf(10000),xf(10000),xlim(15),flength,fhc,att,
      *             npoint(15),ncell
        common/consta/vl,pi,xmat,rpel,qst
@@ -17944,7 +17944,7 @@
 !! Transit time factor d4S(k)/dk5 (single cell)
 !< *******************************************************************
        FUNCTION sb4(BETR,nrc)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/cell/yf(10000),xf(10000),xlim(15),flength,fhc,att,
      *             npoint(15),ncell
        common/consta/vl,pi,xmat,rpel,qst
@@ -17967,7 +17967,7 @@
 !! Transit time factor d4S(k)/dk5 (multi cells)
 !< *******************************************************************
        FUNCTION tsb4(BETR)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/cell/yf(10000),xf(10000),xlim(15),flength,fhc,att,
      *             npoint(15),ncell
        common/consta/vl,pi,xmat,rpel,qst
@@ -18016,7 +18016,7 @@
 !! Transit time factor d5S(k)/dk5 (single cell)
 !< *******************************************************************
        FUNCTION sb5(BETR,nrc)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/cell/yf(10000),xf(10000),xlim(15),flength,fhc,att,
      *             npoint(15),ncell
        common/consta/vl,pi,xmat,rpel,qst
@@ -18039,7 +18039,7 @@
 !! Transit time factor d5S(k)/dk5
 !< *******************************************************************
        FUNCTION tsb5(BETR)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/cell/yf(10000),xf(10000),xlim(15),flength,fhc,att,
      *             npoint(15),ncell
        common/consta/vl,pi,xmat,rpel,qst
@@ -18089,7 +18089,7 @@
 !! The field harmonics are  stored in  A(200)
 !< *******************************************************************
        FUNCTION fone(Z)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
        COMMON/FUNC/A(200),YLG,ATTE,NCEL,NHARM
        COMMON/TTFC/TK,T1K,T2K,SK,S1K,S2K,FH
@@ -18105,7 +18105,7 @@
 !! the field is in the form of a Fourier series expansion
 !< *******************************************************************
        SUBROUTINE rharm
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        COMMON/FUNC/A(200),YLG,ATTE,NCEL,NHARM
        COMMON/TTFC/TK,T1K,T2K,SK,S1K,S2K,FH
        COMMON/TAPES/IN,IFILE,META
@@ -18158,7 +18158,7 @@
 !! graphics post-processor
 !< *******************************************************************
        SUBROUTINE profil
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        COMMON/DPLT/ZDEB,ZFIN,YWMAX,YPMAX,RMSN
        COMMON/TAPES/IN,IFILE,META
        CALL PLPRF1
@@ -18176,7 +18176,7 @@
 !!     SPRFL :position along Z(m)
 !< *******************************************************************
        SUBROUTINE plprf1
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        dimension xx(3000),yy(3000)
 !     RMSN  :envelope size in multiples of RMS size
 !     ZDEB : Starting position of the plot
@@ -18261,7 +18261,7 @@
 !! graphics post-processor
 !< *******************************************************************
        SUBROUTINE plprf2
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        dimension xx(3000),yy(3000)
        CHARACTER*80 CAR,text
        common/prof/car
@@ -18348,7 +18348,7 @@
 !! first derivative of the spline function
 !< *******************************************************************
        FUNCTION slope(N,XV)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/spl/x(4000),y(4000),s(5000),p(5000),q(5000)
        do i=2,n
          xtvi=xv-x(i)
@@ -18374,7 +18374,7 @@
 !! SPLINE FUNCTION
 !< *******************************************************************
        FUNCTION spline (N,XV)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        COMMON /SPL/X(4000),Y(4000),S(5000),P(5000),Q(5000)
        spline=y(1)
        xtv1=xv-x(1)
@@ -18423,7 +18423,7 @@
 !! second derivative of spline functions at position (x,y)
 !< *******************************************************************
        SUBROUTINE DERIV2(N)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/spl/x(4000),y(4000),s(5000),p(5000),q(5000)
        AVXN=X(N)-X(N-1)
        AVVXN=X(N-1)-X(N-2)
@@ -18462,7 +18462,7 @@
 !! second derivative of spline functions at position (x,y)
 !< *******************************************************************
        SUBROUTINE DERIF2(N)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/spff/x(400),y(400),s(500),p(500),q(500)
        AVXN=X(N)-X(N-1)
        AVVXN=X(N-1)-X(N-2)
@@ -18501,7 +18501,7 @@
 !! SPLINE FUNCTION
 !< *******************************************************************
        FUNCTION splinf (N,XV)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        COMMON /SPFF/X(400),Y(400),S(500),P(500),Q(500)
        splinf=y(1)
        xtv1=xv-x(1)
@@ -18550,7 +18550,7 @@
 !! first derivative of the spline function
 !< *******************************************************************
        FUNCTION slopf(N,XV)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        COMMON /SPFF/X(400),Y(400),S(500),P(500),Q(500)
        do i=2,n
          xtvi=xv-x(i)
@@ -18579,7 +18579,7 @@
 !! color.
 !< *******************************************************************
        SUBROUTINE area(init)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        common/faisc/f(10,iptsz),imax,ngood
        common/consta/vl,pi,xmat,rpel,qst
@@ -18722,7 +18722,7 @@
 !! called by plotting routine grcomp(text,iskale)
 !< *******************************************************************
        subroutine histgrm
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter (iptsz=100002)
        common/faisc/f(10,iptsz),imax,ngood
        common/consta/vl,pi,xmat,rpel,qst
@@ -19156,7 +19156,7 @@
 !!  with CHASE These parameters are in the array dav2 like above
 !< *******************************************************************
        SUBROUTINE daves
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
        common/faisc/f(10,iptsz),imax,ngood
@@ -19791,7 +19791,7 @@
 !!                 OTHERWIZE DECLARED *********
 !< *******************************************************************
       SUBROUTINE POFAR1(GAP)
-      IMPLICIT REAL*8(A-Z)
+      implicit real(8)(A-Z)
 !      -- POLE FACE ROTATION
       COMMON /BLOC21/ BE, APB(2), LAYL, LAYX, RABT
       COMMON /BLOC23/ H, DEVI, NB, BDB,L
@@ -19857,7 +19857,7 @@
 !!                 OTHERWIZE DECLARED *********
 !< *******************************************************************
       SUBROUTINE POFAR2(GAP)
-      IMPLICIT REAL*8(A-Z)
+      implicit real(8)(A-Z)
 !      -- POLE FACE ROTATION
       COMMON /BLOC21/ BE, APB(2), LAYL, LAYX, RABT
       COMMON /BLOC23/ H, DEVI, NB, BDB,L
@@ -19921,7 +19921,7 @@
 !!                 OTHERWIZE DECLARED *********
 !< *******************************************************************
       SUBROUTINE BENMAG(sbet,fdtot)
-      IMPLICIT REAL*8(A-Z)
+      implicit real(8)(A-Z)
 !      -- POLE FACE ROTATION
       COMMON /BLOC21/ BE, APB(2), LAYL, LAYX, RABT
       COMMON /BLOC23/ H, DEVI, NB, BDB,L
@@ -20356,7 +20356,7 @@
 !! The method is described in 'synchrotron radiation in DYNAC'
 !< *******************************************************************
        SUBROUTINE syrout(ii)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
        common/faisc/f(10,iptsz),imax,ngood
@@ -20398,7 +20398,7 @@
 !! The method is described in 'synchrotron radiation in DYNAC'
 !< *******************************************************************
        SUBROUTINE syref
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
        COMMON/RADIA/TRT,RMOY,XINTF,CRAE
@@ -20407,7 +20407,7 @@
        common/itvole/itvol,imamin
        common/tofev/ttvols
        logical itvol,imamin
-       real*8 L,NB
+       real(8) L,NB
        beref=vref/vl
        gamref=1./sqrt(1.-beref*beref)
        ener=xmat*gamref*beref
@@ -20437,7 +20437,7 @@
 !! space charge at the middle of the lens
 !< *******************************************************************
        SUBROUTINE sextu(imk2,arg,xlsex,rg)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/FENE/WDISP,WPHAS,WX,WY,RLIM,IFW
        COMMON/TTFC/TK,T1K,T2K,SK,S1K,S2K,FH
@@ -20466,7 +20466,7 @@
        LOGICAL IEMGRW
        common/cgtof/charm(20),cgtdv(20),nbch(20),netac
        COMMON/QSEX/L,KQ2,KS2
-       REAL*8 L,KQ2,KS2
+       real(8) L,KQ2,KS2
        character*1 cr
        dimension trans(2)
        ilost=0
@@ -20633,7 +20633,7 @@
 !!   RG:    APERTURE RADIUS (cm)
 !< *******************************************************************
        SUBROUTINE qalva(bquad,xlqua,rg)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/FENE/WDISP,WPHAS,WX,WY,RLIM,IFW
        COMMON/TTFC/TK,T1K,T2K,SK,S1K,S2K,FH
@@ -20665,7 +20665,7 @@
        common/tofev/ttvols
        COMMON/ITVOLE/ITVOL,IMAMIN
        logical itvol,imamin
-       REAL*8 L,KQ2,KS2
+       real(8) L,KQ2,KS2
        dimension trans(1)
        character*1 cr
 ! print out on terminal of transport element # on one and the same line
@@ -20845,7 +20845,7 @@
 !!   RG : APERTURE RADIUS OF THE LENS (cm)
 !< *******************************************************************
        SUBROUTINE qasex(iksq,args,argq,xlqua,rg)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/FENE/WDISP,WPHAS,WX,WY,RLIM,IFW
        COMMON/TTFC/TK,T1K,T2K,SK,S1K,S2K,FH
@@ -20874,7 +20874,7 @@
        LOGICAL IEMGRW
        common/cgtof/charm(20),cgtdv(20),nbch(20),netac
        COMMON/QSEX/L,KQ2,KS2
-       REAL*8 L,KQ2,KS2
+       real(8) L,KQ2,KS2
        character*1 cr
 ! print out on terminal of transport element # on one and the same line
        NRTRE=NRTRE+1
@@ -21066,7 +21066,7 @@
 !!                 OTHERWIZE DECLARED *********
 !< *******************************************************************
       SUBROUTINE ELQUA
-      IMPLICIT REAL*8(A-Z)
+      implicit real(8)(A-Z)
       COMMON/QSEX/L,KQ2,KS2
       COMMON /BLOC11/ R(6,6), T(6,6,6)
       COMMON/SECDR/ISEOR
@@ -21132,7 +21132,7 @@
 !!                 OTHERWIZE DECLARED *********
 !< *******************************************************************
       SUBROUTINE ELSEX
-      IMPLICIT REAL*8(A-Z)
+      implicit real(8)(A-Z)
       COMMON/QSEX/L,KQ2,KS2
       COMMON /BLOC11/ R(6,6), T(6,6,6)
       COMMON/SECDR/ISEOR
@@ -21193,7 +21193,7 @@
 !!                 OTHERWIZE DECLARED *********
 !< *******************************************************************
       SUBROUTINE ELQSEX
-      IMPLICIT REAL*8(A-Z)
+      implicit real(8)(A-Z)
       COMMON/QSEX/L,KQ2,KS2
       COMMON /BLOC11/ R(6,6), T(6,6,6)
       COMMON/SECDR/ISEOR
@@ -21304,7 +21304,7 @@
 !! Solenoid with an arbitrary magnetic field
 !< *******************************************************************
        SUBROUTINE solfield(bcret,intgr)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/TTFC/TK,T1K,T2K,SK,S1K,S2K,FH
        COMMON/FENE/WDISP,WPHAS,WX,WY,RLIM,IFW
@@ -21465,7 +21465,7 @@
 !! solenoidal field
 !< *******************************************************************
        SUBROUTINE fldsol(dbs,step)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        common/faisc/f(10,iptsz),imax,ngood
        COMMON/FENE/WDISP,WPHAS,WX,WY,RLIM,IFW
@@ -21474,7 +21474,7 @@
        common/femt/iemgrw,iemqesg
        common/cgtof/charm(20),cgtdv(20),nbch(20),netac
        COMMON/SOLE/L,KL,KO
-       REAL*8 L,KL,KO
+       real(8) L,KL,KO
        l=step
        b=dbs
        gpai=0.
@@ -21525,7 +21525,7 @@
 !!     XLSOL : EFFECTIVE LENGHT (CM )
 !< *******************************************************************
        SUBROUTINE solnoid(imks,arg,xlsol)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/TTFC/TK,T1K,T2K,SK,S1K,S2K,FH
        COMMON/FENE/WDISP,WPHAS,WX,WY,RLIM,IFW
@@ -21556,7 +21556,7 @@
        logical iesp,ichaes,shift,ialin,iemgrw
        character*1 cr
        COMMON/SOLE/L,KL,KO
-       REAL*8 L,KL,KO
+       real(8) L,KL,KO
 ! print out on terminal of transport element # on one and the same line
        NRTRE=NRTRE+1
        cr=char(13)
@@ -21712,10 +21712,10 @@
 !! first order and second order R and T solenoid matrix
 !< *******************************************************************
        SUBROUTINE elsol
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        COMMON/SOLE/L,KL,KO
        COMMON/RIGID/BORO
-       REAL*8 L,KL,KO
+       real(8) L,KL,KO
        COMMON /BLOC11/ R(6,6), T(6,6,6)
        COMMON/SECDR/ISEOR
        LOGICAL ISEOR
@@ -21784,7 +21784,7 @@
 !! Calculates RC=RA*RB
 !< *******************************************************************
       SUBROUTINE mfordre(rc,ra,rb)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        DIMENSION RA(6,6), RB(6,6), RC(6,6)
        DO I1 = 1, 6
          DO I2 = 1, 6
@@ -21816,7 +21816,7 @@
 !! --RG : APERTURE RADIUS OF THE LENS (cm)
 !< *******************************************************************
        SUBROUTINE solquad(iksq,args,argq,xlsol,rg)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/TTFC/TK,T1K,T2K,SK,S1K,S2K,FH
        COMMON/FENE/WDISP,WPHAS,WX,WY,RLIM,IFW
@@ -21841,7 +21841,7 @@
        logical iesp,shift,ialin,iemgrw
        character*1 cr
        COMMON/SLQ/L,KSO,KQO
-       REAL*8 L,KSO,KQO
+       real(8) L,KSO,KQO
 ! print out on terminal of transport element # on one and the same line
        NRTRE=NRTRE+1
        cr=char(13)
@@ -22010,7 +22010,7 @@
 !! (+-) 90 DEG BEAM ROTATION
 !< *******************************************************************
        SUBROUTINE rotat(ii)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        common/faisc/f(10,iptsz),imax,ngood
        DIMENSION  FF(6)
@@ -22046,7 +22046,7 @@
 !!                OTHERWIZE DECLARED *********
 !< *******************************************************************
       SUBROUTINE elsq
-      IMPLICIT REAL*8(A-Z)
+      implicit real(8)(A-Z)
       COMMON/RIGID/BORO
       COMMON/SLQ/L,KSO,KQO
       COMMON /BLOC11/ R(6,6), T(6,6,6)
@@ -22197,7 +22197,7 @@
 !! This will allow several space charge computations in the drift
 !< *******************************************************************
        SUBROUTINE fdrift(xl,npart,imit)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        dl=xl/float(npart)
        do i=1,npart
          call drift(dl)
@@ -22211,7 +22211,7 @@
 !! space charge computation at the middle of the drift
 !< *******************************************************************
        SUBROUTINE drift(dl)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/RIGID/BORO
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
@@ -22329,7 +22329,7 @@
        END
        SUBROUTINE clear
 !    CLEAR MATRIX R AND T
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
       COMMON /BLOC11/ R(6,6), T(6,6,6)
       COMMON/SECDR/ISEOR
       LOGICAL ISEOR
@@ -22357,7 +22357,7 @@
 !! MATRIX BASED BEAM COMPUTATION
 !< *******************************************************************
        SUBROUTINE cobeam(ii,xl)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        common/faisc/f(10,iptsz),imax,ngood
        COMMON /BLOC11/ R(6,6), T(6,6,6)
@@ -22414,7 +22414,7 @@
 !! gravity of the bunch
 !< *******************************************************************
        SUBROUTINE disp
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        common/faisc/f(10,iptsz),imax,ngood
        common/etcom/cog(8),exten(17),fd(iptsz)
@@ -22466,7 +22466,7 @@
 !!     central trajectory at the point in question.
 !< *******************************************************************
       SUBROUTINE zrotat(zrot)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        common/faisc/f(10,iptsz),imax,ngood
        common/grot/rzot,izrot
@@ -22531,7 +22531,7 @@
 !!     central trajectory at the point in question.
 !< *******************************************************************
        SUBROUTINE zrotap(zrot)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        common/faisc/f(10,iptsz),imax,ngood
        common/grot/rzot,izrot
@@ -22579,7 +22579,7 @@
 !!       VERTICAL   : YL(cm) YLP(mrad)
 !< *******************************************************************
        SUBROUTINE aliner
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/ALIN/XL,YL,XPL,YPL
        common/faisc/f(10,iptsz),imax,ngood
@@ -22603,7 +22603,7 @@
 !!     VERTICAL PLANE   : YL(cm) YLP(mrad)
 !< *******************************************************************
        SUBROUTINE randali
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/ALIN/XL,YL,XPL,YPL
        common/faisc/f(10,iptsz),imax,ngood
@@ -22649,7 +22649,7 @@
 !! print first and second order matrix of a lens
 !< *******************************************************************
        SUBROUTINE matrix
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        COMMON /BLOC11/ R(6,6), T(6,6,6)
        COMMON/SECDR/ISEOR
        LOGICAL ISEOR
@@ -22681,7 +22681,7 @@
 !!     z (m)   E(z) is normalized
 !< *******************************************************************
        SUBROUTINE egun(fmult,indp)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        common/ttfc/tk,t1k,t2k,sk,s1k,s2k,fh
        common/faisc/f(10,iptsz),imax,ngood
@@ -23028,7 +23028,7 @@
 !!      SCE(10)=same meaning as SCE10 above
 !< *******************************************************************
        SUBROUTINE scheff1_swesson(int)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/DYN/TREF,VREF
        COMMON/CMPTE/IELL
@@ -23435,7 +23435,7 @@
 !!           0  0  0. 0. 0. 0. 0. 0. 0. 0. 0. 0
 !< *******************************************************************
        SUBROUTINE cpardyn(pib)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
        common/rf1ptq/tvolt,avolt,fph,mlc,nceltot
        common/rf2ptq/rfq1(500),rfq2(500),rfq3(500),rfq4(500),rfq6(500)
@@ -23977,7 +23977,7 @@
 !!      n integer order    z argument
 !< *******************************************************************
        function bint(n,z)
-        implicit real*8 (a-h,o-z)
+        implicit real(8) (a-h,o-z)
         COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
         dimension ui(16),wi(16)
 !   GAUSS n=16 de -1. a 1
@@ -24005,7 +24005,7 @@
 !! outside to inside (+/-) pi w.r.t.the synchronous particle
 !< *******************************************************************
        SUBROUTINE accep_rfq(pib)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter(iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
        common/faisc/f(10,iptsz),imax,ngood
@@ -24134,7 +24134,7 @@
 !!
 !< *******************************************************************
        SUBROUTINE rfq_parm
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/RIGID/BORO
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
@@ -25121,7 +25121,7 @@
 !!  solid stripper foils for 'slow' hadron particles
 !< *******************************************************************
         SUBROUTINE stripp
-        implicit real*8 (a-h,o-z)
+        implicit real(8) (a-h,o-z)
         parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
         COMMON /SPL/X(4000),Y(4000),S(5000),P(5000),Q(5000)
         common/strip/atm,qs,atms,ths,qop,sqst(6),anp,nqst
@@ -25377,7 +25377,7 @@
 !         s : ecart-type de la distribution
 !         am: moyenne de la distribution
 !         v : nombre aléatoire selon la loi normale
-        implicit real*8 (a-h,o-z)
+        implicit real(8) (a-h,o-z)
         dimension vecx(1)
         a=0.
         do i=1,24
@@ -25397,7 +25397,7 @@
 !!       RS: radial distance of pole tip from axis (cm)
 !< *******************************************************************
        SUBROUTINE qelec(volt,xlqua,rs)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/FENE/WDISP,WPHAS,WX,WY,RLIM,IFW
        COMMON/TTFC/TK,T1K,T2K,SK,S1K,S2K,FH
@@ -25429,7 +25429,7 @@
        common/tofev/ttvols
        COMMON/ITVOLE/ITVOL,IMAMIN
        logical itvol,imamin
-       REAL*8 L,KQ2,KS2
+       real(8) L,KQ2,KS2
        dimension trans(1)
        character*1 cr
        ilost=0
@@ -25608,7 +25608,7 @@
 !!       RS: radial distance of pole tip from the axis (cm)
 !< *******************************************************************
        SUBROUTINE qfk (ityqu,arg,xlqua,rs)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/FENE/WDISP,WPHAS,WX,WY,RLIM,IFW
        COMMON/TTFC/TK,T1K,T2K,SK,S1K,S2K,FH
@@ -25641,7 +25641,7 @@
        COMMON/ITVOLE/ITVOL,IMAMIN
        common/qfkd/ityq
        logical itvol,imamin,ityq
-       REAL*8 L,KQ2,KS2
+       real(8) L,KQ2,KS2
        dimension trans(1)
        character*1 cr
        ilost=0
@@ -25880,7 +25880,7 @@
 !! series expansion
 !< *******************************************************************
        SUBROUTINE cavnum
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/TTFS/DYNT(MAXCELL),DYNTP(MAXCELL),DYNTPP(MAXCELL),
      *   DYNE0(MAXCELL),DYNPH(MAXCELL),DYNLG(MAXCELL),FHPAR,NC
@@ -26297,7 +26297,7 @@
 !! average k (cm-1)
 !< *******************************************************************
        SUBROUTINE phcrest(phi0,ylg,ncell,zcrest)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/cavnum1/xnh,xpas,fmult,npt
        common/cavnum2/b0,b1,b2,b3,b4,b5
        common/cavnum3/bgt0,bgt1,bgt2,bgt3,bgt4,bgt5
@@ -26367,7 +26367,7 @@
 !! computation of the phase giving the maximum energy gain)
 !< *******************************************************************
        SUBROUTINE phcrest1(phi0,ylg,ncell)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/cavnum1/xnh,xpas,fmult,npt
        common/cavnum2/b0,b1,b2,b3,b4,b5
        common/cavnum3/bgt0,bgt1,bgt2,bgt3,bgt4,bgt5
@@ -26496,7 +26496,7 @@
 !! gam4 = relativistic gamma,  t4 = tof (cavity)
 !< *******************************************************************
        SUBROUTINE dwref(phi0,gam5,t5)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/cavnum1/xnh,xpas,fmult,npt
        common/cavnum2/b0,b1,b2,b3,b4,b5
        common/cavnum5/tspl0,tspl1,tspl2,tspl3,tspl4,tspl5
@@ -26609,7 +26609,7 @@
 !! SUBROUTINE itrd3
 !< *******************************************************************
        SUBROUTINE itrd3
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/cell/yf(10000),xf(10000),xlim(15),flength,fhc,att,
      *             npoint(15),ncell
        common/consta/vl,pi,xmat,rpel,qst
@@ -26657,7 +26657,7 @@
 !! dwref)
 !< *******************************************************************
        SUBROUTINE fposbbb(xlcum,fposs,jx)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/cavnum1/xnh,xpas,fmult,npt
        common/cavnum5/tspl0,tspl1,tspl2,tspl3,tspl4,tspl5
        common/cavnum6/fpos0,fpos1,fpos2,fpos3,fpos4,fpos5
@@ -26729,7 +26729,7 @@
 !! dwref1)
 !< *******************************************************************
        SUBROUTINE fposbb(xlcum)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/cavnum1/xnh,xpas,fmult,npt
        common/cavnum5/tspl0,tspl1,tspl2,tspl3,tspl4,tspl5
        common/cavnum6/fpos0,fpos1,fpos2,fpos3,fpos4,fpos5
@@ -26786,7 +26786,7 @@
 !! electric field at the 6 Bode's positions in the step
 !< *******************************************************************
        SUBROUTINE fposb
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/cavnum1/xnh,xpas,fmult,npt
        common/cavnum5/tspl0,tspl1,tspl2,tspl3,tspl4,tspl5
        common/cavnum6/fpos0,fpos1,fpos2,fpos3,fpos4,fpos5
@@ -26843,7 +26843,7 @@
 !! not used in the code
 !< *******************************************************************
        SUBROUTINE sposb
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/cavnum1/xnh,xpas,fmult,npt
        common/cavnum5/tspl0,tspl1,tspl2,tspl3,tspl4,tspl5
        common/cavnum6/fpos0,fpos1,fpos2,fpos3,fpos4,fpos5
@@ -26900,7 +26900,7 @@
 !! energy gain over the step
 !< *******************************************************************
        FUNCTION xi1(phi0,t0,t5)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/cavnum1/xnh,xpas,fmult,npt
        common/cavnum2/b0,b1,b2,b3,b4,b5
        common/cavnum5/tspl0,tspl1,tspl2,tspl3,tspl4,tspl5
@@ -26933,7 +26933,7 @@
 !! coupling terms in R and R' (energy gain)
 !< *******************************************************************
        FUNCTION xi2(phi0,t0)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/cavnum1/xnh,xpas,fmult,npt
        common/cavnum2/b0,b1,b2,b3,b4,b5
        common/cavnum5/tspl0,tspl1,tspl2,tspl3,tspl4,tspl5
@@ -26964,7 +26964,7 @@
 !! transverse motion field dE/dt
 !< *******************************************************************
        FUNCTION xj1(phi0,t0)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/cavnum1/xnh,xpas,fmult,npt
        common/cavnum2/b0,b1,b2,b3,b4,b5
        common/cavnum3/bgt0,bgt1,bgt2,bgt3,bgt4,bgt5
@@ -26999,7 +26999,7 @@
 !! transverse motion field dE/dt
 !< *******************************************************************
        FUNCTION xj2(phi0,t0)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/cavnum1/xnh,xpas,fmult,npt
        common/cavnum2/b0,b1,b2,b3,b4,b5
        common/cavnum3/bgt0,bgt1,bgt2,bgt3,bgt4,bgt5
@@ -27032,7 +27032,7 @@
 !! transverse motion field E*E
 !< *******************************************************************
        FUNCTION xe21(phi0,t0)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/cavnum1/xnh,xpas,fmult,npt
        common/cavnum2/b0,b1,b2,b3,b4,b5
        common/cavnum4/bge0,bge1,bge2,bge3,bge4,bge5
@@ -27072,7 +27072,7 @@
 !! transverse motion for field E*E
 !< *******************************************************************
        FUNCTION xe22(phi0,t0)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        common/cavnum1/xnh,xpas,fmult,npt
        common/cavnum2/b0,b1,b2,b3,b4,b5
        common/cavnum4/bge0,bge1,bge2,bge3,bge4,bge5
@@ -27114,7 +27114,7 @@
 !! dynamics of the bunch
 !< *******************************************************************
        SUBROUTINE bcnum(phref,ylg,ncell)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/DYN/TREF,VREF
        COMMON/SC3/BEAMC,SCDIST,SCE10,CPLM,ECT,APL,ICHAES,ISCSP
@@ -27323,7 +27323,7 @@
 !!      ifw = 11 ===> wdisp = dW (MeV) relative to REF
 !< *******************************************************************
        SUBROUTINE reject(ilost)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
        COMMON/TTFC/TK,T1K,T2K,SK,S1K,S2K,FH
@@ -27489,7 +27489,7 @@
 !< *******************************************************************
        SUBROUTINE aimalv (ANGL,RMO,BAIM,XN,XB,EK1,EK2,PENT1,RAB1,
      *                   SK1,SK2,PENT2,RAB2)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/TTFC/TK,T1K,T2K,SK,S1K,S2K,FH
        COMMON/SC3/BEAMC,SCDIST,SCE10,CPLM,ECT,APL,ICHAES,ISCSP
@@ -27505,12 +27505,12 @@
        COMMON/QMOYEN/QMOY
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
        COMMON /BLOC23/ H, DEVI, NB, BDB,L
-       real*8 L,NB
+       real(8) L,NB
        COMMON/PORO/IROT1,IROT2
        LOGICAL IROT1,IROT2
        COMMON /BLOC11/ R(6,6), T(6,6,6)
        COMMON /BLOC21/ BE, APB(2), LAYL, LAYX, RABT
-       real*8 LAYL, LAYX
+       real(8) LAYL, LAYX
        COMMON/PLTPRF/SPRFX(3000),SPRFY(3000),SPRFL(3000),SPRFW(3000),
      X               SPRFP(3000),SPRNG(3000),IPRF
        common/rander/ialin
@@ -27963,7 +27963,7 @@
 !! With matrix elements from F.Hinterberger to Triumf note TRI-DN-05-7
 !< *******************************************************************
       SUBROUTINE deflect(fdtot)
-      IMPLICIT REAL*8(A-Z)
+      implicit real(8)(A-Z)
       COMMON /BLOC11/ R(6,6), T(6,6,6)
       common /edef/avb,drad,kx2,ky2,l
 ! --- convert drad, kx2 , ky2 in m
@@ -28082,7 +28082,7 @@
 !!   qst: electric charge
 !< *******************************************************************
        SUBROUTINE e_deflec
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/TTFC/TK,T1K,T2K,SK,S1K,S2K,FH
        COMMON/SC3/BEAMC,SCDIST,SCE10,CPLM,ECT,APL,ICHAES,ISCSP
@@ -28098,7 +28098,7 @@
        COMMON/QMOYEN/QMOY
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
        common /edef/avb,drad,kx2,ky2,L
-       real*8 L,kx2,ky2
+       real(8) L,kx2,ky2
        COMMON /BLOC11/ R(6,6), T(6,6,6)
        COMMON/PLTPRF/SPRFX(3000),SPRFY(3000),SPRFL(3000),SPRFW(3000),
      X               SPRFP(3000),SPRNG(3000),IPRF
@@ -28367,7 +28367,7 @@
 !! select the space charge method (optical lenses)
 !< *******************************************************************
        SUBROUTINE cesp(xlqua)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/SC3/BEAMC,SCDIST,SCE10,CPLM,ECT,APL,ICHAES,ISCSP
        COMMON/CDEK/DWP(iptsz)
@@ -28420,7 +28420,7 @@
 !! partial R.M.S. (called by SCHEFF_sep)
 !< *******************************************************************
        SUBROUTINE sizer(ist,xrms,yrms,zrms)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/part/xc(iptsz),yc(iptsz),zc(iptsz)
        COMMON/CGRMS/xsum,ysum,zsum
@@ -28463,7 +28463,7 @@
 !! called by SCHEFF or SCHERM
 !< *******************************************************************
        SUBROUTINE pintim1(ist)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        common/faisc/f(10,iptsz),imax,ngood
        COMMON/QMOYEN/QMOY
@@ -28560,7 +28560,7 @@
 !! check if the bunches in the beam are separated or not
 !< *******************************************************************
        SUBROUTINE b_sep(isepa)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/part/xc(iptsz),yc(iptsz),zc(iptsz)
        COMMON/CGRMS/xsum,ysum,zsum
@@ -28681,7 +28681,7 @@
 !!         sce(9)=0
 !< *******************************************************************
        SUBROUTINE schefini
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/DYN/TREF,VREF
        COMMON/TTFC/TK,T1K,T2K,SK,S1K,S2K,FH
@@ -28763,7 +28763,7 @@
 !!         sce(9)=0
 !< *******************************************************************
        SUBROUTINE scheff1(idum)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/DYN/TREF,VREF
        COMMON/CMPTE/IELL
@@ -29222,7 +29222,7 @@
 !!         sce(9)=0
 !< *******************************************************************
        SUBROUTINE scheff_sep
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/DYN/TREF,VREF
        COMMON/CMPTE/IELL
@@ -29646,7 +29646,7 @@
 !!       voltage for negative deflection)
 !< *******************************************************************
        SUBROUTINE rfkick(v,dp,harm,nvf)
-       implicit real*8 (a-h,o-z)
+       implicit real(8) (a-h,o-z)
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/RIGID/BORO
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
