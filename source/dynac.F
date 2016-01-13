@@ -47,7 +47,7 @@
 !! THIS SOFTWARE WAS ORIGINALLY PRODUCED BY CERN/PS, CEN/SACLAY
 !!
 !! @version 6.0R15
-!! @date 10-Jan-2016
+!! @date 13-Jan-2016
 !!
 !! @author P. LAPOSTOLLE  CONSULTANT (Paris, France)
 !! @author E. TANKE       ESS (Lund, Sweden)
@@ -165,9 +165,8 @@
      *          'QUAELEC','QUAFK','CAVNUM','EDFLEC','EMITL',
      *          'RFKICK','FIRORD','DCBEAM','T3D'/
        integer narg,i
-       character inarg*80,myarg(10)*80,myfile*80,wfile*80,infiln*80,
-     *           shortl*80
-       character plane*10
+       character inarg*80,myarg(10)*80,myfile*80,wfile*80,infiln*80
+       character plane*10,shortl*80
        logical g77,gfortran
 ! if mg=.true., use MINGW on windows, which has a different result for
 ! ctime function than standard gfortran
@@ -454,7 +453,7 @@
        WRITE(6,3101)
        WRITE(16,3101)
        WRITE(12,3101)
-3101   FORMAT('****** DYNAC V6.0R15 (Beta test), 10-Jan-2015 *******')
+3101   FORMAT('****** DYNAC V6.0R15 (Beta test), 13-Jan-2015 *******')
        if (gfortran) then
          write(16,*) 'Input file: ',infiln
          write(12,*) 'Input file: ',infiln
@@ -3993,7 +3992,7 @@
        common/mcs/imcs,ncstat,cstat(20)
        dimension charge(20),pcent(20),charm(20),pc(20),eoff(20),vecx(1)
        dimension foo(20,9),NDP(20)
-       character*80 myfile
+       character myfile*80
        READ(IN,*) NCSTAT
        N=NCSTAT
        IF (N.GT.20) THEN
@@ -5013,7 +5012,7 @@
        common/rec/irec
        common/etcom/cog(8),exten(17),fd(iptsz)
        logical chasit
-       character*80 wfile
+       character wfile*80
 !      PRINT OF PARTICLE COORDINATES
        ecog=0.
        tcog=0.
@@ -5389,14 +5388,8 @@
        mmax=mmaxi
        nmax=nmaxxi
        ect=4.
-!       call mytime(iitime)
-!       write(16,*) 'PINTFAST started at ',iitime
        call pintfast
-!       call mytime(iitime)
-!       write(16,*) 'PINTFAST end, HCOEF started at ',iitime
        call hcoef
-!       call mytime(iitime)
-!       write(16,*) 'HCOEF ended at ',iitime
        return
        end
 !> *******************************************************************
@@ -11399,7 +11392,8 @@
        common/mcs/imcs,ncstat,cstat(20)
        common/trace3d/trace3h(100),trace3t(maxcell1),tif,kt3h,kt3t,fid
        common/trace3e/tracebi(6),traceei(3)
-       character*128 trace3h,trace3t,tif
+       character trace3h*128,trace3t*128,tif*128
+       logical acpt
        logical dave
 !       dimension foo(9)
         DAVE=.FALSE.
@@ -11576,8 +11570,8 @@
        logical ifcont
        common/trace3d/trace3h(100),trace3t(maxcell1),tif,kt3h,kt3t,fid
        common/trace3e/tracebi(6),traceei(3)
-       character*128 trace3h,trace3t,tif
-       logical iesp,chasit,dave
+       character trace3h*128,trace3t*128,tif*128
+       logical iesp,chasit,dave,acpt
 !       dimension fn(9,iptsz),foo(9),so(6),vecx(1)
        dimension vecx(1)
        read(in,*)LOI,itwiss
@@ -12437,8 +12431,8 @@
        common/trace3e/tracebi(6),traceei(3)
        common/t3dfld/fldctr(15),zend(15),T3D
        logical T3D
-       character*128 trace3h,trace3t,tif
-       logical dave
+       character trace3h*128,trace3t*128,tif*128
+       logical dave,acpt
        read(in,*) iflag
        if(iflag.eq.0 .or. iflag.eq.100)
      *   write(16,*)'Standard file, phase in rad'
@@ -12565,7 +12559,7 @@
        common/trace3e/tracebi(6),traceei(3)
        common/t3dfld/fldctr(15),zend(15),T3D
        logical T3D
-       character*128 trace3h,trace3t,tif
+       character trace3h*128,trace3t*128,tif*128
        logical shift,chasit,dave
 !      FH :INITIAL FREQENCY (hertz)
 ! Use frequency from part. dist. file to calculate f(6,i)
@@ -12909,14 +12903,14 @@
        common/tofev/ttvols
        common/pstpla/tstp
        common/trace3d/trace3h(100),trace3t(maxcell1),tif,kt3h,kt3t,fid
-       character*128 trace3h,trace3t,tif
+       character trace3h*128,trace3t*128,tif*128
 ! --- synchronous particle:
 ! *****     DWRFS(MeV): energy gain
 ! *****     SPHRFS(rad): phase jump
 ! *****     PHRFS(rad):phase RF
 ! *****       common/parmrf/DWRFS,SPHRFS,PHRFS,ngdrf
        logical iesp,irstay,iavp,ispcel,iemgrw
-       character cr*1
+       CHARACTER cr*1
 !         SHIFT =TRUE: cog and synchronous particle are independent
 !         SHIFT =FALSE: cog and synchronous particle are coinciding
        LOGICAL SHIFT,CHASIT,ITVOL,IMAMIN,DAVE,ICHAES
@@ -13448,7 +13442,6 @@
 ! *****      PHRFS(rad):  phase
 ! *****     NGDRF:  position of the reference in the array f(10,iptsz)
 ! ****       common/parmrf/DWRFS,SPHRFS,PHRFS,ngdrf
-!      CHARACTER*1 CHOPT
        FH0=FH/VL
 !   iesp is used in s.c. routines : iesp=.false. == > accel. element
        iesp=.false.
@@ -13749,7 +13742,6 @@
        logical itvol,imamin,ispcel
        logical iesp,iavp,ichaes,irstay
        dimension vecx(1)
-!      CHARACTER*1 CHOPT
        ttvol=ttvols*fh
        FH0=FH/VL
        beref=sqrt(1.-1./(gamref*gamref))
@@ -14425,7 +14417,7 @@
        common/tofev/ttvols
        common/fcont/ifcont
        logical ifcont
-       character cr*1
+       CHARACTER cr*1
        dimension vecx(1)
        LOGICAL chasit,itvol,imamin,shift
 !      ENVELOPE
@@ -14770,7 +14762,7 @@
 !!  -----ANGULAR DISPLACEMENTS DUE TO STEERING
 !< *******************************************************************
        SUBROUTINE steer(fld,nvf)
-       IMPLICIT REAL*8 (A-H,O-Z)
+       implicit real*8 (A-H,O-Z)
 !     4/15/14 - Daniel Alt: Added electrostatic steerers.
        parameter (iptsz=100002,maxcell=3000,maxcell1=3000)
        COMMON/TTFC/TK,T1K,T2K,SK,S1K,S2K,FH
@@ -14787,7 +14779,7 @@
      X               SPRFP(3000),SPRNG(3000),IPRF
        COMMON/DAVCOM/dav1(maxcell1,40),davtot,iitem(maxcell1),idav
        COMMON/COMPT/NRRES,NRTRE,NRBUNC,NRDBUN
-       character cr*1
+       CHARACTER cr*1
        logical iesp,ichaes
 ! print out on terminal of transport element # on one and the same line
        NRTRE=NRTRE+1
@@ -14889,7 +14881,7 @@
        common/shortl/davprt
        logical dave,chasit
        dimension foo(20,9),NDP(20)
-       character*80 davprt(maxcell1),shortl
+       character davprt(maxcell1)*80,shortl*80
        nbemit=nbemit+1
        do i=1,ngood
          ichxyz(i)=1
@@ -15194,7 +15186,7 @@
        common /consta/ vl, pi, xmat, rpel, qst
        common/trace3d/trace3h(100),trace3t(maxcell1),tif,kt3h,kt3t,fid
        common/trace3e/tracebi(6),traceei(3)
-       character*128 trace3h,trace3t,tif
+       character trace3h*128,trace3t*128,tif*128
        iarg=1
        call cdg(iarg)
        CALL EXT2D(1)
@@ -15875,7 +15867,7 @@
        SUBROUTINE ytzp
        implicit real*8 (a-h,o-z)
        parameter(iptsz=100002,maxcell=3000,maxcell1=3000)
-       CHARACTER*80 TEXT,PATITL
+       CHARACTER TEXT*80,PATITL*80
        COMMON /CONSTA/ VL, PI, XMAT, RPEL, QST
        COMMON/TTFC/TK,T1K,T2K,SK,S1K,S2K,FH
        common/faisc/f(10,iptsz),imax,ngood
@@ -16248,7 +16240,7 @@
        SUBROUTINE grcomp(text,iskale)
        implicit real*8 (a-h,o-z)
        parameter(iptsz=100002,maxcell=3000,maxcell1=3000)
-       CHARACTER*80 TEXT,PATITL
+       CHARACTER TEXT*80,PATITL*80
        COMMON/TTFC/TK,T1K,T2K,SK,S1K,S2K,FH
        common/faisc/f(10,iptsz),imax,ngood
        COMMON/STIS/suryth,surzph,enedep,ecogde,TESTCA
@@ -16514,7 +16506,7 @@
 ! ****       common/parmrf/DWRFS,SPHRFS,PHRFS,ngdrf
        logical iesp,ichaes,irstay,iavp,ispcel,ifield,iemgrw
        LOGICAL SHIFT,CHASIT,ITVOL,IMAMIN,DAVE
-       character cr*1
+       CHARACTER cr*1
 !************************************************************
 !    XESLN : NEGATIVE LENGHT OF THE DRIFT FOLLOWING THE GAP
 !    IF XESLN N.E.0 THEN THE CHARGE SPACE EFFECT IMPLIES THE
@@ -18182,7 +18174,7 @@
 !     RMSN  :envelope size in multiples of RMS size
 !     ZDEB : Starting position of the plot
 !     ZFIN : End of the plot
-       CHARACTER*80 CAR,text
+       CHARACTER CAR*80,text*80
        COMMON/DPLT/ZDEB,ZFIN,YWMAX,YPMAX,RMSN
        COMMON/PLTPRF/SPRFY(3000),SPRFZ(3000),SPRFL(3000),SPRFW(3000),
      X               SPRFP(3000),SPRNG(3000),IPRF
@@ -18264,7 +18256,7 @@
        SUBROUTINE plprf2
        implicit real*8 (a-h,o-z)
        dimension xx(3000),yy(3000)
-       CHARACTER*80 CAR,text
+       CHARACTER CAR*80,text*80
        common/prof/car
        COMMON/DPLT/ZDEB,ZFIN,YWMAX,YPMAX,RMSN
        COMMON/PLTPRF/SPRFY(3000),SPRFZ(3000),SPRFL(3000),SPRFW(3000),
@@ -19174,9 +19166,9 @@
        COMMON/DYNI/VREFI,TREFI,FHINIT,ACPT
        common/qfkd/ityq
        common/shortl/davprt
-       LOGICAL ISEOR
+       LOGICAL ISEOR,acpt
        LOGICAL DAVE,CHASIT,ICHAES,ITVOL,IMAMIN,ityq
-       character*80 davprt(maxcell1)
+       character davprt(maxcell1)*80
 ! dave end
        WRITE(12,3334)
 3334   FORMAT('*****************************************************')
@@ -19792,7 +19784,7 @@
 !!                 OTHERWIZE DECLARED *********
 !< *******************************************************************
       SUBROUTINE POFAR1(GAP)
-      IMPLICIT REAL*8(A-Z)
+      implicit real*8(A-Z)
 !      -- POLE FACE ROTATION
       COMMON /BLOC21/ BE, APB(2), LAYL, LAYX, RABT
       COMMON /BLOC23/ H, DEVI, NB, BDB,L
@@ -19858,7 +19850,7 @@
 !!                 OTHERWIZE DECLARED *********
 !< *******************************************************************
       SUBROUTINE POFAR2(GAP)
-      IMPLICIT REAL*8(A-Z)
+      implicit real*8(A-Z)
 !      -- POLE FACE ROTATION
       COMMON /BLOC21/ BE, APB(2), LAYL, LAYX, RABT
       COMMON /BLOC23/ H, DEVI, NB, BDB,L
@@ -19922,7 +19914,7 @@
 !!                 OTHERWIZE DECLARED *********
 !< *******************************************************************
       SUBROUTINE BENMAG(sbet,fdtot)
-      IMPLICIT REAL*8(A-Z)
+      implicit real*8(A-Z)
 !      -- POLE FACE ROTATION
       COMMON /BLOC21/ BE, APB(2), LAYL, LAYX, RABT
       COMMON /BLOC23/ H, DEVI, NB, BDB,L
@@ -20875,8 +20867,8 @@
        LOGICAL IEMGRW
        common/cgtof/charm(20),cgtdv(20),nbch(20),netac
        COMMON/QSEX/L,KQ2,KS2
-       character cr*1
        REAL*8 L,KQ2,KS2
+       character cr*1
 ! print out on terminal of transport element # on one and the same line
        NRTRE=NRTRE+1
        cr=char(13)
@@ -21067,7 +21059,7 @@
 !!                 OTHERWIZE DECLARED *********
 !< *******************************************************************
       SUBROUTINE ELQUA
-      IMPLICIT REAL*8(A-Z)
+      implicit real*8(A-Z)
       COMMON/QSEX/L,KQ2,KS2
       COMMON /BLOC11/ R(6,6), T(6,6,6)
       COMMON/SECDR/ISEOR
@@ -21133,7 +21125,7 @@
 !!                 OTHERWIZE DECLARED *********
 !< *******************************************************************
       SUBROUTINE ELSEX
-      IMPLICIT REAL*8(A-Z)
+      implicit real*8(A-Z)
       COMMON/QSEX/L,KQ2,KS2
       COMMON /BLOC11/ R(6,6), T(6,6,6)
       COMMON/SECDR/ISEOR
@@ -21194,7 +21186,7 @@
 !!                 OTHERWIZE DECLARED *********
 !< *******************************************************************
       SUBROUTINE ELQSEX
-      IMPLICIT REAL*8(A-Z)
+      implicit real*8(A-Z)
       COMMON/QSEX/L,KQ2,KS2
       COMMON /BLOC11/ R(6,6), T(6,6,6)
       COMMON/SECDR/ISEOR
@@ -21551,7 +21543,7 @@
        common/itvole/itvol,imamin
        common/tofev/ttvols
        common/trace3d/trace3h(100),trace3t(maxcell1),tif,kt3h,kt3t,fid
-       character*128 trace3h,trace3t,tif
+       character trace3h*128,trace3t*128,tif*128
        logical itvol,imamin
 !       dimension rs(6,6),rcul(6,6)
        logical iesp,ichaes,shift,ialin,iemgrw
@@ -22047,7 +22039,7 @@
 !!                OTHERWIZE DECLARED *********
 !< *******************************************************************
       SUBROUTINE elsq
-      IMPLICIT REAL*8(A-Z)
+      implicit real*8(A-Z)
       COMMON/RIGID/BORO
       COMMON/SLQ/L,KSO,KQO
       COMMON /BLOC11/ R(6,6), T(6,6,6)
@@ -23451,7 +23443,7 @@
        common/spff/xspf(400),yspf(400),sf(500),pf(500),qf(500)
        common/rms_prfl/npt,npf
        dimension a(16),vptq(16)
-       character*80 vprof,fprof
+       character vprof*80,fprof*80
        logical even,evens,evenr
 !  Do so by shifting particles belonging to the same bunch outside the (+/-) pib/2 (rad) window
 !   w.r.t.the REF to inside the (+/-) pib/2 window w.r.t.the COG
@@ -24020,7 +24012,6 @@
        common/rec/irec
        common/etcom/cog(8),exten(17),fd(iptsz)
        logical chasit
-!       character*80 wfile
        do ite=1,3
          do i=1,ngood
            drad=(f(6,i)-tref)*fh
@@ -24718,7 +24709,7 @@
              rpv=pavolt*rfq9(ncell)
              erf=-rpv/(r0*r0)*c2t*rm
 !*et*2015-07-07*s
-!            erf=erf+0.5*cay*(av10b*bi1*skz+3.*a31vb*bi13*skz3)
+!             erf=erf+0.5*cay*(av10b*bi1*skz+3.*a31vb*bi13*skz3)
              erf=erf+0.5*cay*(a10vb*bi1*skz+3.*a31vb*bi13*skz3)
 !*et*2015-07-07*e
              etf=rpv/(r0*r0)*s2t*rm
@@ -25937,15 +25928,14 @@
        common/t3dfld/fldctr(15),zend(15),T3D
 !       logical T3D,xiset
        logical T3D
-!       character*128 trace3h,trace3t,tif,tifa,tifb
-       character*128 trace3h,trace3t,tif
+       character trace3h*128,trace3t*128,tif*128
 !********************************************
        common/xitrd3/bcour1(15),bcour2(15),tr3dw(15),tr3ph(15),
      *  t0tr3d(15)
 !*ET*2015*Jul*E
        logical iesp,ichaes,irstay,iavp,ispcel,ifield,iemgrw
        LOGICAL SHIFT,CHASIT,ITVOL,IMAMIN,DAVE,JELEC
-       character cr*1
+       CHARACTER cr*1
 !************************************************************
 !    XESLN : NEGATIVE LENGHT OF THE DRIFT FOLLOWING THE GAP
 !    IF XESLN N.E.0 THEN THE CHARGE SPACE EFFECT IMPLIES THE
@@ -27964,7 +27954,7 @@
 !! With matrix elements from F.Hinterberger to Triumf note TRI-DN-05-7
 !< *******************************************************************
       SUBROUTINE deflect(fdtot)
-      IMPLICIT REAL*8(A-Z)
+      implicit real*8(A-Z)
       COMMON /BLOC11/ R(6,6), T(6,6,6)
       common /edef/avb,drad,kx2,ky2,l
 ! --- convert drad, kx2 , ky2 in m
