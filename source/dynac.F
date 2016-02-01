@@ -453,7 +453,7 @@
        WRITE(6,3101)
        WRITE(16,3101)
        WRITE(12,3101)
-3101   FORMAT('****** DYNAC V6.0R15 (Beta test), 13-Jan-2015 *******')
+3101   FORMAT('****** DYNAC V6.0R15 (Beta test), 13-Jan-2016 *******')
        if (gfortran) then
          write(16,*) 'Input file: ',infiln
          write(12,*) 'Input file: ',infiln
