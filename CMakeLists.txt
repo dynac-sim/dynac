@@ -38,6 +38,7 @@ include(CTest)
 
 add_subdirectory(source)
 add_subdirectory(plot)
+add_subdirectory(converters)
 add_subdirectory(datafiles)
 add_subdirectory(doc)
 
