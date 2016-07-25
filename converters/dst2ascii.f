@@ -3,7 +3,7 @@
 c ******************************************************************
 C Version 1.0  31-Oct-2013
 C      THIS SOFTWARE WAS ORIGINALLY PRODUCED BY CERN/PS, CEN/SACLAY
-C      AUTHORS :E. TANKE       
+C      AUTHORS :E. TANKE
 c ******************************************************************
 C Converts TRACEWIN binary particle distribution file to DYNAC ascii
 C standard
@@ -134,9 +134,9 @@ c       open(in,file=myarg(2),form='unformatted',recl=4800031,
        write(iou,*) imax,' 0. 0.'
        do k=1,imax
          write(iou,*)f(1,k),f(2,k),f(3,k),f(4,k),pf*f(5,k),f(6,k)
-       enddo  
-       GOTO 10 
-c8      WRITE( *, * ) 'I/O error # ', N, ', on 7'     
+       enddo
+       GOTO 10
+c8      WRITE( *, * ) 'I/O error # ', N, ', on 7'
        goto 20
 10     write(6,*) 'np,I,freq,Wrest=',imax,cur,freq,energy
 20     close(in)
