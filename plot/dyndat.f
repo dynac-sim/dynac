@@ -1,23 +1,25 @@
         PROGRAM dyndat
-        implicit real*8 (a-h,o-z)
-        CHARACTER*11 pfnm(20),strng
+        implicit real(8) (a-h,o-z)
+        CHARACTER*(255) pfnm(20)
+        CHARACTER*(11) strng
 c        CHARACTER*11 pfnm(20),prnm(20),strng
-        character*5 cccst(20)
+        character*(5) cccst(20)
         common/prtcnt/imax
         common/wfil2/title,labels
         common/fichier/filenm,pfnm
-        common/opsys/opsy
+        common/opsys/opsy,termtype
         common/chstat1/cst(250002),cstat(20),fcstat(20),ncstat,mcstat
         common/chstat2/cccst
         common/pscl/yminsk,iskale
+        common/files/fname,lpath
         DIMENSION dx(250002),dxp(250002),data(10)
-        CHARACTER*80 title,command,junk
-        CHARACTER*40 labels(20)
+        CHARACTER*(80) title
+        CHARACTER*(40) labels(20)
         character filenm*23
-        character*1 fsave
-        character*6 fmt
-        character*132 ras
-        CHARACTER backslash
+        character fsave*1
+        character fmt*6
+        character ras*132
+        CHARACTER backslash*2
         parameter (backslash="\\")
         dimension icstat(20),zstat(20)
         dimension cx(250002),cxp(250002),ctrx1(250002),ctry1(250002)
@@ -25,12 +27,65 @@ c        CHARACTER*11 pfnm(20),prnm(20),strng
         dimension cz(250002),czp(250002),ctrx3(250002),ctry3(250002)
         common/wfil20/xmin(10),xmax(10),ymin(10),ymax(10)
         common/mingw/mg
+        character*(256) command,ppath,inarg,fname,myarg(10),txt
+        character sepa*1
+        character*(16) termtype
         logical mg
+        dimension larg(4)
 c if mg=.true., use MINGW on windows, which has a different result for ctime function than standard gfortran
 c default is mg=.false.        
         mg=.false.
-        if(iargc() .ge. 1) then
-          call getArg(1, command)
+        ppath=''
+        lpath=0
+        command=''
+        fname=''
+        termtype=''
+        sepa=''
+        narg=0
+!        write(6,*) 'In dyndat'
+        DO
+          call get_command_argument(narg, inarg, length, istat)
+          larg(narg+1)=LEN_TRIM(inarg)
+          if(larg(narg+1).eq.0) exit
+!          write(6,*) narg,larg(narg+1),inarg(1:larg(narg+1)),length,
+!     *     istat
+          narg=narg+1
+          myarg(narg)=TRIM(inarg)
+        ENDDO
+!        write(6,*) 'Lengths',larg(2),larg(3)
+        if(narg .ge. 2) then
+          txt=myarg(2)
+          if(txt(1:3).eq.'-tt') termtype(1:larg(2)-3)=txt(4:larg(2))
+          txt=myarg(3)
+          if(txt(1:3).eq.'-tt') termtype(1:larg(3)-3)=txt(4:larg(3))
+          txt=myarg(4)
+          if(txt(1:3).eq.'-tt') termtype(1:larg(4)-3)=txt(4:larg(4))
+          if(larg(2).eq.1) then
+            command=myarg(2)
+          else 
+            ppath=myarg(2)
+          endif    
+          if(narg .ge. 3) then
+            if(larg(2).eq.1) then
+              command=myarg(2)
+              ppath=myarg(3)
+            else 
+              ppath=myarg(2)
+              command=myarg(3)
+            endif    
+!            write(6,*) 'SYSTEM=',trim(command)
+!            write(6,*) 'PATHS',trim(ppath)
+!            write(6,*) 'PATHL',ppath
+            lpm=LEN(ppath)
+            do k=lpm,1,-1
+              if(ppath(k:k).eq.'\' .or. ppath(k:k).eq.'/') then
+                lpath=k
+                sepa=ppath(k:k)
+                exit
+              endif  
+            enddo
+            llpath=LEN_TRIM(ppath)
+          endif  
         else
           write(6,'(a)') "For LINUX   GNUPLOT enter L or l"
           write(6,'(a)') "For MAC     GNUPLOT enter M or m"
@@ -48,15 +103,64 @@ c opsy=1 --> LINUX   GNUPLOT version
 c opsy=2 --> WINDOWS GNUPLOT version
 c opsy=3 --> MAC     GNUPLOT version
         if(opsy.eq.1) then
-          write(6,'(A)') 'PLOTIT V2.7 30-Nov-2015 LINUX'
+          write(6,'(A)') 'PLOTIT V2.8 15-Sep-2016 LINUX'
+          if(LEN_TRIM(termtype).eq.0) then
+            write(6,*)'GNUPLOT TERMINAL TYPE NOT DEFINED'
+            termtype='x11'   
+            write(6,*)'USING TERMINAL TYPE ',termtype   
+          else
+            write(6,*)'GNUPLOT TERMINAL TYPE ',termtype   
+          endif    
         elseif(opsy.eq.2) then
-          write(6,'(A)') 'PLOTIT V2.7 30-Nov-2015 WINDOWS'
+          write(6,'(A)') 'PLOTIT V2.8 15-Sep-2016 WINDOWS'
+          if(LEN_TRIM(termtype).eq.0) then
+            write(6,*)'GNUPLOT TERMINAL TYPE NOT DEFINED'
+            termtype='wxt'   
+            write(6,*)'USING TERMINAL TYPE ',termtype   
+          else
+            write(6,*)'GNUPLOT TERMINAL TYPE ',termtype   
+          endif    
         elseif(opsy.eq.3) then
-          write(6,'(A)') 'PLOTIT V2.7 30-Nov-2015 MAC'
+          write(6,'(A)') 'PLOTIT V2.8 15-Sep-2016 MAC'
+          if(LEN_TRIM(termtype).eq.0) then
+            write(6,*)'GNUPLOT TERMINAL TYPE NOT DEFINED'
+            termtype='wxt'   
+            write(6,*)'USING TERMINAL TYPE ',termtype   
+          else
+            write(6,*)'GNUPLOT TERMINAL TYPE ',termtype   
+          endif    
         else
           write(6,*) 'Error in operating system type entry'
           stop
         endif
+!        write(6,*) 'lpath=',lpath
+        if(lpath.ne.0) then
+          if(opsy.ne.2) then
+!            write(6,*) 'PlotpathL=',llpath,ppath(1:llpath)
+            if(ppath(llpath:llpath).eq.'"') llpath=llpath-1
+            if(ppath(llpath:llpath).eq.'/' .or. 
+     *        ppath(llpath:llpath).eq.backslash) then
+              fname=ppath(1:llpath)
+            else
+              llpath=llpath+1
+              ppath(llpath:llpath)=sepa
+              fname=ppath(1:llpath)
+            endif  
+            lpath=llpath
+!            write(6,*) 'PlotpathS=',llpath,ppath(1:llpath)
+          else
+!            write(6,*) 'PlotpathW=',llpath,ppath(1:llpath)            
+            fname=ppath(1:llpath)
+            if(ppath(llpath:llpath).eq.'"') then              
+              ppath(llpath:llpath)=backslash
+              fname=ppath(1:llpath)
+!              write(6,*) 'PlotpathW2=',llpath,ppath(1:llpath)
+            endif  
+            lpath=llpath
+          endif
+        else 
+          ppath=''    
+        endif  
 c V1.2 Original released version, compatible with g77
 c V2.0 Formatting changed to be compatible with gfortran and with WGNUPLOT gp440win32
 c V2.1 Replaced 'dots' with 'points' syntax
@@ -72,8 +176,10 @@ c      copy
 c      Fix color of points used in particle plots for MAC (changed from grey to black)
 c V2.6 Change from 100k to 250k macro particles
 c V2.7 Various changes related to changes in the names of certain GNUPLOT parameters; these
-c      changes in dyndat.f were needed to for instance avoid that the dots in the
-c      particle distributions would no longer be plotted.
+c      changes in dyndat.f were needed to for instance avoid that the dots in the 
+c      particle distributions would no longer be plotted. 
+c V2.8 Also read plotfile path; this was introduced to be compatible with the DYNAC GUI
+C      Allow to read the terminal type for MAC
          write(6,*)
 C igrtyp is type of graph (there is no igrtyp=8,9,10,13,14,15 or 16)
 C single charge state, no zones:
@@ -92,26 +198,50 @@ C
 C        igrtyp=17 or 22 or 27 log scale in bunch profiles
         ncstat=1
         data(1)=0.
-        pfnm(1)='dynac01.plt'
-        pfnm(2)='dynac02.plt'
-        pfnm(3)='dynac03.plt'
-        pfnm(4)='dynac04.plt'
-        pfnm(5)='dynac05.plt'
-        pfnm(6)='dynac06.plt'
-        pfnm(7)='dynac07.plt'
-        pfnm(8)='dynac08.plt'
-        pfnm(9)='dynac09.plt'
-        pfnm(10)='dynac10.plt'
-        pfnm(11)='dynac11.plt'
-        pfnm(12)='dynac12.plt'
-        pfnm(13)='dynac13.plt'
-        pfnm(14)='dynac14.plt'
-        pfnm(15)='dynac15.plt'
-        pfnm(16)='dynac16.plt'
-        pfnm(17)='dynac17.plt'
-        pfnm(18)='dynac18.plt'
-        pfnm(19)='dynac19.plt'
-        pfnm(20)='dynac20.plt'
+        do i=1,20
+          pfnm(i)=''
+        enddo  
+        fname(lpath+1:lpath+11)='dynac01.plt'
+        pfnm(1)=fname(lpath+1:lpath+11)
+        fname(lpath+1:lpath+11)='dynac02.plt'
+        pfnm(2)=fname(lpath+1:lpath+11)
+        fname(lpath+1:lpath+11)='dynac03.plt'
+        pfnm(3)=fname(lpath+1:lpath+11)
+        fname(lpath+1:lpath+11)='dynac04.plt'
+        pfnm(4)=fname(lpath+1:lpath+11)
+        fname(lpath+1:lpath+11)='dynac05.plt'
+        pfnm(5)=fname(lpath+1:lpath+11)
+        fname(lpath+1:lpath+11)='dynac06.plt'
+        pfnm(6)=fname(lpath+1:lpath+11)
+        fname(lpath+1:lpath+11)='dynac07.plt'
+        pfnm(7)=fname(lpath+1:lpath+11)
+        fname(lpath+1:lpath+11)='dynac08.plt'
+        pfnm(8)=fname(lpath+1:lpath+11)
+        fname(lpath+1:lpath+11)='dynac09.plt'
+        pfnm(9)=fname(lpath+1:lpath+11)
+        fname(lpath+1:lpath+11)='dynac10.plt'
+        pfnm(10)=fname(lpath+1:lpath+11)
+        fname(lpath+1:lpath+11)='dynac11.plt'
+        pfnm(11)=fname(lpath+1:lpath+11)
+        fname(lpath+1:lpath+11)='dynac12.plt'
+        pfnm(12)=fname(lpath+1:lpath+11)
+        fname(lpath+1:lpath+11)='dynac13.plt'
+        pfnm(13)=fname(lpath+1:lpath+11)
+        fname(lpath+1:lpath+11)='dynac14.plt'
+        pfnm(14)=fname(lpath+1:lpath+11)
+        fname(lpath+1:lpath+11)='dynac15.plt'
+        pfnm(15)=fname(lpath+1:lpath+11)
+        fname(lpath+1:lpath+11)='dynac16.plt'
+        pfnm(16)=fname(lpath+1:lpath+11)
+        fname(lpath+1:lpath+11)='dynac17.plt'
+        pfnm(17)=fname(lpath+1:lpath+11)
+        fname(lpath+1:lpath+11)='dynac18.plt'
+        pfnm(18)=fname(lpath+1:lpath+11)
+        fname(lpath+1:lpath+11)='dynac19.plt'
+        pfnm(19)=fname(lpath+1:lpath+11)
+        fname(lpath+1:lpath+11)='dynac20.plt'
+        pfnm(20)=fname(lpath+1:lpath+11)
+        fname(lpath+1:lpath+11)=''
         if(opsy.eq.1 .or. opsy.eq.3) then
 c LINUX or MAC
           command(1:40)="test ! -e savedplots && mkdir savedplots"
@@ -128,9 +258,16 @@ C WINDOWS
         endif
         command=""
         IF (data(1).eq.0.) THEN
-           OPEN(unit=66,file='emit.plot')
-           data(1)=1.
-           data(2)=0.
+!          if(opsy.ne.2) then
+!          if(opsy.ne.2) then
+            fname(lpath+1:lpath+9)='emit.plot'
+!          endif  
+!          endif  
+          lfnam=len_trim(fname)  
+!          write(6,*)'Reading ',lfnam,fname
+          OPEN(unit=66,file=fname)
+          data(1)=1.
+          data(2)=0.
         ENDIF
 10      READ(66,*,end=20) igrtyp
         iskale=0
@@ -261,12 +398,13 @@ c              command(1:1)=' '
           if(opsy.eq.1) then
 C LINUX
             command(1:27)="gnuplot -noraise -geometry "
-	      command(28:51)="500x515-250+25 dynac.gnu"
+            command(28:51)="500x515-250+25 dynac.gnu"
             CALL System(COMMAND(1:51))
           elseif(opsy.eq.3) then
 C MAC
-            command(1:27)="gnuplot -noraise dynac.gnu "
-            CALL System(COMMAND(1:27))
+!            command(1:27)="gnuplot -noraise dynac.gnu "
+            command(1:18)="gnuplot dynac.gnu "
+            CALL System(COMMAND(1:18))
           else
 C WINDOWS          
             command(1:18)="wgnuplot dynac.gnu"
@@ -427,12 +565,13 @@ c          write(6,*) junk
           if(opsy.eq.1) then
 C LINUX
             command(1:27)="gnuplot -noraise -geometry "
-	      command(28:51)="500x515-250+25 dynac.gnu"
+            command(28:51)="500x515-250+25 dynac.gnu"
             CALL System(COMMAND(1:51))
           elseif(opsy.eq.3) then
 C MAC
-            command(1:27)="gnuplot -noraise dynac.gnu "
-            CALL System(COMMAND(1:27))
+!            command(1:27)="gnuplot -noraise dynac.gnu "
+            command(1:18)="gnuplot dynac.gnu "
+            CALL System(COMMAND(1:18))
           else
 C WINDOWS          
             command(1:18)="wgnuplot dynac.gnu"
@@ -471,12 +610,13 @@ c x,y envelopes as f(z)
           if(opsy.eq.1) then
 C LINUX
             command(1:27)="gnuplot -noraise -geometry "
-	      command(28:51)="500x515-250+25 dynac.gnu"
+            command(28:51)="500x515-250+25 dynac.gnu"
             CALL System(COMMAND(1:51))
           elseif(opsy.eq.3) then
 C MAC
-            command(1:27)="gnuplot -noraise dynac.gnu "
-            CALL System(COMMAND(1:27))
+!            command(1:27)="gnuplot -noraise dynac.gnu "
+            command(1:18)="gnuplot dynac.gnu "
+            CALL System(COMMAND(1:18))
           else
 C WINDOWS          
             command(1:18)="wgnuplot dynac.gnu"
@@ -509,12 +649,13 @@ c dW/W envelope as f(z)
           if(opsy.eq.1) then
 C LINUX
             command(1:27)="gnuplot -noraise -geometry "
-	      command(28:51)="500x515-250+25 dynac.gnu"
+            command(28:51)="500x515-250+25 dynac.gnu"
             CALL System(COMMAND(1:51))
           elseif(opsy.eq.3) then
 C MAC
-            command(1:27)="gnuplot -noraise dynac.gnu "
-            CALL System(COMMAND(1:27))
+!            command(1:27)="gnuplot -noraise dynac.gnu "
+            command(1:18)="gnuplot dynac.gnu "
+            CALL System(COMMAND(1:18))
           else
 C WINDOWS          
             command(1:18)="wgnuplot dynac.gnu"
@@ -547,12 +688,13 @@ c dPHI envelope as f(z)
           if(opsy.eq.1) then
 C LINUX
             command(1:27)="gnuplot -noraise -geometry "
-	      command(28:51)="500x515-250+25 dynac.gnu"
+            command(28:51)="500x515-250+25 dynac.gnu"
             CALL System(COMMAND(1:51))
           elseif(opsy.eq.3) then
 C MAC
-            command(1:27)="gnuplot -noraise dynac.gnu "
-            CALL System(COMMAND(1:27))
+!            command(1:27)="gnuplot -noraise dynac.gnu "
+            command(1:18)="gnuplot dynac.gnu "
+            CALL System(COMMAND(1:18))
           else
 C WINDOWS          
             command(1:18)="wgnuplot dynac.gnu"
@@ -830,14 +972,15 @@ C WINDOWS
 20      write(6,*) int(data(2)),' plots in total'
         data(4)=1.
         CLOSE(66)
-30      data(3)=float(imax)
-40      END
+        data(3)=float(imax)
+        END
         SUBROUTINE wfile1(imax,x,xp,cx,cy)  
-        implicit real*8 (a-h,o-z)
-        common/opsys/opsy
+        implicit real(8) (a-h,o-z)
+        common/opsys/opsy,termtype
 c This routine writes the data points which will be plotted by GNU to a file
         dimension x(250002),xp(250002),cx(300),cy(300)
-        CHARACTER*80 title,command
+        CHARACTER*(80) command
+        character*(16) termtype
         command=""
         if(opsy.eq.1 .or. opsy.eq.3) then
 C LINUX or MAC
@@ -869,16 +1012,17 @@ C WINDOWS
         RETURN
         END
         SUBROUTINE wfile2(isave,icontr,xmin,xmax,ymin,ymax)
-        implicit real*8 (a-h,o-z)
+        implicit real(8) (a-h,o-z)
 c this routine will write the .GNU file containing the commands to be
 c executed by GNUPLOT
         common/wfil2/title,labels
         common/fichier/filenm,pfnm
-        common/opsys/opsy
-        CHARACTER*80 command,title
-        CHARACTER*40 labels(20)
-        CHARACTER*11 pfnm(20)
-        CHARACTER backslash,filenm*23,paf*33
+        common/opsys/opsy,termtype
+        CHARACTER*(80) command,title
+        character*(16) termtype,fsave
+        CHARACTER*(40) labels(20)
+        CHARACTER*(255) pfnm(20),txt
+        CHARACTER backslash*2,filenm*23,paf*33
         parameter (backslash="\\")
         command=""
         if(opsy.eq.1 .or. opsy.eq.3) then
@@ -910,15 +1054,23 @@ C WINDOWS
         endif
         write(50,1000)
         ytitle=0.99
+        ltt=len_trim(termtype)
+        txt=''
         if(opsy.eq.1) then
 C LINUX
         elseif(opsy.eq.3) then
 C MAC        
-          write(50,6000)
+          txt(1:13)='set terminal '
+          txt(14:13+ltt)=termtype(1:ltt)
+          txt(14+ltt:41+ltt)=' title "DYNAC" size 900,500'          
+          write(50,'(A)') txt(1:41+ltt)
           ytitle=0.985
         else
 C WINDOWS        
-          write(50,7000)
+          txt(1:13)='set terminal '
+          txt(14:13+ltt)=termtype(1:ltt)
+          txt(14+ltt:41+ltt)=' title "DYNAC" size 900,500'          
+          write(50,'(A)') txt(1:41+ltt)
         endif
         write(50,1202) 
         write(50,1001) title,ytitle
@@ -963,14 +1115,14 @@ C WINDOWS
 1005    format('set yrange [',f12.5,':',f12.5,']')
 1006    format('set size 1., 1.')
 1007    format('set samples 50')   
-1008    format('plot "dynac.plt" using 1:2 with dots lc 0, ',
-     *         A1)
-1011    format('plot "dynac.plt" using 1:2 with dots lc 0')
+!1008    format('plot "dynac.plt" using 1:2 with dots lc 0, ',
+!     *         A1)
+!1011    format('plot "dynac.plt" using 1:2 with dots lc 0')
 1012    format('plot "dynac.plt" using 1:2 with lines, ',
      *         A1)
 1013    format('"dynac.plt" using 3:4 with lines')
 1014    format('plot "dynac.plt" using 1:2 with lines')
-1009    format('"dynac.cnt" using 1:2 with lines')
+!1009    format('"dynac.cnt" using 1:2 with lines')
 1010    format('pause -1 "hit return to continue"')
 1202    format('set nokey')
 2012    format('plot "',a21,'" using 1:2 with lines, ',
@@ -978,17 +1130,16 @@ C WINDOWS
 2013    format('"',a21,'" using 3:4 with lines')
 3014    format('plot "',a21,'" using 1:2 with lines')
 4014    format('plot "',a21,'" using 1:2 with lines')
-6000    format('set terminal aqua title "DYNAC" size 900 500') 
-7000    format('set term wxt size 900,500')     
         close (50)
         RETURN
         END
         SUBROUTINE wfile3(imax,x,xp,y,yp)  
-        implicit real*8 (a-h,o-z)
-        common/opsys/opsy
+        implicit real(8) (a-h,o-z)
+        common/opsys/opsy,termtype
 c This routine writes the data points which will be plotted by GNU to a file
         dimension x(250002),xp(250002),y(250002),yp(250002)
-        CHARACTER*80 title,command
+        character*(16) termtype
+        CHARACTER*(80) command
         command=""
         if(opsy.eq.1 .or. opsy.eq.3) then
 C LINUX or MAC
@@ -1006,17 +1157,18 @@ C WINDOWS
         RETURN
         END
         SUBROUTINE wfile10(icont,imax,x,xp,y,yp,z,zp,igrtyp)  
-        implicit real*8 (a-h,o-z)
+        implicit real(8) (a-h,o-z)
 c This routine writes the data points which will be plotted by GNU to a file
-        character*5 cccst(20)
+        character*(5) cccst(20)
         common/fichier/filenm,pfnm
-        common/opsys/opsy
+        common/opsys/opsy,termtype
         common/chstat1/cst(250002),cstat(20),fcstat(20),ncstat,mcstat
         common/chstat2/cccst
         dimension x(250002),xp(250002),y(250002),yp(250002)
         dimension z(250002),zp(250002)
-        CHARACTER*80 title,command
-        CHARACTER*11 pfnm(20)
+        character*(16) termtype
+        CHARACTER*(80) command
+        CHARACTER*(255) pfnm(20)
         character filenm*23
         if (icont.eq.1) then
 c store ellips contour
@@ -1105,18 +1257,19 @@ C WINDOWS
         RETURN
         END
         SUBROUTINE wfile11(imax,x,xp,y,yp,igrtyp)  
-        implicit real*8 (a-h,o-z)
-        character*5 cccst(20)
+        implicit real(8) (a-h,o-z)
+        character*(5) cccst(20)
         common/fichier/filenm,pfnm
-        common/opsys/opsy
+        common/opsys/opsy,termtype
         common/chstat1/cst(250002),cstat(20),fcstat(20),ncstat,mcstat
         common/chstat2/cccst
 c This routine writes the data points which will be plotted by GNU to a file
         dimension x(250002),xp(250002),y(250002),yp(250002)
-        CHARACTER*80 title,command
-        CHARACTER*11 pfnm(20)
+        character*(16) termtype
+        CHARACTER*(80) command
+        CHARACTER*(255) pfnm(20)
         character filenm*23
-c store particle coordinates    
+c store particle coordinates
         IF(igrtyp.eq.2) then
           command=""
           if(opsy.eq.1 .or. opsy.eq.3) then
@@ -1184,20 +1337,22 @@ C WINDOWS
         RETURN
         END
         SUBROUTINE wfile21(isave,igrtyp)
-        implicit real*8 (a-h,o-z)
-        character*5 cccst(20)
+        implicit real(8) (a-h,o-z)
+        character*(5) cccst(20),toc
         common/prtcnt/imax
         common/wfil2/title,labels
         common/fichier/filenm,pfnm
-        common/opsys/opsy
+        common/opsys/opsy,termtype
         common/chstat1/cst(250002),cstat(20),fcstat(20),ncstat,mcstat
         common/chstat2/cccst
         common/pscl/yminsk,iskale
-        CHARACTER*80 command,title
-        CHARACTER*40 labels(20),labels3,labels4
-        CHARACTER*11 pfnm(20),strng,fnm
-        CHARACTER*6 parcnt
-        CHARACTER backslash,filenm*23,paf*33,indx*2,indxx*3
+        CHARACTER*(80) command,title
+        CHARACTER*(40) labels(20),labels3,labels4
+        CHARACTER*(255) pfnm(20),strng,fnm,txt
+!        CHARACTER*(11) strng,fnm
+        character*(16) termtype
+        CHARACTER*(6) parcnt
+        CHARACTER backslash*2,filenm*23,paf*33,indx*2,indxx*3
         common/wfil20/xmin(10),xmax(10),ymin(10),ymax(10)
         parameter (backslash="\\")
         command=""
@@ -1234,15 +1389,22 @@ C WINDOWS
         endif
         write(50,1000)
         ytitle=0.99
+        ltt=len_trim(termtype)
         if(opsy.eq.1) then
 C LINUX
         elseif(opsy.eq.3) then
 C MAC        
-          write(50,6000)
+          txt(1:13)='set terminal '
+          txt(14:13+ltt)=termtype(1:ltt)
+          txt(14+ltt:41+ltt)=' title "DYNAC" size 750,675'          
+          write(50,'(A)') txt(1:41+ltt)
           ytitle=0.985
         else
 C WINDOWS        
-          write(50,7000)
+          txt(1:13)='set terminal '
+          txt(14:13+ltt)=termtype(1:ltt)
+          txt(14+ltt:41+ltt)=' title "DYNAC" size 750,675'          
+          write(50,'(A)') txt(1:41+ltt)
         endif
         if(ncstat.eq.1) then
           write(50,1203)
@@ -1280,6 +1442,7 @@ c x-z
         if(igrtyp.eq.2) then
           if(isave.eq.0) then
             if(opsy.eq.3) then
+! MAC            
               write(50,8008)
             else
               write(50,1008)
@@ -1287,6 +1450,7 @@ c x-z
           else
             filenm(18:21)='.plt'
             if(opsy.eq.3) then
+! MAC            
               write(50,8808) filenm(1:21)
             else
               write(50,2008) filenm(1:21)
@@ -1294,20 +1458,24 @@ c x-z
           endif
         else
           strng=pfnm(1)
-          indxx=cccst(1)
+          toc=cccst(1)
+          indxx=toc(1:3)
           if(isave.eq.0) then
             write(50,3003) pfnm(1),indxx,backslash
             do j=2,mcstat-1
               strng=pfnm(j)
-              indxx=cccst(j)
+              toc=cccst(j)
+              indxx=toc(1:3)
               write(50,3033) pfnm(j),indxx,j,backslash
             enddo
             strng=pfnm(mcstat)
             if(igrtyp.eq.12) then
-              indxx=cccst(mcstat-1)
+              toc=cccst(mcstat-1)
+              indxx=toc(1:3)
               write(50,3013) pfnm(j),indxx,mcstat
             else
-              indxx=cccst(mcstat)
+              toc=cccst(mcstat)
+              indxx=toc(1:3)
               write(50,3043) pfnm(j),indxx,mcstat
             endif
           else
@@ -1315,17 +1483,20 @@ c x-z
             write(50,5003) filenm,indxx,backslash
             do j=2,mcstat-1
               strng=pfnm(j)
-              indxx=cccst(j)
+              toc=cccst(j)
+              indxx=toc(1:3)
               filenm(18:23)=strng(6:11)
               write(50,5033) filenm,indxx,j,backslash
             enddo
             strng=pfnm(mcstat)
             filenm(18:23)=strng(6:11)
             if(igrtyp.eq.12) then
-              indxx=cccst(mcstat-1)
+              toc=cccst(mcstat-1)
+              indxx=toc(1:3)
               write(50,5013) filenm,indxx,mcstat
             else
-              indxx=cccst(mcstat)
+              toc=cccst(mcstat)
+              indxx=toc(1:3)
               write(50,5043) filenm,indxx,mcstat
             endif
           endif
@@ -1412,15 +1583,18 @@ c new end
         endif
         if(isave.eq.0) then
           fnm=pfnm(1)
-          fnm(9:11)='pro'
+          nn=len_trim(fnm)
+          fnm(nn-2:nn)='pro'
           indx=' X'
           write(50,4303) fnm,indx,backslash
           fnm=pfnm(2)
-          fnm(9:11)='pro'
+          nn=len_trim(fnm)
+          fnm(nn-2:nn)='pro'
           indx=' Y'
           write(50,4305) fnm,indx,backslash
           fnm=pfnm(3)
-          fnm(9:11)='pro'
+          nn=len_trim(fnm)
+          fnm(nn-2:nn)='pro'
           indx=' Z'
           write(50,4313) fnm,indx
         else
@@ -1481,15 +1655,18 @@ c new end
         endif
         if(isave.eq.0) then
           fnm=pfnm(4)
-          fnm(9:11)='pro'
+          nn=len_trim(fnm)
+          fnm(nn-2:nn)='pro'
           indx='Xp'
           write(50,4303) fnm,indx,backslash
           fnm=pfnm(5)
-          fnm(9:11)='pro'
+          nn=len_trim(fnm)
+          fnm(nn-2:nn)='pro'
           indx='Yp'
           write(50,4305) fnm,indx,backslash
           fnm=pfnm(6)
-          fnm(9:11)='pro'
+          nn=len_trim(fnm)
+          fnm(nn-2:nn)='pro'
           indx='Zp'
           write(50,4313) fnm,indx
         else
@@ -1527,12 +1704,12 @@ c
 1004    format('set xrange [',f8.2,':',f8.2,']')
 1005    format('set yrange [',f12.6,':',f12.6,']')
 1006    format('set size 0.5,0.5')
-1100    format('set size 1.0, 1.0')
+!1100    format('set size 1.0, 1.0')
 1101    format('set origin 0.,0.5')
 1103    format('set origin 0.5,0.5')
 1105    format('set origin 0.,0.')
 1107    format('set origin 0.5,0.')
-1007    format('set samples 50')   
+!1007    format('set samples 50')   
 1008    format('plot "dynac.plt" using 1:2 with dots lc 0')
 8008    format('plot "dynac.plt" using 1:2 with dots lc 8')
 1010    format('plot "dynac.plt" using 3:4 with dots lc 0')
@@ -1602,8 +1779,6 @@ c
      *         '" with lines ls 2, ',A1)
 6313    format('     "',a23,'" using 1:2 title "',A2,
      *         '" with lines ls 3')
-6000    format('set terminal aqua title "DYNAC" size 750 675') 
-7000    format('set term wxt size 750,675')     
 9000    format('set logscale y')
 9010    format('set nologscale y')
 9012    format('set format y "%.0t.E%+02T"')
@@ -1613,39 +1788,58 @@ c
         RETURN
         END
         SUBROUTINE wfile20(isave,igrtyp)
-        implicit real*8 (a-h,o-z)
-        character*5 cccst(20)
+        implicit real(8) (a-h,o-z)
+        character*(5) cccst(20),toc
         common/prtcnt/imax
         common/chstat1/cst(250002),cstat(20),fcstat(20),ncstat,mcstat
         common/chstat2/cccst
         common/wfil2/title,labels
         common/fichier/filenm,pfnm
-        common/opsys/opsy
-        CHARACTER*80 command,title
-        CHARACTER*40 labels(20)
-        CHARACTER*11 pfnm(20),strng
-        CHARACTER*6 parcnt
-        CHARACTER backslash,filenm*23,paf*33,indx*2,indxx*3
+        common/opsys/opsy,termtype
+        common/files/fname,lpath
+        CHARACTER*(256) fname,command,lfname        
+        CHARACTER*(80) title
+        CHARACTER*(40) labels(20)
+        CHARACTER*(255) pfnm(20),txt
+        CHARACTER*(11) strng
+        CHARACTER*(6) parcnt
+        character*(16) termtype
+!        CHARACTER backslash*2,filenm*23,paf*33,indx*2,indxx*3
+        CHARACTER backslash*2,filenm*23,paf*33,indxx*3
         common/wfil20/xmin(10),xmax(10),ymin(10),ymax(10)
         parameter (backslash="\\")
-        command=""
+        command=''
+        lfname=''
         write(parcnt,'(I6)') imax
         write(6,7) imax
 7       format(i6,' particles total')
         ytitle=0.993
+        
+!        write(6,*) 'In wfile20 path=',fname(1:lpath)
         if(opsy.eq.1) then
 C LINUX
-          command="rm -f dynac.gnu"
+          command(1:7)='rm -f "'
+          command(8:lpath+7)=fname(1:lpath)
+          command(lpath+8:lpath+17)='dynac.gnu"'
         elseif(opsy.eq.3) then
 C MAC
-          command="rm -f dynac.gnu"
+          command(1:7)='rm -f "'
+          command(8:lpath+7)=fname(1:lpath)
+          command(lpath+8:lpath+17)='dynac.gnu"'
           ytitle=0.985          
         else
 C WINDOWS
           command="if exist dynac.gnu del dynac.gnu"
         endif
+!        write(6,*) 'In wfile20 CMD=',command
         CALL System(COMMAND)
         IF (isave.eq.0) then
+!          lfname(1:1)='"'
+!          lfname(2:1+lpath)=fname(1:lpath)
+!          lfname(2+lpath:11+lpath)='dynac.gnu"'
+!          lfn=11+lpath
+!          write(6,*) 'In wfile20 gnu=',lfname(1:lfn)         
+!          OPEN(unit=50,file=lfname(1:lfn))
           OPEN(unit=50,file='dynac.gnu')
         ELSE
           call fn
@@ -1685,17 +1879,25 @@ C WINDOWS
         endif
         write(50,1100)   
         write(50,1001) title,ytitle
+        ltt=len_trim(termtype)
         if(opsy.eq.1) then
 C LINUX
           write(50,1510) parcnt
         elseif(opsy.eq.3) then
 C MAC        
           write(50,1510) parcnt
-          write(50,6000)
+          txt(1:13)='set terminal '
+          txt(14:13+ltt)=termtype(1:ltt)
+          txt(14+ltt:41+ltt)=' title "DYNAC" size 750,675'          
+          write(50,'(A)') txt(1:41+ltt)
+          ytitle=0.985
         else
-C WINDOWS
+C WINDOWS        
           write(50,1500) parcnt
-          write(50,7000)
+          txt(1:13)='set terminal '
+          txt(14:13+ltt)=termtype(1:ltt)
+          txt(14+ltt:41+ltt)=' title "DYNAC" size 750,675'          
+          write(50,'(A)') txt(1:41+ltt)
         endif
         write(50,1200)   
 c x-xp
@@ -1717,42 +1919,48 @@ c x-xp
             filenm(18:21)='.plt'
             write(50,2022) filenm(1:21),backslash
             filenm(18:21)='.cnt'
-	      write(50,2019) filenm(1:21)
+            write(50,2019) filenm(1:21)
           ENDIF
         ELSE
           IF (isave.eq.0) then
             strng=pfnm(1)
-            indxx=cccst(1)
+            toc=cccst(1)
+            indxx=toc(1:3)
             write(50,3001) pfnm(1),indxx,backslash
             do j=2,mcstat
               strng=pfnm(j)
               if(j.eq.mcstat .and. igrtyp.eq.11) then
-                indxx=cccst(j-1)
+                toc=cccst(j-1)
+                indxx=toc(1:3)
                 write(50,3018) pfnm(j),indxx,j,backslash
               else
-                indxx=cccst(j)
+                toc=cccst(j)
+                indxx=toc(1:3)
                 write(50,3008) pfnm(j),indxx,j,backslash
               endif
             enddo
             write(50,1009)
           ELSE
             strng=pfnm(1)
-            indxx=cccst(1)
+            toc=cccst(1)
+            indxx=toc(1:3)
             filenm(18:23)=strng(6:11)
             write(50,4001) filenm,indxx,backslash
             do j=2,mcstat
               strng=pfnm(j)
               filenm(18:23)=strng(6:11)
               if(j.eq.mcstat .and. igrtyp.eq.11) then
-                indxx=cccst(j-1)
+                toc=cccst(j-1)
+                indxx=toc(1:3)
                 write(50,4018) filenm,indxx,j,backslash
               else
-                indxx=cccst(j)
+                toc=cccst(j)
+                indxx=toc(1:3)
                 write(50,4008) filenm,indxx,j,backslash
               endif
             enddo
             filenm(18:21)='.cnt'
-   	      write(50,2019) filenm(1:21)
+            write(50,2019) filenm(1:21)
           ENDIF
         ENDIF
         write(50,1203)
@@ -1876,7 +2084,7 @@ c dW-dPHI
               write(50,4014) filenm,j,backslash
             enddo
             filenm(18:21)='.cnt'
-	    write(50,2025) filenm(1:21)
+            write(50,2025) filenm(1:21)
           ENDIF
         ENDIF
         write(50,1201)
@@ -1896,7 +2104,7 @@ c dW-dPHI
 1102    format('set origin 0.5,0.5')
 1103    format('set origin 0.,0.')
 1104    format('set origin 0.5,0.')
-1007    format('set samples 50')   
+!1007    format('set samples 50')   
 1008    format('plot "dynac.plt" using 1:2 title "" with ',
      *         'dots lc 0, ',A1)
 8008    format('plot "dynac.plt" using 1:2 title "" with ',
@@ -1926,27 +2134,27 @@ c dW-dPHI
 1206    format('set key at screen 0.56, 0.95 spacing 0.8',
      *         ' samplen 1 textcolor rgb variable ')
 1203    format('set nokey')
-2002    format('plot "',a23,'" using 1:2 with dots, ',
-     *         A1)
+!2002    format('plot "',a23,'" using 1:2 with dots, ',
+!     *         A1)
 2022    format('plot "',a21,'" using 1:2 title "" with ',
      *         'dots lc 0, ',A1)
-2008    format('     "',a23,'" using 1:2 with dots lc 1, ',
-     *         A1)
-2009    format('     "',a23,'" using 1:2 title "" with lines')
+!2008    format('     "',a23,'" using 1:2 with dots lc 1, ',
+!     *         A1)
+!2009    format('     "',a23,'" using 1:2 title "" with lines')
 2019    format('     "',a21,'" using 1:2 title "" with lines')
-2011    format('plot "',a23,'" using 3:4 with',
-     *         ' dots lc 0, ',A1)
+!2011    format('plot "',a23,'" using 3:4 with',
+!     *         ' dots lc 0, ',A1)
 2031    format('plot "',a21,'" using 3:4 with',
      *         ' dots lc 0, ',A1)
-2012    format('     "',a23,'" using 3:4 with lines')
+!2012    format('     "',a23,'" using 3:4 with lines')
 2042    format('     "',a21,'" using 3:4 with lines')
-2013    format('plot "',a23,'" using 1:3',
-     *         ' with dots lc 0')
+!2013    format('plot "',a23,'" using 1:3',
+!     *         ' with dots lc 0')
 2033    format('plot "',a21,'" using 1:3',
      *         ' with dots lc 0')
-2014    format('plot "',a23,'" using 5:6 with',
-     *         ' dots lc 0, ',A1)
-2015    format('     "',a23,'" using 5:6 with lines')
+!2014    format('plot "',a23,'" using 5:6 with',
+!     *         ' dots lc 0, ',A1)
+!2015    format('     "',a23,'" using 5:6 with lines')
 2024    format('plot "',a21,'" using 5:6 with',
      *         ' dots lc 0, ',A1)
 2025    format('     "',a21,'" using 5:6 with lines')
@@ -1990,17 +2198,15 @@ c dW-dPHI
      *         ' dots lc 1, ',A1)
 4014    format('     "',a23,'" using 5:6 with',
      *         ' dots lc ',I2,',',A1)
-5000    format('set label "',A3,'" at screen ',f4.2,',',f4.2)
-6000    format('set terminal aqua title "DYNAC" size 750 675') 
-7000    format('set term wxt size 750,675')     
+!5000    format('set label "',A3,'" at screen ',f4.2,',',f4.2)
         close (50)
         RETURN
         END
         SUBROUTINE fn
-        implicit real*8 (a-h,o-z)
+        implicit real(8) (a-h,o-z)
         common/fichier/filenm,pfnm
         common/mingw/mg
-        CHARACTER*11 pfnm(20)
+        CHARACTER*(255) pfnm(20)
         character iitime*30,filenm*23
         logical mg
         inttim=time8()
@@ -2040,7 +2246,7 @@ c fill the blank with the character '0' to avoid error message on file copy
         return
         end
         subroutine mkfrmt(i,fmt)
-        implicit real*8 (a-h,o-z)
+        implicit real(8) (a-h,o-z)
 c this routine makes a (variable) A format
 c e.g. if the integer i=11, the character format fmt will
 c be fmt=(A11)

@@ -673,6 +673,7 @@ BEAM AT OUTPUT DTL TANK 1
 0 5
 1. 50. 1. 50. 1. 1.  90. 0.2
 ;ENVEL
+;1
 ;Beam from RFQ output to DTL1 output
 ;0. 15.
 ;1. 1. 30. 60.
@@ -680,4 +681,7 @@ BEAM AT OUTPUT DTL TANK 1
 ;BEAM AT DTL 1 OUTPUT 
 ;0  0 
 ;1.  1.  40.  0
+WRBEAM
+sns_mebt_dtl_out.dst
+0 100
 STOP

@@ -1,4 +1,5 @@
 # DYNAC V6.0 (WINDOWS and LINUX/MAC versions)             12-Nov-2015
+# DYNAC V6 (WINDOWS and LINUX/MAC versions)               15-Sep-2016
 
 
 ## GETTING STARTED
@@ -20,8 +21,8 @@ On UNIX systems you may run `make install` to get the binaries in your path. On 
 Go to the datafiles directory.
 
 You are now ready to run DYNAC. An example file is given for 2
-different types of accelerators:  
-sns_mebt_dtl1.in     -> THE MEBT and first DTL tank for the SNS  
+different types of accelerators:
+sns_mebt_dtl1.in     -> THE MEBT and first DTL tank for the SNS
 egun_example2.in     -> Electron gun (you will also need egun_field.txt)
 
 Run it on linux/MAC by typing:
@@ -47,6 +48,17 @@ with plotit for the WINDOWS version: the first time you use it it may
 complain about not finding 3 files. Ignore this message. Details on
 `plotit` may be found in chapter 7 of the DYNAC help file.
 
+MAC users can change the default gnuplot terminal by changing plotit using the 
+-tt option in the following way:
+~/your_path/dynac/plot/dynplt m -ttxxxx
+where xxxx is the gnuplot terminal name. If not specified, aqua will be used.
+But aqua yields a very slow response in gnuplot for scatter plots, whereas wxt
+is much faster.
+
+If you already have an older version of DYNAC installed, you may wish
+to download only the relevant files upon an update. These are typically 
+the source code, the user guide and sometimes the plotting program 
+dyndat.f and can be found under the "Individual files" heading.
 
 Input files contain a sequence of keywords or type code entries. The
 help file containing the user instructions for these type code entries
